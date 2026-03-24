@@ -81,16 +81,26 @@ Paiement mobile money natif (Wave CI, MTN MoMo, Orange Money)
 Assistant IA avec support Nouchi, Dioula, Bambara
 Conçu pour les vendeurs WhatsApp d'Abidjan
 Interface optimisée mobile (marché à 95% mobile)
-📱 Screenshots
-Interface Client
-�
-Charger l'image
-Dashboard Vendeur
-�
-Charger l'image
-Panel Admin
-�
-Charger l'image
+## 📱 Screenshots
+
+### Interface Client
+
+
+![Interface Client](Screenshot_20260324_100111_Chrome.jpg)
+
+
+
+### Dashboard Vendeur
+
+
+![Dashboard Vendeur](Screenshot_20260324_100201_Chrome.jpg)
+
+
+
+### Panel Admin
+
+
+![Panel Admin](Screenshot_20260324_100219_Chrome.jpg)
 👨‍💻 À propos
 Projet construit seul, sur téléphone, en 7 semaines, sans formation académique spécialisée.
 Motivé par une expérience personnelle en tant que vendeur en ligne à Abidjan — j'ai construit l'outil que j'aurais voulu avoir.
