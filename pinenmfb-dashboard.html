@@ -93,6 +93,8 @@
         }
 
         .topbar-btn .ui-icon { width: 21px; height: 21px; }
+        .topbar-btn .menu-icon { width: 24px; height: 24px; }
+        .profile-icon .menu-icon { width: 22px; height: 22px; }
         .stat-icon .ui-icon { width: 23px; height: 23px; }
 
 
@@ -1138,29 +1140,30 @@
             <div class="menu-title">Menu</div>
 
             <a href="#" class="menu-item" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
-                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
-                    <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"></rect>
-                    <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"></rect>
-                    <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"></rect>
-                    <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"></rect>
+                <svg class="anim-dash bottom-svg menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                    <rect class="dash-bar dash-bar-1 bottom-dark" x="8"  y="8"  width="22" height="22" rx="5"></rect>
+                    <rect class="dash-bar dash-bar-2 bottom-lime" x="34" y="8"  width="22" height="14" rx="5"></rect>
+                    <rect class="dash-bar dash-bar-3 bottom-green" x="34" y="26" width="22" height="30" rx="5"></rect>
+                    <rect class="dash-bar bottom-green"           x="8"  y="34" width="22" height="22" rx="5"></rect>
+                    <circle class="dash-dot" cx="46" cy="14" r="3.5" fill="white"></circle>
                 </svg>
                 Tableau de bord
             </a>
 
             <a href="#" class="menu-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
-                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
-                    <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
+                <svg class="anim-wallet bottom-svg menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                    <path class="wallet-card bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
                     <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"></rect>
-                    <path fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
+                    <path class="wallet-flap" fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
                     <circle cx="46" cy="38" r="4" class="bottom-lime"></circle>
                 </svg>
                 Caisse
             </a>
 
             <a href="#" class="menu-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
-                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <svg class="anim-doc bottom-svg menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"></path>
-                    <path class="bottom-lime" d="M38 10V20H48Z"></path>
+                    <path class="doc-fold bottom-lime" d="M38 10V20H48Z"></path>
                     <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"></rect>
                     <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"></rect>
                 </svg>
@@ -1168,16 +1171,16 @@
             </a>
 
             <a href="#" class="menu-item active" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
-                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
-                    <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"></rect>
-                    <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"></rect>
-                    <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"></rect>
+                <svg class="anim-bars bottom-svg menu-icon active" viewBox="0 0 64 64" aria-hidden="true">
+                    <rect class="bar bar-1 bottom-dark"  x="12" y="38" width="10" height="16" rx="4"></rect>
+                    <rect class="bar bar-2 bottom-green" x="27" y="26" width="10" height="28" rx="4"></rect>
+                    <rect class="bar bar-3 bottom-lime"  x="42" y="14" width="10" height="40" rx="4"></rect>
                 </svg>
                 Rapport
             </a>
 
             <a href="#" class="menu-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
-                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <svg class="anim-shield bottom-svg menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path class="bottom-green" d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z"></path>
                     <circle cx="32" cy="22" r="13" class="bottom-dark"></circle>
                     <circle cx="46" cy="16" r="6" class="bottom-lime"></circle>
@@ -1206,25 +1209,30 @@
 
             <div class="topbar-actions">
 
-                <div class="topbar-btn">
-                    <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="11" cy="11" r="6"></circle>
-                        <path d="M16 16L21 21"></path>
+                <div class="topbar-btn" onclick="pulseIcon(this)">
+                    <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                        <circle cx="26" cy="26" r="16" class="bottom-dark"></circle>
+                        <circle cx="26" cy="26" r="9" fill="white"></circle>
+                        <path d="M38 38L52 52" stroke="var(--primary-green)" stroke-width="8" stroke-linecap="round"></path>
+                        <circle cx="34" cy="15" r="4" class="bottom-lime"></circle>
                     </svg>
                 </div>
 
-                <div class="topbar-btn">
-                    <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M18 9C18 5.7 15.8 3 12 3C8.2 3 6 5.7 6 9V13L4 17H20L18 13V9Z"></path>
-                        <path d="M9.5 20C10.2 20.8 11 21 12 21C13 21 13.8 20.8 14.5 20"></path>
+                <div class="topbar-btn" onclick="pulseIcon(this)">
+                    <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M32 8C24 8 18 14 18 24V34L12 44H52L46 34V24C46 14 40 8 32 8Z" class="bottom-dark"></path>
+                        <rect x="16" y="44" width="32" height="4" rx="2" class="bottom-green"></rect>
+                        <circle cx="32" cy="52" r="5" class="bottom-green"></circle>
+                        <circle cx="46" cy="14" r="6" class="bottom-lime"></circle>
                     </svg>
                 </div>
 
                 <div class="profile">
                     <div class="profile-icon">
-                        <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="12" cy="8" r="3"></circle>
-                            <path d="M5 20C5 16.7 8.1 14 12 14C15.9 14 19 16.7 19 20"></path>
+                        <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                            <path d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z" class="bottom-green"></path>
+                            <circle cx="32" cy="22" r="13" class="bottom-dark"></circle>
+                            <circle cx="46" cy="16" r="6" class="bottom-lime"></circle>
                         </svg>
                     </div>
                     <div>
@@ -1533,29 +1541,30 @@
             <div class="menu-title">Menu</div>
 
             <a href="#" class="menu-item" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
-                <svg class="menu-icon" viewBox="0 0 64 64">
-                    <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"></rect>
-                    <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"></rect>
-                    <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"></rect>
-                    <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"></rect>
+                <svg class="anim-dash bottom-svg menu-icon" viewBox="0 0 64 64">
+                    <rect class="dash-bar dash-bar-1 bottom-dark" x="8"  y="8"  width="22" height="22" rx="5"></rect>
+                    <rect class="dash-bar dash-bar-2 bottom-lime" x="34" y="8"  width="22" height="14" rx="5"></rect>
+                    <rect class="dash-bar dash-bar-3 bottom-green" x="34" y="26" width="22" height="30" rx="5"></rect>
+                    <rect class="dash-bar bottom-green"           x="8"  y="34" width="22" height="22" rx="5"></rect>
+                    <circle class="dash-dot" cx="46" cy="14" r="3.5" fill="white"></circle>
                 </svg>
                 Tableau de bord
             </a>
 
             <a href="#" class="menu-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
-                <svg class="menu-icon" viewBox="0 0 64 64">
-                    <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
+                <svg class="anim-wallet bottom-svg menu-icon" viewBox="0 0 64 64">
+                    <path class="wallet-card bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
                     <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"></rect>
-                    <path fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
+                    <path class="wallet-flap" fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
                     <circle cx="46" cy="38" r="4" class="bottom-lime"></circle>
                 </svg>
                 Caisse
             </a>
 
             <a href="#" class="menu-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
-                <svg class="menu-icon" viewBox="0 0 64 64">
+                <svg class="anim-doc bottom-svg menu-icon" viewBox="0 0 64 64">
                     <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"></path>
-                    <path class="bottom-lime" d="M38 10V20H48Z"></path>
+                    <path class="doc-fold bottom-lime" d="M38 10V20H48Z"></path>
                     <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"></rect>
                     <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"></rect>
                 </svg>
@@ -1563,16 +1572,16 @@
             </a>
 
             <a href="#" class="menu-item active" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
-                <svg class="menu-icon" viewBox="0 0 64 64">
-                    <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"></rect>
-                    <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"></rect>
-                    <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"></rect>
+                <svg class="anim-bars bottom-svg menu-icon" viewBox="0 0 64 64">
+                    <rect class="bar bar-1 bottom-dark"  x="12" y="38" width="10" height="16" rx="4"></rect>
+                    <rect class="bar bar-2 bottom-green" x="27" y="26" width="10" height="28" rx="4"></rect>
+                    <rect class="bar bar-3 bottom-lime"  x="42" y="14" width="10" height="40" rx="4"></rect>
                 </svg>
                 Rapport
             </a>
 
             <a href="#" class="menu-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
-                <svg class="menu-icon" viewBox="0 0 64 64">
+                <svg class="anim-shield bottom-svg menu-icon" viewBox="0 0 64 64">
                     <path class="bottom-green" d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z"></path>
                     <circle cx="32" cy="22" r="13" class="bottom-dark"></circle>
                     <circle cx="46" cy="16" r="6" class="bottom-lime"></circle>
@@ -1994,29 +2003,35 @@
         }
     }
 
+    /* Rejoue l'animation d'un SVG (retire .active, force un reflow,
+       re-ajoute .active si l'élément est celui qui vient d'être cliqué).
+       Fonctionne pour tous les emplacements : sidebar desktop, drawer
+       mobile, bottom nav mobile. */
+    function replaySvgAnim(container, shouldActivate) {
+        const svg = container.querySelector('svg');
+        if (!svg) return;
+        svg.classList.remove('active');
+        if (shouldActivate) {
+            void svg.offsetWidth;
+            svg.classList.add('active');
+        }
+    }
+
     function navigateTo(evt, viewKey) {
         if (evt) evt.preventDefault();
 
-        // Menu items (sidebar + drawer)
+        // Menu items (sidebar desktop + drawer mobile)
         document.querySelectorAll('.menu-item[data-view]').forEach(item => {
-            item.classList.toggle('active', item.dataset.view === viewKey);
+            const isTarget = item.dataset.view === viewKey;
+            item.classList.toggle('active', isTarget);
+            replaySvgAnim(item, isTarget);
         });
 
-        // Bottom nav
+        // Bottom nav mobile
         document.querySelectorAll('.mob-bottom-nav .nav-item[data-view]').forEach(item => {
-            item.classList.toggle('active', item.dataset.view === viewKey);
-
-            // Rejoue l'animation de l'icône du nav cliqué :
-            // on retire puis on ré-ajoute la classe 'active' du SVG,
-            // en forçant un reflow entre les deux pour que le navigateur
-            // redémarre effectivement les keyframes.
-            const svg = item.querySelector('svg');
-            if (!svg) return;
-            svg.classList.remove('active');
-            if (item.dataset.view === viewKey) {
-                void svg.offsetWidth;
-                svg.classList.add('active');
-            }
+            const isTarget = item.dataset.view === viewKey;
+            item.classList.toggle('active', isTarget);
+            replaySvgAnim(item, isTarget);
         });
 
         // Vue desktop
