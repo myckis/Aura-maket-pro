@@ -556,32 +556,6 @@
 
 
         /* =========================================================
-           MOBILE TABS
-        ========================================================= */
-
-        .top-tabs {
-            display: flex;
-            padding: 0 24px;
-            gap: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab-item {
-            padding-bottom: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-
-        .tab-item.active {
-            color: var(--text-main);
-            font-weight: 700;
-            border-bottom: 3px solid var(--primary-green);
-        }
-
-
-        /* =========================================================
            MOBILE CONTENT
         ========================================================= */
 
@@ -1114,7 +1088,6 @@
 
         @media (max-width: 380px) {
             .mob-header { padding-left: 18px; padding-right: 18px; }
-            .top-tabs { padding-left: 18px; padding-right: 18px; gap: 15px; }
             .net-worth-box, .assets-section { padding-left: 18px; padding-right: 18px; }
             .time-filters { padding-left: 18px; padding-right: 18px; }
             .filter-btn { padding-left: 8px; padding-right: 8px; }
@@ -1406,14 +1379,6 @@
         </div>
 
     </header>
-
-
-    <nav class="top-tabs">
-        <div class="tab-item">Dashboard</div>
-        <div class="tab-item active">Net worth</div>
-        <div class="tab-item">Credit</div>
-        <div class="tab-item">Debt</div>
-    </nav>
 
 
     <main class="mob-content">
