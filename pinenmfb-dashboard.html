@@ -845,9 +845,92 @@
            BOTTOM SVG COLORS
         ========================================================= */
 
+        .bottom-svg { overflow: visible; }
         .bottom-dark { fill: var(--primary-dark); }
         .bottom-green { fill: var(--primary-green); }
         .bottom-lime { fill: var(--icon-lime); }
+
+
+        /* =========================================================
+           ANIMATIONS DES ICÔNES
+           (rejouées à chaque clic sur l'onglet correspondant —
+            la vue elle-même ne fait aucune transition)
+        ========================================================= */
+
+        /* Pulse des icônes du header (loupe / cloche) */
+        .icon-pulse {
+            animation: iconPulse .5s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.25); }
+        }
+
+        /* FACTURATION — le coin du document se replie */
+        .anim-doc.active .doc-fold {
+            animation: foldFlip .5s ease;
+            transform-origin: 38px 20px;
+        }
+        @keyframes foldFlip {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.4); }
+        }
+
+        /* CAISSE — le portefeuille s'ouvre, la carte glisse */
+        .anim-wallet.active .wallet-flap {
+            animation: flapOpen .6s ease;
+            transform-origin: top center;
+        }
+        .anim-wallet.active .wallet-card {
+            animation: cardSlide .6s ease;
+        }
+        @keyframes flapOpen {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-3px) scaleY(.8); }
+        }
+        @keyframes cardSlide {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-7px); }
+        }
+
+        /* RAPPORT — les 3 barres du graphique poussent */
+        .anim-bars.active .bar {
+            animation: barGrow .6s cubic-bezier(.34,1.56,.64,1);
+            transform-origin: bottom;
+        }
+        .anim-bars.active .bar-1 { animation-delay: .05s; }
+        .anim-bars.active .bar-2 { animation-delay: .15s; }
+        .anim-bars.active .bar-3 { animation-delay: .25s; }
+        @keyframes barGrow {
+            0%   { transform: scaleY(.3); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* PROFIL — pulse du bouclier + halo vert */
+        .anim-shield.active {
+            animation: shieldProtect .6s cubic-bezier(.175,.885,.32,1.275);
+        }
+        @keyframes shieldProtect {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.18); filter: drop-shadow(0 0 6px var(--icon-lime)); }
+        }
+
+        /* TABLEAU DE BORD — les 4 tuiles poussent, le point pop */
+        .anim-dash.active .dash-bar {
+            animation: barGrow .6s cubic-bezier(.34,1.56,.64,1);
+            transform-origin: bottom;
+        }
+        .anim-dash.active .dash-bar-1 { animation-delay: .05s; }
+        .anim-dash.active .dash-bar-2 { animation-delay: .15s; }
+        .anim-dash.active .dash-bar-3 { animation-delay: .25s; }
+        .anim-dash.active .dash-dot {
+            animation: dotPop .4s .4s cubic-bezier(.175,.885,.32,1.275) forwards;
+            transform-origin: 46px 14px;
+            transform: scale(0);
+        }
+        @keyframes dotPop {
+            to { transform: scale(1); }
+        }
 
 
         /* =========================================================
@@ -1302,7 +1385,7 @@
 
         <div class="mob-header-actions">
 
-            <div class="mob-header-button">
+            <div class="mob-header-button" onclick="pulseIcon(this)">
                 <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <circle cx="26" cy="26" r="16" class="bottom-dark"></circle>
                     <circle cx="26" cy="26" r="9" fill="white"></circle>
@@ -1311,7 +1394,7 @@
                 </svg>
             </div>
 
-            <div class="mob-header-button">
+            <div class="mob-header-button" onclick="pulseIcon(this)">
                 <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path d="M32 8C24 8 18 14 18 24V34L12 44H52L46 34V24C46 14 40 8 32 8Z" class="bottom-dark"></path>
                     <rect x="16" y="44" width="32" height="4" rx="2" class="bottom-green"></rect>
@@ -1524,29 +1607,30 @@
     <nav class="mob-bottom-nav">
 
         <div class="nav-item active" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
-            <svg class="bottom-svg" viewBox="0 0 64 64">
-                <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"/>
-                <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"/>
-                <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"/>
-                <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"/>
+            <svg class="anim-dash bottom-svg active" viewBox="0 0 64 64">
+                <rect class="dash-bar dash-bar-1 bottom-dark" x="8"  y="8"  width="22" height="22" rx="5"/>
+                <rect class="dash-bar dash-bar-2 bottom-lime" x="34" y="8"  width="22" height="14" rx="5"/>
+                <rect class="dash-bar dash-bar-3 bottom-green" x="34" y="26" width="22" height="30" rx="5"/>
+                <rect class="dash-bar bottom-green"           x="8"  y="34" width="22" height="22" rx="5"/>
+                <circle class="dash-dot" cx="46" cy="14" r="3.5" fill="white"/>
             </svg>
             <span>Tableau de bord</span>
         </div>
 
         <div class="nav-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
-            <svg class="bottom-svg" viewBox="0 0 64 64">
-                <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"/>
+            <svg class="anim-wallet bottom-svg" viewBox="0 0 64 64">
+                <path class="wallet-card bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"/>
                 <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"/>
-                <path d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z" fill="#092920"/>
+                <path class="wallet-flap" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z" fill="#092920"/>
                 <circle cx="46" cy="38" r="4" class="bottom-lime"/>
             </svg>
             <span>Caisse</span>
         </div>
 
         <div class="nav-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
-            <svg class="bottom-svg" viewBox="0 0 64 64">
+            <svg class="anim-doc bottom-svg" viewBox="0 0 64 64">
                 <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"/>
-                <path class="bottom-lime" d="M38 10V20H48Z"/>
+                <path class="doc-fold bottom-lime" d="M38 10V20H48Z"/>
                 <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"/>
                 <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"/>
             </svg>
@@ -1554,16 +1638,16 @@
         </div>
 
         <div class="nav-item" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
-            <svg class="bottom-svg" viewBox="0 0 64 64">
-                <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"/>
-                <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"/>
-                <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"/>
+            <svg class="anim-bars bottom-svg" viewBox="0 0 64 64">
+                <rect class="bar bar-1 bottom-dark"  x="12" y="38" width="10" height="16" rx="4"/>
+                <rect class="bar bar-2 bottom-green" x="27" y="26" width="10" height="28" rx="4"/>
+                <rect class="bar bar-3 bottom-lime"  x="42" y="14" width="10" height="40" rx="4"/>
             </svg>
             <span>Rapport</span>
         </div>
 
         <div class="nav-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
-            <svg class="bottom-svg" viewBox="0 0 64 64">
+            <svg class="anim-shield bottom-svg" viewBox="0 0 64 64">
                 <path d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z" class="bottom-green"/>
                 <circle cx="32" cy="22" r="13" class="bottom-dark"/>
                 <circle cx="46" cy="16" r="6" class="bottom-lime"/>
@@ -1935,6 +2019,18 @@
         // Bottom nav
         document.querySelectorAll('.mob-bottom-nav .nav-item[data-view]').forEach(item => {
             item.classList.toggle('active', item.dataset.view === viewKey);
+
+            // Rejoue l'animation de l'icône du nav cliqué :
+            // on retire puis on ré-ajoute la classe 'active' du SVG,
+            // en forçant un reflow entre les deux pour que le navigateur
+            // redémarre effectivement les keyframes.
+            const svg = item.querySelector('svg');
+            if (!svg) return;
+            svg.classList.remove('active');
+            if (item.dataset.view === viewKey) {
+                void svg.offsetWidth;
+                svg.classList.add('active');
+            }
         });
 
         // Vue desktop
@@ -1954,6 +2050,19 @@
         if (drawer && drawer.classList.contains('active')) toggleMobDrawer();
 
         return false;
+    }
+
+
+    /* =========================================================
+       PULSE DES ICÔNES DU HEADER MOBILE (loupe / cloche)
+    ========================================================= */
+
+    function pulseIcon(el) {
+        const svg = el.querySelector('svg');
+        if (!svg) return;
+        svg.classList.remove('icon-pulse');
+        void svg.offsetWidth;
+        svg.classList.add('icon-pulse');
     }
 
 
