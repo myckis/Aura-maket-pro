@@ -524,7 +524,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 24px 12px;
+            padding: 20px 24px 16px;
+
+            /* Bloc rectangulaire figé en haut : reste visible pendant
+               tout le scroll, comme un vrai app bar mobile. */
+            position: sticky;
+            top: 0;
+            z-index: 900;
+
+            /* Fond opaque identique au body : le bloc reste un
+               rectangle uni, pas un verre transparent. */
+            background: var(--bg-lime);
+
+            /* Ombre légère vers le bas pour matérialiser la
+               séparation d'avec le contenu qui défile dessous,
+               sans casser la teinte. */
+            box-shadow: 0 1px 0 rgba(7, 71, 40, .06);
+
+            /* Force la promotion en couche compositée : pas de
+               jitter au scroll sur Chrome Android. */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
         }
 
         .mob-header h1 {
