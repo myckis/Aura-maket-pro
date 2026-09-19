@@ -2,32 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PinenMFB — Financial Dashboard</title>
 
-    <!-- Google Font -->
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -45,12 +26,8 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
 
-            /* Nouveau fond global (remplace le blanc) */
             --bg-lime: #e8f39c;
-            --bg-body-desk: #e8f39c;
-            --bg-body-mob: #e8f39c;
 
-            /* Surfaces en verre dépoli (glassmorphism) */
             --bg-surface: rgba(255, 255, 255, 0.35);
             --bg-surface-strong: rgba(255, 255, 255, 0.55);
             --glass-border: rgba(255, 255, 255, 0.6);
@@ -74,14 +51,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-
             font-family: var(--font-family);
-
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             width: 100%;
             min-height: 100%;
         }
@@ -92,141 +66,51 @@
             background: var(--bg-lime);
         }
 
-        button,
-        a {
-            -webkit-tap-highlight-color: transparent;
-        }
-
-
-        /* =========================================================
-           GLASSMORPHISM (classe utilitaire commune)
-        ========================================================= */
-
-        .glass {
-            background: var(--bg-surface);
-            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-            border: 1px solid var(--glass-border);
-            box-shadow:
-                0 8px 32px rgba(7, 71, 40, 0.10),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-        }
-
 
         /* =========================================================
            SVG ICON SYSTEM
-           STYLE COMMUN AUX ICÔNES
         ========================================================= */
 
         .ui-icon {
             width: 23px;
             height: 23px;
-
             display: block;
-
             fill: none;
             stroke: currentColor;
             stroke-width: 1.9;
             stroke-linecap: round;
             stroke-linejoin: round;
-
             flex-shrink: 0;
         }
 
-        .ui-icon-fill {
-            width: 23px;
-            height: 23px;
-
-            display: block;
-
-            fill: currentColor;
-            stroke: none;
-
-            flex-shrink: 0;
-        }
-
-        .menu-item .ui-icon {
-            width: 22px;
-            height: 22px;
-        }
+        .menu-item .ui-icon { width: 22px; height: 22px; }
 
         .menu-icon {
             width: 26px;
             height: 26px;
-
             display: block;
-
             flex-shrink: 0;
         }
 
-        .topbar-btn .ui-icon {
-            width: 21px;
-            height: 21px;
-        }
-
-        .stat-icon .ui-icon {
-            width: 23px;
-            height: 23px;
-        }
-
-
-        /* =========================================================
-           SVG ICON COLORS
-        ========================================================= */
-
-        .icon-dark {
-            color: var(--primary-dark);
-        }
-
-        .icon-green {
-            color: var(--primary-green);
-        }
-
-        .icon-lime {
-            color: var(--icon-lime);
-        }
+        .topbar-btn .ui-icon { width: 21px; height: 21px; }
+        .stat-icon .ui-icon { width: 23px; height: 23px; }
 
 
         /* =========================================================
            RESPONSIVE SWITCH
         ========================================================= */
 
-        .mobile-view {
-            display: none;
-        }
-
-        .desktop-view {
-            display: flex;
-        }
+        .mobile-view { display: none; }
+        .desktop-view { display: flex; }
 
         @media (min-width: 769px) {
-
-            body {
-                background-color: var(--bg-body-desk);
-            }
-
-            .mobile-view {
-                display: none !important;
-            }
-
-            .desktop-view {
-                display: flex !important;
-            }
+            .mobile-view { display: none !important; }
+            .desktop-view { display: flex !important; }
         }
 
         @media (max-width: 768px) {
-
-            body {
-                background-color: var(--bg-body-mob);
-            }
-
-            .desktop-view {
-                display: none !important;
-            }
-
-            .mobile-view {
-                display: flex !important;
-            }
+            .desktop-view { display: none !important; }
+            .mobile-view { display: flex !important; }
         }
 
 
@@ -247,22 +131,16 @@
         .sidebar {
             width: 260px;
             height: 100vh;
-
             position: fixed;
             top: 0;
             left: 0;
-
             display: flex;
             flex-direction: column;
-
             padding: 24px;
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-
             border-right: 1px solid var(--glass-border);
-
             z-index: 100;
         }
 
@@ -274,11 +152,8 @@
         .logo-area {
             display: flex;
             align-items: center;
-
             gap: 12px;
-
             margin-bottom: 40px;
-
             font-size: 20px;
             font-weight: 800;
         }
@@ -286,16 +161,12 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             background: var(--primary-dark);
             color: white;
-
             border-radius: 11px;
-
             font-size: 23px;
             font-weight: 800;
             font-style: italic;
@@ -306,18 +177,13 @@
            MENU
         ========================================================= */
 
-        .menu-group {
-            margin-bottom: 24px;
-        }
+        .menu-group { margin-bottom: 24px; }
 
         .menu-title {
             margin-bottom: 12px;
-
             font-size: 11px;
             font-weight: 700;
-
             color: var(--text-muted);
-
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -325,44 +191,19 @@
         .menu-item {
             display: flex;
             align-items: center;
-
             gap: 12px;
-
             padding: 12px 16px;
-
             margin-bottom: 4px;
-
             border-radius: 12px;
-
             color: var(--text-muted);
-
             font-size: 14px;
             font-weight: 600;
-
             text-decoration: none;
-
-            transition:
-                background .2s ease,
-                color .2s ease,
-                transform .2s ease;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.4);
-            color: var(--primary-dark);
         }
 
         .menu-item.active {
             background: var(--primary-dark);
             color: white;
-        }
-
-        .menu-item.active .ui-icon {
-            color: white;
-        }
-
-        .menu-item.active .bottom-dark {
-            fill: white;
         }
 
 
@@ -372,45 +213,30 @@
 
         .upgrade-card {
             margin-top: auto;
-
             padding: 24px;
-
             text-align: center;
-
             background: #042f1a;
             color: white;
-
             border-radius: 16px;
         }
 
-        .upgrade-card h4 {
-            font-size: 15px;
-        }
-
+        .upgrade-card h4 { font-size: 15px; }
         .upgrade-card p {
             margin-top: 5px;
-
             font-size: 12px;
-
             color: #94a3b8;
             line-height: 1.5;
         }
 
         .btn-upgrade {
             width: 100%;
-
             margin-top: 12px;
-
             padding: 10px;
-
             border: 1px solid var(--primary-green);
             border-radius: 8px;
-
             background: var(--primary-dark);
             color: white;
-
             font-weight: 600;
-
             cursor: pointer;
         }
 
@@ -421,14 +247,10 @@
 
         .desk-main {
             flex: 1;
-
             margin-left: 260px;
-
             padding: 32px;
-
             display: flex;
             flex-direction: column;
-
             gap: 24px;
         }
 
@@ -450,9 +272,7 @@
 
         .desk-title p {
             margin-top: 4px;
-
             font-size: 14px;
-
             color: var(--text-muted);
         }
 
@@ -465,72 +285,48 @@
         .topbar-btn {
             width: 42px;
             height: 42px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 50%;
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             border: 1px solid var(--glass-border);
-
             color: var(--text-main);
-
             box-shadow: 0 4px 16px rgba(7, 71, 40, 0.08);
-
             cursor: pointer;
         }
 
         .profile {
             display: flex;
             align-items: center;
-
             gap: 10px;
-
             padding: 6px 16px 6px 8px;
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             border: 1px solid var(--glass-border);
-
             border-radius: 30px;
-
             box-shadow: 0 4px 16px rgba(7, 71, 40, 0.08);
         }
 
         .profile-icon {
             width: 34px;
             height: 34px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 50%;
-
             background: var(--primary-light);
-
             color: var(--primary-dark);
         }
 
-        .profile-icon .ui-icon {
-            width: 21px;
-            height: 21px;
-        }
-
-        .profile h5 {
-            font-size: 13px;
-        }
-
+        .profile-icon .ui-icon { width: 21px; height: 21px; }
+        .profile h5 { font-size: 13px; }
         .profile p {
             margin-top: 2px;
-
             font-size: 11px;
-
             color: var(--text-muted);
         }
 
@@ -541,56 +337,42 @@
 
         .desk-grid {
             display: grid;
-
             grid-template-columns: 2fr 1fr;
-
             gap: 24px;
         }
 
         .desk-column {
             display: flex;
             flex-direction: column;
-
             gap: 24px;
         }
 
 
         /* =========================================================
-           STATISTICS
+           STAT CARDS
         ========================================================= */
 
         .stats-grid {
             display: grid;
-
             grid-template-columns: repeat(2, 1fr);
-
             gap: 24px;
         }
 
         .stat-card {
             padding: 24px;
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             border: 1px solid var(--glass-border);
-
             border-radius: var(--radius-lg);
-
-            box-shadow:
-                0 8px 32px rgba(7, 71, 40, 0.10),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-
+            box-shadow: 0 8px 32px rgba(7, 71, 40, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.4);
             display: flex;
             flex-direction: column;
-
             gap: 12px;
         }
 
         .stat-card.dark {
             background: rgba(7, 71, 40, 0.82);
-            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: white;
         }
@@ -604,15 +386,11 @@
         .stat-icon {
             width: 44px;
             height: 44px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 12px;
-
             background: rgba(255, 255, 255, 0.5);
-
             color: var(--primary-green);
         }
 
@@ -626,9 +404,7 @@
             color: var(--text-muted);
         }
 
-        .stat-card.dark .stat-label {
-            color: #cbd5e1;
-        }
+        .stat-card.dark .stat-label { color: #cbd5e1; }
 
         .stat-value {
             font-size: 32px;
@@ -641,42 +417,25 @@
             color: var(--text-muted);
         }
 
-        .stat-card.dark .stat-description {
-            color: #cbd5e1;
-        }
+        .stat-card.dark .stat-description { color: #cbd5e1; }
 
 
         /* =========================================================
            BADGES
         ========================================================= */
 
-        .badge-up,
-        .badge-down {
+        .badge-up, .badge-down {
             display: inline-flex;
             align-items: center;
-
             padding: 4px 8px;
-
             border-radius: 20px;
-
             font-size: 12px;
             font-weight: 700;
         }
 
-        .badge-up {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .badge-down {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .stat-card.dark .badge-up {
-            background: var(--primary-green);
-            color: white;
-        }
+        .badge-up { background: #dcfce7; color: #16a34a; }
+        .badge-down { background: #fee2e2; color: #ef4444; }
+        .stat-card.dark .badge-up { background: var(--primary-green); color: white; }
 
 
         /* =========================================================
@@ -685,22 +444,16 @@
 
         .desk-card {
             padding: 24px;
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             border: 1px solid var(--glass-border);
-
             border-radius: var(--radius-lg);
-
-            box-shadow:
-                0 8px 32px rgba(7, 71, 40, 0.10),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(7, 71, 40, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .desk-card h3 {
             margin-bottom: 16px;
-
             font-size: 18px;
         }
 
@@ -710,20 +463,13 @@
         ========================================================= */
 
         .product-card {
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(212, 236, 224, 0.55),
-                    rgba(255, 255, 255, 0.35)
-                );
+            background: linear-gradient(145deg, rgba(212, 236, 224, 0.55), rgba(255, 255, 255, 0.35));
         }
 
         .product-list {
             margin-top: 20px;
-
             display: flex;
             flex-direction: column;
-
             gap: 12px;
         }
 
@@ -731,9 +477,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-
             font-size: 14px;
             font-weight: 600;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .empty-state-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            color: var(--text-muted);
         }
 
 
@@ -744,27 +513,17 @@
         .mobile-view {
             width: 100%;
             min-height: 100vh;
-
             background: var(--bg-lime);
-
             display: flex;
             flex-direction: column;
-
             padding-bottom: 80px;
-
             position: relative;
         }
-
-
-        /* =========================================================
-           MOBILE HEADER
-        ========================================================= */
 
         .mob-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             padding: 20px 24px 12px;
         }
 
@@ -776,7 +535,6 @@
         .mob-header-left {
             display: flex;
             align-items: center;
-
             gap: 14px;
         }
 
@@ -789,13 +547,10 @@
         .mob-header-button {
             width: 24px;
             height: 24px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             color: var(--text-main);
-
             cursor: pointer;
         }
 
@@ -806,30 +561,22 @@
 
         .top-tabs {
             display: flex;
-
             padding: 0 24px;
-
             gap: 20px;
-
             border-bottom: 1px solid var(--border-color);
         }
 
         .tab-item {
             padding-bottom: 12px;
-
             font-size: 14px;
             font-weight: 500;
-
             color: var(--text-muted);
-
             white-space: nowrap;
         }
 
         .tab-item.active {
             color: var(--text-main);
-
             font-weight: 700;
-
             border-bottom: 3px solid var(--primary-green);
         }
 
@@ -840,13 +587,9 @@
 
         .mob-content {
             padding: 20px 0;
-
-            position: relative;
         }
 
-        .net-worth-box {
-            padding: 0 24px;
-        }
+        .net-worth-box { padding: 0 24px; }
 
         .net-worth-label {
             font-size: 14px;
@@ -855,29 +598,23 @@
 
         .net-worth-amount {
             margin: 4px 0;
-
             font-size: 40px;
             font-weight: 800;
-
             letter-spacing: -1px;
         }
 
         .net-worth-change {
             display: flex;
             align-items: center;
-
             font-size: 14px;
             font-weight: 600;
-
             color: var(--text-muted);
         }
 
         .change-green {
             display: flex;
             align-items: center;
-
             margin-right: 6px;
-
             color: var(--primary-green);
         }
 
@@ -889,67 +626,8 @@
         .mob-chart-container {
             width: 100%;
             height: 180px;
-
             position: relative;
-
             margin-top: 15px;
-        }
-
-        .mob-tooltip {
-            position: absolute;
-
-            top: -10px;
-            left: 58%;
-
-            transform: translateX(-50%);
-
-            padding: 6px 10px;
-
-            background: var(--bg-surface-strong);
-            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-
-            box-shadow: 0 4px 10px rgba(7, 71, 40, .08);
-
-            text-align: center;
-
-            z-index: 10;
-
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .mob-vertical-line {
-            position: absolute;
-
-            top: 40px;
-            left: 58%;
-
-            width: 1px;
-            height: 120px;
-
-            border-left: 2px dashed #cbd5e1;
-        }
-
-        .mob-point-circle {
-            position: absolute;
-
-            top: 108px;
-            left: calc(58% - 6px);
-
-            width: 12px;
-            height: 12px;
-
-            background: white;
-
-            border: 3px solid var(--primary-green);
-
-            border-radius: 50%;
-
-            z-index: 2;
         }
 
 
@@ -960,20 +638,15 @@
         .time-filters {
             display: flex;
             justify-content: space-between;
-
             padding: 20px 24px;
         }
 
         .filter-btn {
             padding: 6px 12px;
-
             border-radius: 20px;
-
             color: var(--text-main);
-
             font-size: 13px;
             font-weight: 600;
-
             cursor: pointer;
         }
 
@@ -990,20 +663,13 @@
         .info-line {
             display: flex;
             align-items: center;
-
             gap: 4px;
-
             padding: 0 24px;
-
             color: var(--text-muted);
-
             font-size: 12px;
         }
 
-        .info-line .ui-icon {
-            width: 15px;
-            height: 15px;
-        }
+        .info-line .ui-icon { width: 15px; height: 15px; }
 
 
         /* =========================================================
@@ -1012,21 +678,16 @@
 
         .section-divider {
             margin: 20px 24px;
-
             border: none;
-
             border-top: 1px solid var(--border-color);
         }
 
-        .assets-section {
-            padding: 0 24px;
-        }
+        .assets-section { padding: 0 24px; }
 
         .assets-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             margin-bottom: 4px;
         }
 
@@ -1037,16 +698,13 @@
 
         .assets-header a {
             color: var(--primary-green);
-
             font-size: 13px;
             font-weight: 600;
-
             text-decoration: none;
         }
 
         .assets-total {
             margin-bottom: 16px;
-
             font-size: 18px;
             font-weight: 700;
         }
@@ -1054,13 +712,9 @@
         .asset-row {
             display: flex;
             align-items: center;
-
             gap: 16px;
-
             padding: 12px;
-
             border-radius: var(--radius-md);
-
             background: var(--bg-surface);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
@@ -1070,37 +724,27 @@
         .asset-icon {
             width: 44px;
             height: 44px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 12px;
-
             background: rgba(255, 255, 255, 0.55);
-
             color: var(--primary-green);
         }
 
-        .asset-info {
-            flex: 1;
-        }
+        .asset-info { flex: 1; }
 
         .asset-main {
             display: flex;
             justify-content: space-between;
-
             font-weight: 700;
         }
 
         .asset-sub {
             display: flex;
             justify-content: space-between;
-
             margin-top: 2px;
-
             font-size: 12px;
-
             color: var(--text-muted);
         }
 
@@ -1111,126 +755,70 @@
 
         .mob-drawer-overlay {
             position: fixed;
-
             inset: 0;
-
             background: rgba(15,23,42,.4);
-
-            backdrop-filter: blur(4px);
-
             z-index: 2000;
-
-            opacity: 0;
-            visibility: hidden;
-
-            transition:
-                opacity .3s ease,
-                visibility .3s ease;
+            display: none;
         }
 
-        .mob-drawer-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .mob-drawer-overlay.active { display: block; }
 
         .mob-drawer {
             position: fixed;
-
             top: 0;
-            left: -320px;
-
+            left: 0;
             width: 280px;
             height: 100vh;
-
             padding: 24px;
-
-            /* Fond opaque identique au body : plus de verre dépoli,
-               plus de dashboard visible en flou derrière. */
             background: var(--bg-lime);
-
             box-shadow: 8px 0 25px rgba(7, 71, 40, .15);
-
-            border-right: none;
-
             z-index: 2001;
-
-            display: flex;
+            display: none;
             flex-direction: column;
-
             overflow-y: auto;
-
-            transition:
-                left .3s cubic-bezier(.4,0,.2,1);
         }
 
         .mob-drawer.active {
-            left: 0;
+            display: flex;
         }
 
         .drawer-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             margin-bottom: 40px;
         }
 
         .drawer-close {
             width: 30px;
             height: 30px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             color: var(--text-muted);
-
             cursor: pointer;
         }
 
 
         /* =========================================================
-           BOTTOM NAVIGATION
+           BOTTOM NAV — opaque, immobile
         ========================================================= */
 
         .mob-bottom-nav {
             position: fixed;
-
             bottom: 0;
             left: 0;
-
             width: 100%;
-
             padding: 8px 0 12px;
-
-            /* Fond opaque identique au body : pas de glass, pas de blur,
-               pas de séparation visible. Le nav se fond dans le dashboard
-               (comme LinkedIn / Instagram). */
             background: var(--bg-lime);
-
-            /* Pas de backdrop-filter : sur Chrome Android il provoque
-               du jitter / scintillement quand la page scrolle sous un
-               élément fixed. */
-
             border-top: none;
-
-            /* Ombre légère vers le haut plutôt qu'un trait blanc :
-               marque la séparation sans casser la teinte. */
             box-shadow: 0 -1px 0 rgba(7, 71, 40, .06);
-
             display: flex;
             justify-content: space-around;
-
             z-index: 1000;
-
-            /* Force la promotion en couche compositée : le nav reste
-               parfaitement immobile pendant le scroll, même sur les
-               navigateurs mobiles qui ont un bug sur position:fixed. */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             will-change: transform;
-
-            /* Respect du safe area (encoches iPhone) */
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         }
 
@@ -1238,441 +826,45 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-
             gap: 4px;
-
             color: var(--text-muted);
-
             font-size: 11px;
             font-weight: 600;
-
             cursor: pointer;
         }
 
         .nav-item svg {
             width: 28px;
             height: 28px;
-
-            transition:
-                transform .2s ease,
-                filter .2s ease;
         }
 
-        .nav-item.active {
-            color: var(--primary-green);
-        }
-
-        .nav-item.active svg {
-            transform: scale(1.1);
-        }
+        .nav-item.active { color: var(--primary-green); }
 
 
         /* =========================================================
-           BOTTOM SVG ICONS
+           BOTTOM SVG COLORS
         ========================================================= */
 
-        .bottom-svg {
-            overflow: visible;
-        }
-
-        .bottom-dark {
-            fill: var(--primary-dark);
-        }
-
-        .bottom-green {
-            fill: var(--primary-green);
-        }
-
-        .bottom-lime {
-            fill: var(--icon-lime);
-        }
+        .bottom-dark { fill: var(--primary-dark); }
+        .bottom-green { fill: var(--primary-green); }
+        .bottom-lime { fill: var(--icon-lime); }
 
 
         /* =========================================================
-           ANIMATIONS
+           VIEWS — pas de transition, juste show/hide
         ========================================================= */
 
-        .icon-pulse {
-            animation:
-                iconPulse
-                .5s
-                cubic-bezier(.34,1.56,.64,1);
-        }
-
-        @keyframes iconPulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.25);
-            }
-        }
-
-
-        .anim-doc.active .doc-fold {
-            animation: foldFlip .5s ease;
-            transform-origin: 38px 20px;
-        }
-
-        @keyframes foldFlip {
-            0%, 100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.4);
-            }
-        }
-
-
-        .anim-wallet.active .wallet-flap {
-            animation: flapOpen .6s ease;
-            transform-origin: top center;
-        }
-
-        .anim-wallet.active .wallet-card {
-            animation: cardSlide .6s ease;
-        }
-
-        @keyframes flapOpen {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform:
-                    translateY(-3px)
-                    scaleY(.8);
-            }
-        }
-
-        @keyframes cardSlide {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-7px);
-            }
-        }
-
-
-        .anim-bars.active .bar {
-            animation:
-                barGrow
-                .6s
-                cubic-bezier(.34,1.56,.64,1);
-            transform-origin: bottom;
-        }
-
-        .anim-bars.active .bar-1 {
-            animation-delay: .05s;
-        }
-
-        .anim-bars.active .bar-2 {
-            animation-delay: .15s;
-        }
-
-        .anim-bars.active .bar-3 {
-            animation-delay: .25s;
-        }
-
-        @keyframes barGrow {
-            0% {
-                transform: scaleY(.3);
-            }
-
-            100% {
-                transform: scaleY(1);
-            }
-        }
-
-
-        .anim-shield.active {
-            animation:
-                shieldProtect
-                .6s
-                cubic-bezier(.175,.885,.32,1.275);
-        }
-
-        @keyframes shieldProtect {
-
-            0%, 100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.18);
-                filter:
-                    drop-shadow(
-                        0 0 6px
-                        var(--icon-lime)
-                    );
-            }
-        }
-
-
-        .anim-dash.active .dash-bar {
-            animation:
-                barGrow
-                .6s
-                cubic-bezier(.34,1.56,.64,1);
-            transform-origin: bottom;
-        }
-
-        .anim-dash.active .dash-bar-1 {
-            animation-delay: .05s;
-        }
-
-        .anim-dash.active .dash-bar-2 {
-            animation-delay: .15s;
-        }
-
-        .anim-dash.active .dash-bar-3 {
-            animation-delay: .25s;
-        }
-
-        .anim-dash.active .dash-dot {
-            animation:
-                dotPop
-                .4s
-                .4s
-                cubic-bezier(.175,.885,.32,1.275)
-                forwards;
-            transform-origin: 46px 14px;
-            transform: scale(0);
-        }
-
-
-        .anim-trend.active .trend-line {
-            stroke-dasharray: 60;
-            stroke-dashoffset: 60;
-
-            animation:
-                drawLine
-                .7s
-                forwards
-                ease-out;
-        }
-
-        .anim-trend.active .trend-dot {
-            animation:
-                dotPop
-                .4s
-                .5s
-                cubic-bezier(.175,.885,.32,1.275)
-                forwards;
-
-            transform-origin: 50px 12px;
-            transform: scale(0);
-        }
-
-        @keyframes drawLine {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        @keyframes dotPop {
-            to {
-                transform: scale(1);
-            }
-        }
-
-
-        /* =========================================================
-           NAVIGATION — VUES MULTIPLES (fade + slide)
-        ========================================================= */
-
-        .view {
-            display: none;
-
-            opacity: 0;
-            transform: translateY(14px);
-
-            animation:
-                viewEnter
-                .45s
-                cubic-bezier(.22,1,.36,1)
-                forwards;
-        }
-
+        .view { display: none; }
         .view.active {
             display: flex;
             flex-direction: column;
-
             gap: 24px;
         }
 
-        .view.leaving {
-            display: flex;
-            flex-direction: column;
-
-            gap: 24px;
-
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-
-            animation:
-                viewLeave
-                .22s
-                ease
-                forwards;
-        }
-
-        @keyframes viewEnter {
-
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-        }
-
-        @keyframes viewLeave {
-
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-        }
-
-        .mob-view {
-            display: none;
-
-            opacity: 0;
-            transform: translateX(16px);
-
-            animation:
-                mobViewEnter
-                .4s
-                cubic-bezier(.22,1,.36,1)
-                forwards;
-        }
-
+        .mob-view { display: none; }
         .mob-view.active {
             display: flex;
             flex-direction: column;
-        }
-
-        .mob-view.leaving {
-            display: flex;
-            flex-direction: column;
-
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-
-            animation:
-                mobViewLeave
-                .2s
-                ease
-                forwards;
-        }
-
-        @keyframes mobViewEnter {
-
-            from {
-                opacity: 0;
-                transform: translateX(16px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-        }
-
-        @keyframes mobViewLeave {
-
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateX(-12px);
-            }
-
-        }
-
-
-        /* =========================================================
-           RIPPLE EFFECT (clic module)
-        ========================================================= */
-
-        .ripple-host {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ripple-el {
-            position: absolute;
-
-            border-radius: 50%;
-
-            background: rgba(255, 255, 255, .55);
-
-            transform: scale(0);
-
-            pointer-events: none;
-
-            animation:
-                rippleAnim
-                .55s
-                ease-out
-                forwards;
-        }
-
-        .menu-item.ripple-host .ripple-el {
-            background: rgba(255, 255, 255, .35);
-        }
-
-        .menu-item.active.ripple-host .ripple-el {
-            background: rgba(255, 255, 255, .45);
-        }
-
-        .nav-item .ripple-el {
-            background: rgba(0, 147, 69, .25);
-        }
-
-        @keyframes rippleAnim {
-
-            to {
-                transform: scale(2.6);
-                opacity: 0;
-            }
-
-        }
-
-
-        /* =========================================================
-           HIGHLIGHT GLISSANT — SIDEBAR / DRAWER
-        ========================================================= */
-
-        .menu-item {
-            position: relative;
-        }
-
-        .menu-item.active {
-            transform: translateX(2px);
         }
 
 
@@ -1684,13 +876,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             gap: 16px;
-
             padding: 16px;
-
             border-radius: var(--radius-md);
-
             background: rgba(255, 255, 255, 0.4);
             -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
             backdrop-filter: blur(var(--glass-blur)) saturate(160%);
@@ -1710,15 +898,11 @@
         .placeholder-icon {
             width: 42px;
             height: 42px;
-
             flex-shrink: 0;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 12px;
-
             background: var(--primary-light);
             color: var(--primary-green);
         }
@@ -1730,7 +914,6 @@
 
         .placeholder-sub {
             margin-top: 2px;
-
             font-size: 12px;
             color: var(--text-muted);
         }
@@ -1738,34 +921,32 @@
         .placeholder-value {
             font-size: 15px;
             font-weight: 800;
-
             white-space: nowrap;
         }
+
+
+        /* =========================================================
+           PROFILE
+        ========================================================= */
 
         .profile-hero {
             display: flex;
             align-items: center;
             gap: 18px;
-
             padding: 24px;
         }
 
         .profile-hero-avatar {
             width: 72px;
             height: 72px;
-
             border-radius: 50%;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             background: var(--primary-dark);
             color: white;
-
             font-size: 26px;
             font-weight: 800;
-
             flex-shrink: 0;
         }
 
@@ -1773,25 +954,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-
             padding: 14px 0;
-
             border-bottom: 1px solid var(--border-color);
-
             font-size: 14px;
         }
 
-        .profile-field:last-child {
-            border-bottom: none;
-        }
+        .profile-field:last-child { border-bottom: none; }
+        .profile-field-label { color: var(--text-muted); }
+        .profile-field-value { font-weight: 700; }
 
-        .profile-field-label {
-            color: var(--text-muted);
-        }
 
-        .profile-field-value {
-            font-weight: 700;
-        }
+        /* =========================================================
+           FORMS
+        ========================================================= */
 
         .form-grid {
             display: grid;
@@ -1805,9 +980,7 @@
             gap: 6px;
         }
 
-        .form-field.full {
-            grid-column: 1 / -1;
-        }
+        .form-field.full { grid-column: 1 / -1; }
 
         .form-field label {
             font-size: 12px;
@@ -1818,12 +991,9 @@
         .form-field input,
         .form-field select {
             padding: 11px 14px;
-
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
-
             background: rgba(255, 255, 255, .5);
-
             font-size: 14px;
             font-family: var(--font-family);
             color: var(--text-main);
@@ -1831,27 +1001,18 @@
 
         .btn-primary {
             padding: 12px 20px;
-
             border: none;
             border-radius: var(--radius-sm);
-
             background: var(--primary-dark);
             color: white;
-
             font-weight: 700;
             font-size: 14px;
-
             cursor: pointer;
-
             align-self: flex-start;
         }
 
         @media (max-width: 640px) {
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
+            .form-grid { grid-template-columns: 1fr; }
         }
 
 
@@ -1859,19 +1020,8 @@
            RESPONSIVE DESKTOP
         ========================================================= */
 
-        @media (min-width: 1200px) {
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-        }
-
         @media (max-width: 1050px) {
-
-            .desk-grid {
-                grid-template-columns: 1fr;
-            }
+            .desk-grid { grid-template-columns: 1fr; }
         }
 
 
@@ -1880,38 +1030,12 @@
         ========================================================= */
 
         @media (max-width: 380px) {
-
-            .mob-header {
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .top-tabs {
-                padding-left: 18px;
-                padding-right: 18px;
-
-                gap: 15px;
-            }
-
-            .net-worth-box,
-            .assets-section {
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .time-filters {
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .filter-btn {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
-
-            .net-worth-amount {
-                font-size: 34px;
-            }
+            .mob-header { padding-left: 18px; padding-right: 18px; }
+            .top-tabs { padding-left: 18px; padding-right: 18px; gap: 15px; }
+            .net-worth-box, .assets-section { padding-left: 18px; padding-right: 18px; }
+            .time-filters { padding-left: 18px; padding-right: 18px; }
+            .filter-btn { padding-left: 8px; padding-right: 8px; }
+            .net-worth-amount { font-size: 34px; }
         }
 
     </style>
@@ -1926,8 +1050,6 @@
 
 <div class="desktop-view">
 
-    <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
         <div class="logo-area">
@@ -1935,214 +1057,103 @@
             PinenMFB
         </div>
 
-
-        <!-- MENU -->
-
         <div class="menu-group">
+            <div class="menu-title">Menu</div>
 
-            <div class="menu-title">
-                Menu
-            </div>
-
-
-            <!-- Tableau de bord -->
-            <a href="#" class="menu-item ripple-host" data-view="dashboard" onclick="return navigateTo(event, this, 'dashboard')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <a href="#" class="menu-item" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"></rect>
                     <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"></rect>
                     <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"></rect>
                     <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"></rect>
                 </svg>
-
                 Tableau de bord
-
             </a>
 
-
-            <!-- Caisse -->
-            <a href="#" class="menu-item ripple-host" data-view="caisse" onclick="return navigateTo(event, this, 'caisse')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <a href="#" class="menu-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
                     <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"></rect>
                     <path fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
                     <circle cx="46" cy="38" r="4" class="bottom-lime"></circle>
                 </svg>
-
                 Caisse
-
             </a>
 
-
-            <!-- Facturation -->
-            <a href="#" class="menu-item ripple-host" data-view="facturation" onclick="return navigateTo(event, this, 'facturation')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <a href="#" class="menu-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"></path>
                     <path class="bottom-lime" d="M38 10V20H48Z"></path>
                     <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"></rect>
                     <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"></rect>
                 </svg>
-
                 Facturation
-
             </a>
 
-
-            <!-- Rapport -->
-            <a href="#" class="menu-item active ripple-host" data-view="rapport" onclick="return navigateTo(event, this, 'rapport')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <a href="#" class="menu-item active" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"></rect>
                     <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"></rect>
                     <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"></rect>
                 </svg>
-
                 Rapport
-
             </a>
 
-
-            <!-- Profil -->
-            <a href="#" class="menu-item ripple-host" data-view="profil" onclick="return navigateTo(event, this, 'profil')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <a href="#" class="menu-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <path class="bottom-green" d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z"></path>
                     <circle cx="32" cy="22" r="13" class="bottom-dark"></circle>
                     <circle cx="46" cy="16" r="6" class="bottom-lime"></circle>
                 </svg>
-
                 Profil
-
             </a>
-
         </div>
 
-
-        <!-- UPGRADE -->
-
         <div class="upgrade-card">
-
-            <h4>
-                Upgrade Pro
-            </h4>
-
-            <p>
-                Discover the benefit of an upgraded account
-            </p>
-
-            <button class="btn-upgrade">
-                Upgrade $580
-            </button>
-
+            <h4>Upgrade Pro</h4>
+            <p>Discover the benefit of an upgraded account</p>
+            <button class="btn-upgrade">Upgrade</button>
         </div>
 
     </aside>
 
 
-    <!-- MAIN -->
-
     <main class="desk-main">
-
-
-        <!-- TOPBAR -->
 
         <header class="desk-topbar">
 
             <div class="desk-title">
-
-                <h1 id="deskViewTitle">
-                    Sales Report
-                </h1>
-
-                <p id="deskViewSub">
-                    Sunday, October 12th 2025
-                </p>
-
+                <h1 id="deskViewTitle"></h1>
+                <p id="deskViewSub"></p>
             </div>
-
 
             <div class="topbar-actions">
 
-
-                <!-- Search -->
-
                 <div class="topbar-btn">
-
-                    <svg
-                        class="ui-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
+                    <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                         <circle cx="11" cy="11" r="6"></circle>
                         <path d="M16 16L21 21"></path>
                     </svg>
-
                 </div>
 
-
-                <!-- Notification -->
-
                 <div class="topbar-btn">
-
-                    <svg
-                        class="ui-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
+                    <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M18 9C18 5.7 15.8 3 12 3C8.2 3 6 5.7 6 9V13L4 17H20L18 13V9Z"></path>
                         <path d="M9.5 20C10.2 20.8 11 21 12 21C13 21 13.8 20.8 14.5 20"></path>
                     </svg>
-
                 </div>
 
-
-                <!-- Profile -->
-
                 <div class="profile">
-
                     <div class="profile-icon">
-
-                        <svg
-                            class="ui-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
+                        <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="12" cy="8" r="3"></circle>
                             <path d="M5 20C5 16.7 8.1 14 12 14C15.9 14 19 16.7 19 20"></path>
                         </svg>
-
                     </div>
-
                     <div>
-
-                        <h5 id="deskProfileName"></h5>
-
-                        <p id="deskProfileRole"></p>
-
+                        <h5 id="deskProfileName">—</h5>
+                        <p id="deskProfileRole">—</p>
                     </div>
-
                 </div>
 
             </div>
@@ -2150,133 +1161,74 @@
         </header>
 
 
-        <!-- =====================================================
-             VUE : RAPPORT (existante, active par défaut)
-        ===================================================== -->
-
+        <!-- VUE : RAPPORT -->
         <div class="view active" data-view="rapport">
+            <div class="desk-grid">
+                <div class="desk-column">
+                    <div class="stats-grid" id="rapportStatsGrid"></div>
 
-        <!-- GRID -->
-
-        <div class="desk-grid">
-
-
-            <!-- LEFT -->
-
-            <div class="desk-column">
-
-
-                <!-- STAT CARDS -->
-
-                <div class="stats-grid" id="rapportStatsGrid"></div>
-
-
-                <!-- BAR CHART -->
-
-                <div class="desk-card">
-
-                    <h3>
-                        Customer Habbits
-                    </h3>
-
-                    <div style="height:250px;">
-                        <canvas id="deskBarChart"></canvas>
+                    <div class="desk-card">
+                        <h3>Habitudes clients</h3>
+                        <div style="height:250px;">
+                            <canvas id="deskBarChart"></canvas>
+                        </div>
                     </div>
-
                 </div>
 
-            </div>
-
-
-            <!-- RIGHT -->
-
-            <div class="desk-column">
-
-                <div class="desk-card product-card">
-
-                    <h3>
-                        Product Statistic
-                    </h3>
-
-                    <div style="height:200px;">
-                        <canvas id="deskPieChart"></canvas>
+                <div class="desk-column">
+                    <div class="desk-card product-card">
+                        <h3>Statistiques produits</h3>
+                        <div style="height:200px;">
+                            <canvas id="deskPieChart"></canvas>
+                        </div>
+                        <div class="product-list" id="productList"></div>
                     </div>
-
-
-                    <div class="product-list" id="productList"></div>
-
                 </div>
-
             </div>
-
-        </div>
-
         </div>
 
 
-        <!-- =====================================================
-             VUE : TABLEAU DE BORD (placeholder)
-        ===================================================== -->
-
+        <!-- VUE : TABLEAU DE BORD -->
         <div class="view" data-view="dashboard">
-
             <div class="stats-grid" id="dashboardStatsGrid"></div>
 
             <div class="desk-card">
                 <h3>Activité récente</h3>
-
                 <div id="dashboardActivityList"></div>
-
             </div>
-
         </div>
 
 
-        <!-- =====================================================
-             VUE : CAISSE (placeholder)
-        ===================================================== -->
-
+        <!-- VUE : CAISSE -->
         <div class="view" data-view="caisse">
-
             <div class="stats-grid" id="caisseStatsGrid"></div>
 
             <div class="desk-card">
                 <h3>Dernières opérations</h3>
-
                 <div id="caisseOpsList"></div>
-
             </div>
-
         </div>
 
 
-        <!-- =====================================================
-             VUE : FACTURATION (placeholder)
-        ===================================================== -->
-
+        <!-- VUE : FACTURATION -->
         <div class="view" data-view="facturation">
 
             <div class="desk-card">
-
                 <h3>Nouvelle facture</h3>
 
                 <div class="form-grid">
-
                     <div class="form-field">
                         <label>Client</label>
                         <input type="text" placeholder="Nom du client">
                     </div>
-
                     <div class="form-field">
                         <label>Montant</label>
                         <input type="text" placeholder="0.00">
                     </div>
-
                     <div class="form-field">
                         <label>Échéance</label>
                         <input type="text" placeholder="JJ/MM/AAAA">
                     </div>
-
                     <div class="form-field">
                         <label>Statut</label>
                         <select>
@@ -2285,53 +1237,37 @@
                             <option>Payée</option>
                         </select>
                     </div>
-
                     <div class="form-field full">
                         <label>Note</label>
                         <input type="text" placeholder="Optionnel">
                     </div>
-
                 </div>
 
-                <button class="btn-primary" style="margin-top:20px;">
-                    Créer la facture
-                </button>
-
+                <button class="btn-primary" style="margin-top:20px;">Créer la facture</button>
             </div>
 
             <div class="desk-card">
                 <h3>Factures récentes</h3>
-
                 <div id="invoicesList"></div>
-
             </div>
 
         </div>
 
 
-        <!-- =====================================================
-             VUE : PROFIL (placeholder)
-        ===================================================== -->
-
+        <!-- VUE : PROFIL -->
         <div class="view" data-view="profil">
 
             <div class="desk-card profile-hero">
-
-                <div class="profile-hero-avatar" id="profileAvatar"></div>
-
+                <div class="profile-hero-avatar" id="profileAvatar">—</div>
                 <div>
-                    <h3 id="profileHeroName" style="margin-bottom:4px;"></h3>
-                    <div class="stat-description" id="profileHeroRole"></div>
+                    <h3 id="profileHeroName" style="margin-bottom:4px;">—</h3>
+                    <div class="stat-description" id="profileHeroRole">—</div>
                 </div>
-
             </div>
 
             <div class="desk-card">
-
                 <h3>Informations du compte</h3>
-
                 <div id="profileFieldsDesk"></div>
-
             </div>
 
         </div>
@@ -2348,88 +1284,40 @@
 
 <div class="mobile-view">
 
-
-    <!-- HEADER -->
-
     <header class="mob-header">
 
         <div class="mob-header-left">
 
-            <!-- Menu -->
-
-            <div
-                class="mob-header-button"
-                onclick="toggleMobDrawer()"
-            >
-
-                <svg
-                    class="ui-icon"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
+            <div class="mob-header-button" onclick="toggleMobDrawer()">
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4 6H20"></path>
                     <path d="M4 12H20"></path>
                     <path d="M4 18H20"></path>
                 </svg>
-
             </div>
 
-            <h1 id="mobViewTitle">
-                For you
-            </h1>
+            <h1 id="mobViewTitle">—</h1>
 
         </div>
 
         <div class="mob-header-actions">
 
-
-            <!-- Search -->
-
-            <div
-                class="mob-header-button"
-                onclick="pulseIcon(this)"
-            >
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
+            <div class="mob-header-button">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
                     <circle cx="26" cy="26" r="16" class="bottom-dark"></circle>
                     <circle cx="26" cy="26" r="9" fill="white"></circle>
-                    <path
-                        d="M38 38L52 52"
-                        stroke="var(--primary-green)"
-                        stroke-width="8"
-                        stroke-linecap="round"
-                    ></path>
+                    <path d="M38 38L52 52" stroke="var(--primary-green)" stroke-width="8" stroke-linecap="round"></path>
                     <circle cx="34" cy="15" r="4" class="bottom-lime"></circle>
                 </svg>
-
             </div>
 
-
-            <!-- Notification -->
-
-            <div
-                class="mob-header-button"
-                onclick="pulseIcon(this)"
-            >
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M32 8C24 8 18 14 18 24V34L12 44H52L46 34V24C46 14 40 8 32 8Z"
-                        class="bottom-dark"
-                    ></path>
+            <div class="mob-header-button">
+                <svg class="menu-icon" viewBox="0 0 64 64" aria-hidden="true">
+                    <path d="M32 8C24 8 18 14 18 24V34L12 44H52L46 34V24C46 14 40 8 32 8Z" class="bottom-dark"></path>
                     <rect x="16" y="44" width="32" height="4" rx="2" class="bottom-green"></rect>
                     <circle cx="32" cy="52" r="5" class="bottom-green"></circle>
                     <circle cx="46" cy="14" r="6" class="bottom-lime"></circle>
                 </svg>
-
             </div>
 
         </div>
@@ -2437,686 +1325,250 @@
     </header>
 
 
-    <!-- TOP TABS -->
-
     <nav class="top-tabs">
-
-        <div class="tab-item">
-            Dashboard
-        </div>
-
-        <div class="tab-item active">
-            Net worth
-        </div>
-
-        <div class="tab-item">
-            Credit
-        </div>
-
-        <div class="tab-item">
-            Debt
-        </div>
-
+        <div class="tab-item">Dashboard</div>
+        <div class="tab-item active">Net worth</div>
+        <div class="tab-item">Credit</div>
+        <div class="tab-item">Debt</div>
     </nav>
 
-
-    <!-- CONTENT -->
 
     <main class="mob-content">
 
 
-        <!-- =====================================================
-             VUE MOBILE : RAPPORT (existante, active par défaut)
-        ===================================================== -->
-
+        <!-- VUE MOBILE : RAPPORT -->
         <div class="mob-view active" data-mob-view="rapport">
 
-
-        <!-- NET WORTH -->
-
-        <div class="net-worth-box">
-
-            <div class="net-worth-label">
-                Net worth
+            <div class="net-worth-box">
+                <div class="net-worth-label">Net worth</div>
+                <div class="net-worth-amount" id="mobNetWorthAmount">—</div>
+                <div class="net-worth-change">
+                    <span class="change-green">
+                        <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 19V5"></path>
+                            <path d="M6 11L12 5L18 11"></path>
+                        </svg>
+                        <span id="mobNetWorthChange">—</span>
+                    </span>
+                    Since you joined
+                </div>
             </div>
 
-            <div class="net-worth-amount" id="mobNetWorthAmount"></div>
-
-            <div class="net-worth-change">
-
-                <span class="change-green">
-
-                    <svg
-                        class="ui-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path d="M12 19V5"></path>
-                        <path d="M6 11L12 5L18 11"></path>
-                    </svg>
-
-                    <span id="mobNetWorthChange"></span>
-
-                </span>
-
-                Since you joined
-
+            <div class="mob-chart-container">
+                <canvas id="mobLineChart"></canvas>
             </div>
+
+            <div class="time-filters">
+                <div class="filter-btn">1M</div>
+                <div class="filter-btn">3M</div>
+                <div class="filter-btn">6M</div>
+                <div class="filter-btn">YTD</div>
+                <div class="filter-btn">1Y</div>
+                <div class="filter-btn active">All</div>
+            </div>
+
+            <div class="info-line">
+                Based on credit report and linked info
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 11V16"></path>
+                    <circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"></circle>
+                </svg>
+            </div>
+
+            <hr class="section-divider">
+
+            <section class="assets-section">
+                <div class="assets-header">
+                    <h2>Assets</h2>
+                    <a href="#">Link more</a>
+                </div>
+                <div class="assets-total" id="assetsTotal">—</div>
+                <div id="assetsList"></div>
+            </section>
 
         </div>
 
 
-        <!-- CHART -->
-
-        <div class="mob-chart-container">
-
-            <div class="mob-tooltip" id="mobChartTooltip"></div>
-
-            <div class="mob-vertical-line"></div>
-
-            <div class="mob-point-circle"></div>
-
-            <canvas id="mobLineChart"></canvas>
-
-        </div>
-
-
-        <!-- FILTERS -->
-
-        <div class="time-filters">
-
-            <div class="filter-btn">
-                1M
-            </div>
-
-            <div class="filter-btn">
-                3M
-            </div>
-
-            <div class="filter-btn">
-                6M
-            </div>
-
-            <div class="filter-btn">
-                YTD
-            </div>
-
-            <div class="filter-btn">
-                1Y
-            </div>
-
-            <div class="filter-btn active">
-                All
-            </div>
-
-        </div>
-
-
-        <!-- INFO -->
-
-        <div class="info-line">
-
-            Based on credit report and linked info
-
-            <svg
-                class="ui-icon"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-            >
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M12 11V16"></path>
-                <circle
-                    cx="12"
-                    cy="7.5"
-                    r=".7"
-                    fill="currentColor"
-                    stroke="none"
-                ></circle>
-            </svg>
-
-        </div>
-
-
-        <hr class="section-divider">
-
-
-        <!-- ASSETS -->
-
-        <section class="assets-section">
-
-            <div class="assets-header">
-
-                <h2>
-                    Assets
-                </h2>
-
-                <a href="#">
-                    Link more
-                </a>
-
-            </div>
-
-
-            <div class="assets-total" id="assetsTotal"></div>
-
-
-            <div id="assetsList"></div>
-
-        </section>
-
-        </div>
-
-
-        <!-- =====================================================
-             VUE MOBILE : TABLEAU DE BORD (placeholder)
-        ===================================================== -->
-
+        <!-- VUE MOBILE : TABLEAU DE BORD -->
         <div class="mob-view" data-mob-view="dashboard">
-
             <div class="assets-section" id="mobDashboardList" style="padding-top:16px;"></div>
-
         </div>
 
 
-        <!-- =====================================================
-             VUE MOBILE : CAISSE (placeholder)
-        ===================================================== -->
-
+        <!-- VUE MOBILE : CAISSE -->
         <div class="mob-view" data-mob-view="caisse">
-
             <div class="assets-section" id="mobCaisseList" style="padding-top:16px;"></div>
-
         </div>
 
 
-        <!-- =====================================================
-             VUE MOBILE : FACTURATION (placeholder)
-        ===================================================== -->
-
+        <!-- VUE MOBILE : FACTURATION -->
         <div class="mob-view" data-mob-view="facturation">
 
             <div class="assets-section" style="padding-top:16px; display:flex; flex-direction:column; gap:14px;">
-
                 <div class="form-field">
                     <label>Client</label>
                     <input type="text" placeholder="Nom du client">
                 </div>
-
                 <div class="form-field">
                     <label>Montant</label>
                     <input type="text" placeholder="0.00">
                 </div>
-
-                <button class="btn-primary" style="width:100%;">
-                    Créer la facture
-                </button>
+                <button class="btn-primary" style="width:100%;">Créer la facture</button>
 
                 <hr class="section-divider" style="margin:16px 0;">
 
                 <div id="mobInvoicesList"></div>
-
             </div>
 
         </div>
 
 
-        <!-- =====================================================
-             VUE MOBILE : PROFIL (placeholder)
-        ===================================================== -->
-
+        <!-- VUE MOBILE : PROFIL -->
         <div class="mob-view" data-mob-view="profil">
-
             <div class="assets-section" style="padding-top:16px;">
-
                 <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-                    <div class="profile-hero-avatar" id="mobProfileAvatar"></div>
+                    <div class="profile-hero-avatar" id="mobProfileAvatar">—</div>
                     <div>
-                        <div class="placeholder-title" id="mobProfileName" style="font-size:16px;"></div>
-                        <div class="placeholder-sub" id="mobProfileRole"></div>
+                        <div class="placeholder-title" id="mobProfileName" style="font-size:16px;">—</div>
+                        <div class="placeholder-sub" id="mobProfileRole">—</div>
                     </div>
                 </div>
-
                 <div id="profileFieldsMob"></div>
-
             </div>
-
         </div>
+
 
     </main>
 
 
-
-    <!-- =========================================================
-         DRAWER
-    ========================================================= -->
-
-    <div
-        class="mob-drawer-overlay"
-        id="mobDrawerOverlay"
-        onclick="toggleMobDrawer()"
-    ></div>
+    <div class="mob-drawer-overlay" id="mobDrawerOverlay" onclick="toggleMobDrawer()"></div>
 
 
-    <aside
-        class="mob-drawer"
-        id="mobDrawer"
-    >
+    <aside class="mob-drawer" id="mobDrawer">
 
         <div class="drawer-header">
-
-            <div
-                class="logo-area"
-                style="margin-bottom:0;"
-            >
-
-                <div class="logo-icon">
-                    L
-                </div>
-
+            <div class="logo-area" style="margin-bottom:0;">
+                <div class="logo-icon">L</div>
                 PinenMFB
-
             </div>
-
-
-            <div
-                class="drawer-close"
-                onclick="toggleMobDrawer()"
-            >
-
-                <svg
-                    class="ui-icon"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
+            <div class="drawer-close" onclick="toggleMobDrawer()">
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M6 6L18 18"></path>
                     <path d="M18 6L6 18"></path>
                 </svg>
-
             </div>
-
         </div>
 
-
-        <!-- DRAWER MENU -->
-
         <div class="menu-group">
+            <div class="menu-title">Menu</div>
 
-            <div class="menu-title">
-                Menu
-            </div>
-
-
-            <a href="#" class="menu-item ripple-host" data-view="dashboard" onclick="return navigateTo(event, this, 'dashboard')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                >
+            <a href="#" class="menu-item" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
+                <svg class="menu-icon" viewBox="0 0 64 64">
                     <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"></rect>
                     <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"></rect>
                     <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"></rect>
                     <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"></rect>
                 </svg>
-
                 Tableau de bord
-
             </a>
 
-
-            <a href="#" class="menu-item ripple-host" data-view="caisse" onclick="return navigateTo(event, this, 'caisse')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                >
+            <a href="#" class="menu-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
+                <svg class="menu-icon" viewBox="0 0 64 64">
                     <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"></path>
                     <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"></rect>
                     <path fill="#092920" d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"></path>
                     <circle cx="46" cy="38" r="4" class="bottom-lime"></circle>
                 </svg>
-
                 Caisse
-
             </a>
 
-
-            <a href="#" class="menu-item ripple-host" data-view="facturation" onclick="return navigateTo(event, this, 'facturation')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                >
+            <a href="#" class="menu-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
+                <svg class="menu-icon" viewBox="0 0 64 64">
                     <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"></path>
                     <path class="bottom-lime" d="M38 10V20H48Z"></path>
                     <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"></rect>
                     <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"></rect>
                 </svg>
-
                 Facturation
-
             </a>
 
-
-            <a
-                href="#"
-                class="menu-item active ripple-host"
-                data-view="rapport"
-                onclick="return navigateTo(event, this, 'rapport')"
-            >
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                >
+            <a href="#" class="menu-item active" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
+                <svg class="menu-icon" viewBox="0 0 64 64">
                     <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"></rect>
                     <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"></rect>
                     <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"></rect>
                 </svg>
-
                 Rapport
-
             </a>
 
-
-            <a href="#" class="menu-item ripple-host" data-view="profil" onclick="return navigateTo(event, this, 'profil')">
-
-                <svg
-                    class="menu-icon"
-                    viewBox="0 0 64 64"
-                >
+            <a href="#" class="menu-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
+                <svg class="menu-icon" viewBox="0 0 64 64">
                     <path class="bottom-green" d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z"></path>
                     <circle cx="32" cy="22" r="13" class="bottom-dark"></circle>
                     <circle cx="46" cy="16" r="6" class="bottom-lime"></circle>
                 </svg>
-
                 Profil
-
             </a>
-
         </div>
 
-
-        <!-- UPGRADE -->
-
         <div class="upgrade-card">
-
-            <h4>
-                Upgrade Pro
-            </h4>
-
-            <p>
-                Discover the benefit of an upgraded account
-            </p>
-
-            <button class="btn-upgrade">
-                Upgrade $580
-            </button>
-
+            <h4>Upgrade Pro</h4>
+            <p>Discover the benefit of an upgraded account</p>
+            <button class="btn-upgrade">Upgrade</button>
         </div>
 
     </aside>
 
 
-
-    <!-- =========================================================
-         MOBILE BOTTOM NAV
-    ========================================================= -->
-
     <nav class="mob-bottom-nav">
 
-
-        <!-- TABLEAU DE BORD -->
-
-        <div
-            class="nav-item active ripple-host"
-            data-view="dashboard"
-            onclick="return navigateTo(event, this, 'dashboard')"
-        >
-
-            <svg
-                class="anim-dash bottom-svg active"
-                viewBox="0 0 64 64"
-            >
-
-                <rect
-                    class="dash-bar bottom-dark"
-                    x="8"
-                    y="8"
-                    width="22"
-                    height="22"
-                    rx="5"
-                />
-
-                <rect
-                    class="dash-bar bottom-lime"
-                    x="34"
-                    y="8"
-                    width="22"
-                    height="14"
-                    rx="5"
-                />
-
-                <rect
-                    class="dash-bar bottom-green"
-                    x="34"
-                    y="26"
-                    width="22"
-                    height="30"
-                    rx="5"
-                />
-
-                <rect
-                    class="dash-bar bottom-green"
-                    x="8"
-                    y="34"
-                    width="22"
-                    height="22"
-                    rx="5"
-                />
-
-                <circle
-                    class="dash-dot"
-                    cx="46"
-                    cy="14"
-                    r="3.5"
-                    fill="white"
-                />
-
+        <div class="nav-item active" data-view="dashboard" onclick="return navigateTo(event, 'dashboard')">
+            <svg class="bottom-svg" viewBox="0 0 64 64">
+                <rect x="8" y="8" width="22" height="22" rx="5" class="bottom-dark"/>
+                <rect x="34" y="8" width="22" height="14" rx="5" class="bottom-lime"/>
+                <rect x="34" y="26" width="22" height="30" rx="5" class="bottom-green"/>
+                <rect x="8" y="34" width="22" height="22" rx="5" class="bottom-green"/>
             </svg>
-
-            <span>
-                Tableau de bord
-            </span>
-
+            <span>Tableau de bord</span>
         </div>
 
-
-        <!-- CAISSE -->
-
-        <div
-            class="nav-item ripple-host"
-            data-view="caisse"
-            onclick="return navigateTo(event, this, 'caisse')"
-        >
-
-            <svg
-                class="anim-wallet bottom-svg"
-                viewBox="0 0 64 64"
-            >
-
-                <path
-                    class="wallet-card bottom-green"
-                    d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"
-                />
-
-                <rect
-                    x="10"
-                    y="20"
-                    width="44"
-                    height="32"
-                    rx="8"
-                    class="bottom-dark"
-                />
-
-                <path
-                    class="wallet-flap"
-                    d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z"
-                    fill="#092920"
-                />
-
-                <circle
-                    cx="46"
-                    cy="38"
-                    r="4"
-                    class="bottom-lime"
-                />
-
+        <div class="nav-item" data-view="caisse" onclick="return navigateTo(event, 'caisse')">
+            <svg class="bottom-svg" viewBox="0 0 64 64">
+                <path class="bottom-green" d="M22 14H42A4 4 0 0 1 46 18V22H18V18A4 4 0 0 1 22 14Z"/>
+                <rect x="10" y="20" width="44" height="32" rx="8" class="bottom-dark"/>
+                <path d="M38 30H54A4 4 0 0 1 58 34V42A4 4 0 0 1 54 46H38A4 4 0 0 1 34 42V34A4 4 0 0 1 38 30Z" fill="#092920"/>
+                <circle cx="46" cy="38" r="4" class="bottom-lime"/>
             </svg>
-
-            <span>
-                Caisse
-            </span>
-
+            <span>Caisse</span>
         </div>
 
-
-        <!-- FACTURATION -->
-
-        <div
-            class="nav-item ripple-host"
-            data-view="facturation"
-            onclick="return navigateTo(event, this, 'facturation')"
-        >
-
-            <svg
-                class="anim-doc bottom-svg"
-                viewBox="0 0 64 64"
-            >
-
-                <path
-                    class="bottom-dark"
-                    d="M16 10H38L48 20V54H16Z"
-                />
-
-                <path
-                    class="doc-fold bottom-lime"
-                    d="M38 10V20H48Z"
-                />
-
-                <rect
-                    x="22"
-                    y="32"
-                    width="16"
-                    height="4"
-                    rx="2"
-                    class="bottom-green"
-                />
-
-                <rect
-                    x="22"
-                    y="40"
-                    width="20"
-                    height="4"
-                    rx="2"
-                    class="bottom-lime"
-                />
-
+        <div class="nav-item" data-view="facturation" onclick="return navigateTo(event, 'facturation')">
+            <svg class="bottom-svg" viewBox="0 0 64 64">
+                <path class="bottom-dark" d="M16 10H38L48 20V54H16Z"/>
+                <path class="bottom-lime" d="M38 10V20H48Z"/>
+                <rect x="22" y="32" width="16" height="4" rx="2" class="bottom-green"/>
+                <rect x="22" y="40" width="20" height="4" rx="2" class="bottom-lime"/>
             </svg>
-
-            <span>
-                Facturation
-            </span>
-
+            <span>Facturation</span>
         </div>
 
-
-        <!-- RAPPORT -->
-
-        <div
-            class="nav-item ripple-host"
-            data-view="rapport"
-            onclick="return navigateTo(event, this, 'rapport')"
-        >
-
-            <svg
-                class="anim-bars bottom-svg"
-                viewBox="0 0 64 64"
-            >
-
-                <rect
-                    class="bar bar-1 bottom-dark"
-                    x="12"
-                    y="38"
-                    width="10"
-                    height="16"
-                    rx="4"
-                />
-
-                <rect
-                    class="bar bar-2 bottom-green"
-                    x="27"
-                    y="26"
-                    width="10"
-                    height="28"
-                    rx="4"
-                />
-
-                <rect
-                    class="bar bar-3 bottom-lime"
-                    x="42"
-                    y="14"
-                    width="10"
-                    height="40"
-                    rx="4"
-                />
-
+        <div class="nav-item" data-view="rapport" onclick="return navigateTo(event, 'rapport')">
+            <svg class="bottom-svg" viewBox="0 0 64 64">
+                <rect x="12" y="38" width="10" height="16" rx="4" class="bottom-dark"/>
+                <rect x="27" y="26" width="10" height="28" rx="4" class="bottom-green"/>
+                <rect x="42" y="14" width="10" height="40" rx="4" class="bottom-lime"/>
             </svg>
-
-            <span>
-                Rapport
-            </span>
-
+            <span>Rapport</span>
         </div>
 
-
-        <!-- PROFIL -->
-
-        <div
-            class="nav-item ripple-host"
-            data-view="profil"
-            onclick="return navigateTo(event, this, 'profil')"
-        >
-
-            <svg
-                class="anim-shield bottom-svg"
-                viewBox="0 0 64 64"
-            >
-
-                <path
-                    d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z"
-                    class="bottom-green"
-                />
-
-                <circle
-                    cx="32"
-                    cy="22"
-                    r="13"
-                    class="bottom-dark"
-                />
-
-                <circle
-                    cx="46"
-                    cy="16"
-                    r="6"
-                    class="bottom-lime"
-                />
-
+        <div class="nav-item" data-view="profil" onclick="return navigateTo(event, 'profil')">
+            <svg class="bottom-svg" viewBox="0 0 64 64">
+                <path d="M10 54C10 41 19.6 32 32 32C44.4 32 54 41 54 54Z" class="bottom-green"/>
+                <circle cx="32" cy="22" r="13" class="bottom-dark"/>
+                <circle cx="46" cy="16" r="6" class="bottom-lime"/>
             </svg>
-
-            <span>
-                Profil
-            </span>
-
+            <span>Profil</span>
         </div>
 
     </nav>
@@ -3131,132 +1583,148 @@
 
 <script>
 
-
     /* =========================================================
-       DONNÉES (source unique — à remplacer par un appel API)
-       Toutes les valeurs affichées dans le dashboard viennent
-       d'ici. Rien n'est écrit en dur dans le HTML.
+       APP_DATA — SOURCE UNIQUE
+       ---------------------------------------------------------
+       Structure vide, prête à être branchée sur une vraie API
+       (Firestore, REST, Supabase, etc.). Chaque section décrit
+       la forme attendue des données. Aucune valeur fictive.
     ========================================================= */
 
     const APP_DATA = {
 
+        // Utilisateur connecté
         profile: {
-            name: 'Antonio Samuel',
-            role: 'Admin Officer',
-            company: 'PinenMFB',
-            email: 'antonio.samuel@pinenmfb.com',
-            phone: '+225 07 00 00 00',
-            memberSince: 'Mars 2023'
+            name: '',            // ex: 'Antonio Samuel'
+            role: '',            // ex: 'Admin Officer'
+            company: '',         // ex: 'PinenMFB'
+            email: '',
+            phone: '',
+            memberSince: ''
         },
 
+        // Vue RAPPORT
         rapport: {
-            date: 'Sunday, October 12th 2025',
-            stats: [
-                { icon: 'invoice', dark: true, trend: 'up', trendValue: '+20.9%', label: 'Total Sales', value: '$619,000', description: 'Products vs Last Month' },
-                { icon: 'orders', dark: false, trend: 'up', trendValue: '+10.9%', label: 'Total Orders', value: '1,000', description: 'Orders vs Last Month' },
-                { icon: 'visitors', dark: false, trend: 'down', trendValue: '-10.3%', label: 'Total Visitors', value: '2003.67', description: 'Users vs Last Month' },
-                { icon: 'products', dark: false, trend: 'up', trendValue: '+20.9%', label: 'Total Products Sold', value: '3,000', description: 'Products vs Last Month' }
-            ],
+            date: '',            // ex: 'Sunday, October 12th 2025'
+            stats: [],           // [{ icon, dark, trend, trendValue, label, value, description }]
             barChart: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                seriesA: [23000, 42000, 20000, 12000, 23000, 35000],
-                seriesB: [40000, 18000, 29000, 8000, 40000, 15000]
+                labels: [],      // ['Jan','Feb',...]
+                seriesA: [],
+                seriesB: []
             },
-            products: [
-                { label: 'Electronics', value: '2,487', trend: 'down', trendValue: '-1.8%', share: 60 },
-                { label: 'Games', value: '1,828', trend: 'up', trendValue: '+2.9%', share: 25 },
-                { label: 'Furniture', value: '1,463', trend: 'down', trendValue: '-1.0%', share: 15 }
-            ],
+            products: [],        // [{ label, value, trend, trendValue, share }]
             netWorth: {
-                amount: 189334,
-                change: 5000,
-                history: {
-                    labels: ['2019', '2020', '2021', '2021', '2022', '2022', '2023', '2023'],
-                    values: [10000, 12000, 50000, 70000, 99761, 100000, 140000, 189334]
-                },
-                tooltipDate: 'Nov 12, 2021',
-                tooltipValue: 99761
+                amount: null,
+                change: null,
+                history: { labels: [], values: [] }
             },
-            assetsTotal: 286949,
-            assets: [
-                { icon: 'cash', label: 'Cash', value: '$27,238', sub: '4 accounts', note: '1 needs attention' }
-            ]
+            assetsTotal: null,
+            assets: []           // [{ icon, label, value, sub, note }]
         },
 
+        // Vue TABLEAU DE BORD
         dashboard: {
-            stats: [
-                { icon: 'balance', dark: true, trend: 'up', trendValue: '+4.2%', label: 'Solde global', value: '$142,880', description: 'Tous comptes confondus' },
-                { icon: 'invoice', dark: false, trend: 'up', trendValue: '+12', label: 'Factures en attente', value: '8', description: 'À traiter cette semaine' }
-            ],
-            activity: [
-                { icon: 'orders', title: 'Encaissement client', sub: "Aujourd'hui, 09:24", value: '+$1,240' },
-                { icon: 'invoice', title: 'Facture #INV-0231 envoyée', sub: 'Hier, 17:02', value: '$3,600' },
-                { icon: 'visitors', title: "Nouveau membre d'équipe", sub: 'Il y a 2 jours', value: '—' }
-            ]
+            stats: [],           // même forme que rapport.stats
+            activity: []         // [{ icon, title, sub, value }]
         },
 
+        // Vue CAISSE
         caisse: {
-            stats: [
-                { icon: 'card', dark: true, trend: 'up', trendValue: 'Ouverte', label: 'Fonds de caisse', value: '$4,120', description: 'Depuis 08:00' },
-                { icon: 'orders', dark: false, trend: 'up', trendValue: '+18', label: 'Transactions du jour', value: '27', description: 'Ventes + retraits' }
-            ],
-            operations: [
-                { icon: 'in', title: 'Vente — Client comptoir', sub: '14:12', value: '+$85' },
-                { icon: 'out', title: 'Retrait espèces', sub: '11:40', value: '-$200' }
-            ]
+            stats: [],
+            operations: []       // [{ icon, title, sub, value }]
         },
 
+        // Vue FACTURATION
         facturation: {
-            invoices: [
-                { number: '#INV-0231', client: 'Société Alpha', status: 'Payée', date: '12 oct.', value: '$3,600' },
-                { number: '#INV-0230', client: 'Boutique Ivoire', status: 'En attente', date: '9 oct.', value: '$920' }
-            ]
+            invoices: []         // [{ number, client, status, date, value }]
         }
 
     };
 
 
     /* =========================================================
-       ICÔNES (référencées par clé depuis APP_DATA)
+       MÉTADONNÉES DES VUES (titres statiques d'interface)
+    ========================================================= */
+
+    const VIEW_META = {
+        dashboard:   { title: 'Tableau de bord', sub: "Vue d'ensemble de votre activité" },
+        caisse:      { title: 'Caisse',          sub: 'Suivi des opérations de caisse' },
+        facturation: { title: 'Facturation',     sub: 'Gérez vos factures clients' },
+        rapport:     { title: 'Rapport',         sub: '' },
+        profil:      { title: 'Profil',          sub: 'Informations du compte' }
+    };
+
+    const MOB_TITLES = {
+        dashboard:   'Tableau de bord',
+        caisse:      'Caisse',
+        facturation: 'Facturation',
+        rapport:     'Rapport',
+        profil:      'Profil'
+    };
+
+
+    /* =========================================================
+       ICÔNES (référencées par clé)
     ========================================================= */
 
     const ICONS = {
-        invoice: '<path d="M6 3H15L19 7V21H6Z"></path><path d="M15 3V7H19"></path><path d="M9 11H16"></path><path d="M9 15H14"></path>',
-        orders: '<path d="M4 19V5"></path><path d="M4 19H21"></path><path d="M7 15L11 11L14 13L20 6"></path>',
+        invoice:  '<path d="M6 3H15L19 7V21H6Z"></path><path d="M15 3V7H19"></path><path d="M9 11H16"></path><path d="M9 15H14"></path>',
+        orders:   '<path d="M4 19V5"></path><path d="M4 19H21"></path><path d="M7 15L11 11L14 13L20 6"></path>',
         visitors: '<circle cx="9" cy="8" r="3"></circle><path d="M3 20C3 16.7 5.7 14 9 14C12.3 14 15 16.7 15 20"></path><path d="M16 11C18.2 11 20 12.8 20 15"></path>',
         products: '<path d="M5 7H19"></path><path d="M7 7L8 20H16L17 7"></path><path d="M9 7V4H15V7"></path><path d="M10 11V16"></path><path d="M14 11V16"></path>',
-        balance: '<circle cx="12" cy="12" r="9"></circle><path d="M12 7V12L15 15"></path>',
-        card: '<rect x="3" y="6" width="18" height="13" rx="3"></rect><circle cx="16" cy="13" r="2"></circle>',
-        cash: '<rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M7 10H17"></path><circle cx="16" cy="13" r="2"></circle><path d="M6 3H17"></path>',
-        in: '<path d="M12 19V5"></path><path d="M6 11L12 5L18 11"></path>',
-        out: '<path d="M12 5V19"></path><path d="M6 13L12 19L18 13"></path>'
+        balance:  '<circle cx="12" cy="12" r="9"></circle><path d="M12 7V12L15 15"></path>',
+        card:     '<rect x="3" y="6" width="18" height="13" rx="3"></rect><circle cx="16" cy="13" r="2"></circle>',
+        cash:     '<rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M7 10H17"></path><circle cx="16" cy="13" r="2"></circle><path d="M6 3H17"></path>',
+        in:       '<path d="M12 19V5"></path><path d="M6 11L12 5L18 11"></path>',
+        out:      '<path d="M12 5V19"></path><path d="M6 13L12 19L18 13"></path>',
+        empty:    '<circle cx="12" cy="12" r="9"></circle><path d="M8 12H16"></path>'
     };
 
 
     function iconMarkup(key) {
-        return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[key] || ICONS.orders) + '</svg>';
-    }
-
-
-    function initials(name) {
-        return name
-            .split(' ')
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(part => part[0].toUpperCase())
-            .join('');
+        return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[key] || ICONS.empty) + '</svg>';
     }
 
 
     /* =========================================================
-       RENDU — STAT CARDS
+       HELPERS
+    ========================================================= */
+
+    function initials(name) {
+        if (!name) return '';
+        return name.split(' ').filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join('');
+    }
+
+    function formatCurrency(n) {
+        if (n === null || n === undefined || n === '') return '—';
+        return '$' + Math.round(n).toLocaleString('en-US');
+    }
+
+    function setText(id, value, fallback) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = (value === '' || value == null) ? (fallback || '—') : value;
+    }
+
+    function emptyState(message) {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">${iconMarkup('empty')}</div>
+                ${message}
+            </div>
+        `;
+    }
+
+
+    /* =========================================================
+       RENDU
     ========================================================= */
 
     function renderStatsGrid(containerId, stats) {
-
         const container = document.getElementById(containerId);
+        if (!container) return;
 
-        if (!container) {
+        if (!stats || !stats.length) {
+            container.innerHTML = emptyState('Aucune statistique disponible');
             return;
         }
 
@@ -3264,26 +1732,22 @@
             <div class="stat-card${stat.dark ? ' dark' : ''}">
                 <div class="stat-header">
                     <div class="stat-icon">${iconMarkup(stat.icon)}</div>
-                    <span class="badge-${stat.trend === 'down' ? 'down' : 'up'}">${stat.trendValue}</span>
+                    <span class="badge-${stat.trend === 'down' ? 'down' : 'up'}">${stat.trendValue || ''}</span>
                 </div>
-                <div class="stat-label">${stat.label}</div>
-                <div class="stat-value">${stat.value}</div>
-                <div class="stat-description">${stat.description}</div>
+                <div class="stat-label">${stat.label || ''}</div>
+                <div class="stat-value">${stat.value || '—'}</div>
+                <div class="stat-description">${stat.description || ''}</div>
             </div>
         `).join('');
-
     }
 
 
-    /* =========================================================
-       RENDU — LISTES GÉNÉRIQUES (activité / opérations / factures)
-    ========================================================= */
-
-    function renderPlaceholderList(containerId, items) {
-
+    function renderPlaceholderList(containerId, items, emptyMessage) {
         const container = document.getElementById(containerId);
+        if (!container) return;
 
-        if (!container) {
+        if (!items || !items.length) {
+            container.innerHTML = emptyState(emptyMessage || 'Aucune donnée');
             return;
         }
 
@@ -3292,22 +1756,22 @@
                 <div class="placeholder-left">
                     <div class="placeholder-icon">${iconMarkup(item.icon)}</div>
                     <div>
-                        <div class="placeholder-title">${item.title}</div>
-                        <div class="placeholder-sub">${item.sub}</div>
+                        <div class="placeholder-title">${item.title || ''}</div>
+                        <div class="placeholder-sub">${item.sub || ''}</div>
                     </div>
                 </div>
-                <div class="placeholder-value">${item.value}</div>
+                <div class="placeholder-value">${item.value || '—'}</div>
             </div>
         `).join('');
-
     }
 
 
     function renderInvoiceList(containerId, invoices) {
-
         const container = document.getElementById(containerId);
+        if (!container) return;
 
-        if (!container) {
+        if (!invoices || !invoices.length) {
+            container.innerHTML = emptyState('Aucune facture');
             return;
         }
 
@@ -3316,505 +1780,181 @@
                 <div class="placeholder-left">
                     <div class="placeholder-icon">${iconMarkup('invoice')}</div>
                     <div>
-                        <div class="placeholder-title">${inv.number} — ${inv.client}</div>
-                        <div class="placeholder-sub">${inv.status} · ${inv.date}</div>
+                        <div class="placeholder-title">${inv.number || ''} — ${inv.client || ''}</div>
+                        <div class="placeholder-sub">${inv.status || ''} · ${inv.date || ''}</div>
                     </div>
                 </div>
-                <div class="placeholder-value">${inv.value}</div>
+                <div class="placeholder-value">${inv.value || '—'}</div>
             </div>
         `).join('');
-
     }
 
 
-    /* =========================================================
-       RENDU — PROFIL
-    ========================================================= */
-
     function renderProfile() {
-
         const p = APP_DATA.profile;
+
         const fields = [
-            { label: 'Email', value: p.email },
-            { label: 'Téléphone', value: p.phone },
-            { label: 'Rôle', value: p.role },
+            { label: 'Email',         value: p.email },
+            { label: 'Téléphone',     value: p.phone },
+            { label: 'Rôle',          value: p.role },
             { label: 'Membre depuis', value: p.memberSince }
         ];
 
         const fieldsMarkup = fields.map(f => `
             <div class="profile-field">
                 <span class="profile-field-label">${f.label}</span>
-                <span class="profile-field-value">${f.value}</span>
+                <span class="profile-field-value">${f.value || '—'}</span>
             </div>
         `).join('');
 
-        document.getElementById('deskProfileName').textContent = p.name;
-        document.getElementById('deskProfileRole').textContent = p.role;
+        setText('deskProfileName', p.name);
+        setText('deskProfileRole', p.role);
 
-        document.getElementById('profileAvatar').textContent = initials(p.name);
-        document.getElementById('profileHeroName').textContent = p.name;
-        document.getElementById('profileHeroRole').textContent = `${p.role} · ${p.company}`;
+        setText('profileAvatar', initials(p.name));
+        setText('profileHeroName', p.name);
+        setText('profileHeroRole', p.role && p.company ? `${p.role} · ${p.company}` : (p.role || p.company));
         document.getElementById('profileFieldsDesk').innerHTML = fieldsMarkup;
 
-        document.getElementById('mobProfileAvatar').textContent = initials(p.name);
-        document.getElementById('mobProfileName').textContent = p.name;
-        document.getElementById('mobProfileRole').textContent = p.role;
-        document.getElementById('profileFieldsMob').innerHTML = fieldsMarkup.replace(
-            '<span class="profile-field-label">Rôle</span>',
-            '<span class="profile-field-label">Rôle</span>'
-        );
+        setText('mobProfileAvatar', initials(p.name));
+        setText('mobProfileName', p.name);
+        setText('mobProfileRole', p.role);
 
-        // Sur mobile, le rôle est déjà affiché dans l'en-tête : on ne le duplique pas
         document.getElementById('profileFieldsMob').innerHTML = fields
             .filter(f => f.label !== 'Rôle')
             .map(f => `
                 <div class="profile-field">
                     <span class="profile-field-label">${f.label}</span>
-                    <span class="profile-field-value">${f.value}</span>
+                    <span class="profile-field-value">${f.value || '—'}</span>
                 </div>
             `).join('');
-
-    }
-
-
-    /* =========================================================
-       RENDU — ASSETS (mobile, vue rapport)
-    ========================================================= */
-
-    function formatCurrency(n) {
-        return '$' + Math.round(n).toLocaleString('en-US');
     }
 
 
     function renderAssets() {
-
         const r = APP_DATA.rapport;
 
-        document.getElementById('assetsTotal').textContent = formatCurrency(r.assetsTotal);
+        setText('assetsTotal', formatCurrency(r.assetsTotal));
 
-        document.getElementById('assetsList').innerHTML = r.assets.map(asset => `
+        const container = document.getElementById('assetsList');
+        if (!r.assets || !r.assets.length) {
+            container.innerHTML = emptyState('Aucun actif rattaché');
+            return;
+        }
+
+        container.innerHTML = r.assets.map(asset => `
             <div class="asset-row">
                 <div class="asset-icon">${iconMarkup(asset.icon)}</div>
                 <div class="asset-info">
                     <div class="asset-main">
-                        <span>${asset.label}</span>
-                        <span>${asset.value}</span>
+                        <span>${asset.label || ''}</span>
+                        <span>${asset.value || '—'}</span>
                     </div>
                     <div class="asset-sub">
-                        <span>${asset.sub}</span>
-                        <span>${asset.note}</span>
+                        <span>${asset.sub || ''}</span>
+                        <span>${asset.note || ''}</span>
                     </div>
                 </div>
             </div>
         `).join('');
-
     }
 
-
-    /* =========================================================
-       RENDU — NET WORTH (mobile, vue rapport)
-    ========================================================= */
 
     function renderNetWorth() {
-
         const nw = APP_DATA.rapport.netWorth;
-
-        document.getElementById('mobNetWorthAmount').textContent = formatCurrency(nw.amount);
-        document.getElementById('mobNetWorthChange').textContent = formatCurrency(nw.change);
-
-        document.getElementById('mobChartTooltip').innerHTML = `
-            ${nw.tooltipDate}
-            <br>
-            <span style="color:#008b40;">●</span>
-            ${formatCurrency(nw.tooltipValue)}
-        `;
-
+        setText('mobNetWorthAmount', formatCurrency(nw.amount));
+        setText('mobNetWorthChange', formatCurrency(nw.change));
     }
 
 
-    /* =========================================================
-       RENDU INITIAL DE TOUTES LES VUES
-    ========================================================= */
+    function renderProducts() {
+        const container = document.getElementById('productList');
+        const products = APP_DATA.rapport.products;
+
+        if (!products || !products.length) {
+            container.innerHTML = emptyState('Aucun produit');
+            return;
+        }
+
+        container.innerHTML = products.map(p => `
+            <div class="product-row">
+                <span>${p.label || ''}</span>
+                <span>${p.value || '—'} <small class="badge-${p.trend === 'down' ? 'down' : 'up'}">${p.trendValue || ''}</small></span>
+            </div>
+        `).join('');
+    }
+
 
     function renderAll() {
-
         renderProfile();
 
         renderStatsGrid('rapportStatsGrid', APP_DATA.rapport.stats);
         renderStatsGrid('dashboardStatsGrid', APP_DATA.dashboard.stats);
         renderStatsGrid('caisseStatsGrid', APP_DATA.caisse.stats);
 
-        renderPlaceholderList('dashboardActivityList', APP_DATA.dashboard.activity);
-        renderPlaceholderList('mobDashboardList', APP_DATA.dashboard.activity);
+        renderPlaceholderList('dashboardActivityList', APP_DATA.dashboard.activity, 'Aucune activité récente');
+        renderPlaceholderList('mobDashboardList', APP_DATA.dashboard.activity, 'Aucune activité récente');
 
-        renderPlaceholderList('caisseOpsList', APP_DATA.caisse.operations);
-        renderPlaceholderList('mobCaisseList', APP_DATA.caisse.operations);
+        renderPlaceholderList('caisseOpsList', APP_DATA.caisse.operations, 'Aucune opération');
+        renderPlaceholderList('mobCaisseList', APP_DATA.caisse.operations, 'Aucune opération');
 
         renderInvoiceList('invoicesList', APP_DATA.facturation.invoices);
         renderInvoiceList('mobInvoicesList', APP_DATA.facturation.invoices);
 
-        document.getElementById('productList').innerHTML = APP_DATA.rapport.products.map(p => `
-            <div class="product-row">
-                <span>${p.label}</span>
-                <span>${p.value} <small class="badge-${p.trend === 'down' ? 'down' : 'up'}">${p.trendValue}</small></span>
-            </div>
-        `).join('');
-
+        renderProducts();
         renderAssets();
         renderNetWorth();
 
+        // Titre initial : Rapport (vue active par défaut)
+        applyViewTitles('rapport');
     }
-
-
-    document.addEventListener('DOMContentLoaded', renderAll);
-
 
 
     /* =========================================================
-       NAVIGATION MULTI-MODULES
-       (ripple + état actif + transition de vue)
+       NAVIGATION — SANS ANIMATION
     ========================================================= */
 
-    const VIEW_META = {
-        dashboard: {
-            title: 'Tableau de bord',
-            sub: 'Vue d\'ensemble de votre activité'
-        },
-        caisse: {
-            title: 'Caisse',
-            sub: 'Suivi des opérations de caisse'
-        },
-        facturation: {
-            title: 'Facturation',
-            sub: 'Gérez vos factures clients'
-        },
-        rapport: {
-            title: 'Sales Report',
-            sub: APP_DATA.rapport.date
-        },
-        profil: {
-            title: 'Profil',
-            sub: 'Informations du compte'
-        }
-    };
-
-    const MOB_TITLES = {
-        dashboard: 'Tableau de bord',
-        caisse: 'Caisse',
-        facturation: 'Facturation',
-        rapport: 'For you',
-        profil: 'Profil'
-    };
-
-
-    function spawnRipple(hostEl, evt) {
-
-        if (!hostEl) {
-            return;
-        }
-
-        hostEl.classList.add('ripple-host');
-
-        const rect =
-            hostEl.getBoundingClientRect();
-
-        const size =
-            Math.max(rect.width, rect.height) * 1.4;
-
-        const x =
-            (evt && typeof evt.clientX === 'number')
-                ? evt.clientX - rect.left
-                : rect.width / 2;
-
-        const y =
-            (evt && typeof evt.clientY === 'number')
-                ? evt.clientY - rect.top
-                : rect.height / 2;
-
-        const ripple =
-            document.createElement('span');
-
-        ripple.className = 'ripple-el';
-
-        ripple.style.width = size + 'px';
-        ripple.style.height = size + 'px';
-        ripple.style.left = (x - size / 2) + 'px';
-        ripple.style.top = (y - size / 2) + 'px';
-
-        hostEl.appendChild(ripple);
-
-        ripple.addEventListener(
-            'animationend',
-            () => ripple.remove()
-        );
-
-    }
-
-
-    function switchDeskView(viewKey) {
-
-        const views =
-            document.querySelectorAll(
-                '.desk-main > .view'
-            );
-
-        views.forEach(view => {
-
-            const isTarget =
-                view.dataset.view === viewKey;
-
-            const isActive =
-                view.classList.contains('active');
-
-            if (isTarget && !isActive) {
-
-                view.classList.remove('leaving');
-                view.classList.add('active');
-
-                /* relance l'animation d'entrée */
-                view.style.animation = 'none';
-                void view.offsetWidth;
-                view.style.animation = '';
-
-            } else if (!isTarget && isActive) {
-
-                view.classList.add('leaving');
-
-                window.setTimeout(() => {
-                    view.classList.remove('active', 'leaving');
-                }, 220);
-
-            }
-
-        });
-
+    function applyViewTitles(viewKey) {
         const meta = VIEW_META[viewKey];
-
         if (meta) {
-
-            const titleEl =
-                document.getElementById('deskViewTitle');
-
-            const subEl =
-                document.getElementById('deskViewSub');
-
-            if (titleEl) {
-                titleEl.textContent = meta.title;
-            }
-
-            if (subEl) {
-                subEl.textContent = meta.sub;
-            }
-
+            setText('deskViewTitle', meta.title);
+            setText('deskViewSub', meta.sub || APP_DATA.rapport.date || '');
         }
-
+        if (MOB_TITLES[viewKey]) {
+            setText('mobViewTitle', MOB_TITLES[viewKey]);
+        }
     }
 
+    function navigateTo(evt, viewKey) {
+        if (evt) evt.preventDefault();
 
-    function switchMobView(viewKey) {
-
-        const views =
-            document.querySelectorAll(
-                '.mob-content > .mob-view'
-            );
-
-        views.forEach(view => {
-
-            const isTarget =
-                view.dataset.mobView === viewKey;
-
-            const isActive =
-                view.classList.contains('active');
-
-            if (isTarget && !isActive) {
-
-                view.classList.remove('leaving');
-                view.classList.add('active');
-
-                view.style.animation = 'none';
-                void view.offsetWidth;
-                view.style.animation = '';
-
-            } else if (!isTarget && isActive) {
-
-                view.classList.add('leaving');
-
-                window.setTimeout(() => {
-                    view.classList.remove('active', 'leaving');
-                }, 200);
-
-            }
-
+        // Menu items (sidebar + drawer)
+        document.querySelectorAll('.menu-item[data-view]').forEach(item => {
+            item.classList.toggle('active', item.dataset.view === viewKey);
         });
 
-        const titleEl =
-            document.getElementById('mobViewTitle');
-
-        if (titleEl && MOB_TITLES[viewKey]) {
-            titleEl.textContent = MOB_TITLES[viewKey];
-        }
-
-    }
-
-
-    function navigateTo(evt, clickedEl, viewKey) {
-
-        if (evt) {
-            evt.preventDefault();
-        }
-
-        spawnRipple(clickedEl, evt);
-
-
-        /* --- Sidebar desktop + drawer mobile (menu-item) --- */
-
-        document
-            .querySelectorAll('.menu-item[data-view]')
-            .forEach(item => {
-
-                const match =
-                    item.dataset.view === viewKey;
-
-                item.classList.toggle('active', match);
-
-                const dark =
-                    item.querySelector('.bottom-dark');
-
-                if (dark) {
-                    dark.classList.toggle(
-                        'active-fill',
-                        match
-                    );
-                }
-
-            });
-
-
-        /* --- Bottom nav mobile (nav-item) --- */
-
-        const bottomItems =
-            document.querySelectorAll(
-                '.mob-bottom-nav .nav-item[data-view]'
-            );
-
-        bottomItems.forEach(item => {
-
-            item.classList.remove('active');
-
-            const svg =
-                item.querySelector('svg');
-
-            if (svg) {
-                svg.classList.remove('active');
-            }
-
+        // Bottom nav
+        document.querySelectorAll('.mob-bottom-nav .nav-item[data-view]').forEach(item => {
+            item.classList.toggle('active', item.dataset.view === viewKey);
         });
 
-        const bottomMatch =
-            document.querySelector(
-                '.mob-bottom-nav .nav-item[data-view="' + viewKey + '"]'
-            );
+        // Vue desktop
+        document.querySelectorAll('.desk-main > .view').forEach(v => {
+            v.classList.toggle('active', v.dataset.view === viewKey);
+        });
 
-        if (bottomMatch) {
+        // Vue mobile
+        document.querySelectorAll('.mob-content > .mob-view').forEach(v => {
+            v.classList.toggle('active', v.dataset.mobView === viewKey);
+        });
 
-            bottomMatch.classList.add('active');
+        applyViewTitles(viewKey);
 
-            const activeSvg =
-                bottomMatch.querySelector('svg');
-
-            if (activeSvg) {
-                void activeSvg.offsetWidth;
-                activeSvg.classList.add('active');
-            }
-
-        }
-
-
-        /* --- Contenu --- */
-
-        switchDeskView(viewKey);
-        switchMobView(viewKey);
-
-
-        /* --- Fermer le drawer si ouvert --- */
-
-        const drawer =
-            document.getElementById('mobDrawer');
-
-        if (drawer && drawer.classList.contains('active')) {
-            toggleMobDrawer();
-        }
+        // Fermer le drawer si ouvert
+        const drawer = document.getElementById('mobDrawer');
+        if (drawer && drawer.classList.contains('active')) toggleMobDrawer();
 
         return false;
-
     }
-
-
-
-    /* =========================================================
-       MOBILE HEADER ICONS
-    ========================================================= */
-
-    function pulseIcon(el) {
-
-        const svg =
-            el.querySelector('svg');
-
-        if (!svg) {
-            return;
-        }
-
-        svg.classList.remove('icon-pulse');
-
-        void svg.offsetWidth;
-
-        svg.classList.add('icon-pulse');
-
-    }
-
-
-    function switchTab(clickedItem) {
-
-        const items =
-            document.querySelectorAll(
-                '.mob-bottom-nav .nav-item'
-            );
-
-        items.forEach(item => {
-
-            item.classList.remove('active');
-
-            const svg =
-                item.querySelector('svg');
-
-            if (svg) {
-                svg.classList.remove('active');
-            }
-
-        });
-
-
-        clickedItem.classList.add('active');
-
-
-        const activeSvg =
-            clickedItem.querySelector('svg');
-
-        if (activeSvg) {
-
-            /*
-             * Force le navigateur à recalculer
-             * l'élément afin de relancer
-             * correctement l'animation.
-             */
-
-            void activeSvg.offsetWidth;
-
-            activeSvg.classList.add('active');
-        }
-
-    }
-
 
 
     /* =========================================================
@@ -3822,255 +1962,99 @@
     ========================================================= */
 
     function toggleMobDrawer() {
-
-        const drawer =
-            document.getElementById(
-                'mobDrawer'
-            );
-
-        const overlay =
-            document.getElementById(
-                'mobDrawerOverlay'
-            );
-
-        if (!drawer || !overlay) {
-            return;
-        }
-
+        const drawer = document.getElementById('mobDrawer');
+        const overlay = document.getElementById('mobDrawerOverlay');
+        if (!drawer || !overlay) return;
         drawer.classList.toggle('active');
-
         overlay.classList.toggle('active');
-
     }
 
 
-
     /* =========================================================
-       CHART DESKTOP — BAR
+       CHARTS
     ========================================================= */
 
-    const deskBarElement =
-        document.getElementById(
-            'deskBarChart'
-        );
-
-
-    if (deskBarElement) {
-
-        const deskBarCtx =
-            deskBarElement.getContext('2d');
+    function initCharts() {
 
         const bar = APP_DATA.rapport.barChart;
-
-        new Chart(
-            deskBarCtx,
-            {
-
+        const deskBar = document.getElementById('deskBarChart');
+        if (deskBar && bar.labels.length) {
+            new Chart(deskBar.getContext('2d'), {
                 type: 'bar',
-
                 data: {
-
                     labels: bar.labels,
-
                     datasets: [
-
-                        {
-                            data: bar.seriesA,
-
-                            backgroundColor:
-                                '#22c55e',
-
-                            borderRadius: 4
-                        },
-
-                        {
-                            data: bar.seriesB,
-
-                            backgroundColor:
-                                '#074728',
-
-                            borderRadius: 4
-                        }
-
+                        { data: bar.seriesA, backgroundColor: '#22c55e', borderRadius: 4 },
+                        { data: bar.seriesB, backgroundColor: '#074728', borderRadius: 4 }
                     ]
-
                 },
-
                 options: {
-
                     responsive: true,
-
                     maintainAspectRatio: false,
-
-                    plugins: {
-
-                        legend: {
-                            display: false
-                        }
-
-                    }
-
+                    plugins: { legend: { display: false } }
                 }
-
-            }
-        );
-
-    }
-
-
-
-    /* =========================================================
-       CHART DESKTOP — PIE
-    ========================================================= */
-
-    const deskPieElement =
-        document.getElementById(
-            'deskPieChart'
-        );
-
-
-    if (deskPieElement) {
-
-        const deskPieCtx =
-            deskPieElement.getContext('2d');
+            });
+        }
 
         const products = APP_DATA.rapport.products;
-
-        new Chart(
-            deskPieCtx,
-            {
-
+        const deskPie = document.getElementById('deskPieChart');
+        if (deskPie && products.length) {
+            new Chart(deskPie.getContext('2d'), {
                 type: 'pie',
-
                 data: {
-
                     labels: products.map(p => p.label),
-
-                    datasets: [
-
-                        {
-                            data: products.map(p => p.share),
-
-                            backgroundColor: [
-                                '#074728',
-                                '#009345',
-                                '#22c55e'
-                            ]
-                        }
-
-                    ]
-
+                    datasets: [{
+                        data: products.map(p => p.share),
+                        backgroundColor: ['#074728', '#009345', '#22c55e']
+                    }]
                 },
-
                 options: {
-
                     responsive: true,
-
                     maintainAspectRatio: false,
-
-                    plugins: {
-
-                        legend: {
-                            display: false
-                        }
-
-                    }
-
+                    plugins: { legend: { display: false } }
                 }
+            });
+        }
 
-            }
-        );
-
+        const history = APP_DATA.rapport.netWorth.history;
+        const mobLine = document.getElementById('mobLineChart');
+        if (mobLine && history.labels.length) {
+            new Chart(mobLine.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: history.labels,
+                    datasets: [{
+                        data: history.values,
+                        borderColor: '#008b40',
+                        borderWidth: 3,
+                        tension: .4,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
     }
-
 
 
     /* =========================================================
-       CHART MOBILE
+       BOOT
     ========================================================= */
 
-    const mobLineElement =
-        document.getElementById(
-            'mobLineChart'
-        );
-
-
-    if (mobLineElement) {
-
-        const mobLineCtx =
-            mobLineElement.getContext('2d');
-
-        const history = APP_DATA.rapport.netWorth.history;
-
-        new Chart(
-            mobLineCtx,
-            {
-
-                type: 'line',
-
-                data: {
-
-                    labels: history.labels,
-
-                    datasets: [
-
-                        {
-
-                            data: history.values,
-
-                            borderColor:
-                                '#008b40',
-
-                            borderWidth: 3,
-
-                            tension: .4,
-
-                            pointRadius: 0,
-
-                            pointHoverRadius: 5,
-
-                            fill: false
-
-                        }
-
-                    ]
-
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio: false,
-
-                    plugins: {
-
-                        legend: {
-                            display: false
-                        }
-
-                    },
-
-                    scales: {
-
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        },
-
-                        y: {
-                            display: false
-                        }
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        renderAll();
+        initCharts();
+    });
 
 </script>
 
