@@ -1203,16 +1203,35 @@
 
             padding: 8px 0 12px;
 
-            background: var(--bg-surface-strong);
-            -webkit-backdrop-filter: blur(24px) saturate(160%);
-            backdrop-filter: blur(24px) saturate(160%);
+            /* Fond opaque identique au body : pas de glass, pas de blur,
+               pas de séparation visible. Le nav se fond dans le dashboard
+               (comme LinkedIn / Instagram). */
+            background: var(--bg-lime);
 
-            border-top: 1px solid var(--glass-border);
+            /* Pas de backdrop-filter : sur Chrome Android il provoque
+               du jitter / scintillement quand la page scrolle sous un
+               élément fixed. */
+
+            border-top: none;
+
+            /* Ombre légère vers le haut plutôt qu'un trait blanc :
+               marque la séparation sans casser la teinte. */
+            box-shadow: 0 -1px 0 rgba(7, 71, 40, .06);
 
             display: flex;
             justify-content: space-around;
 
             z-index: 1000;
+
+            /* Force la promotion en couche compositée : le nav reste
+               parfaitement immobile pendant le scroll, même sur les
+               navigateurs mobiles qui ont un bug sur position:fixed. */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+
+            /* Respect du safe area (encoches iPhone) */
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         }
 
         .nav-item {
