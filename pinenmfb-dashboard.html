@@ -1144,13 +1144,13 @@
 
             padding: 24px;
 
-            background: var(--bg-surface);
-            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            /* Fond opaque identique au body : plus de verre dépoli,
+               plus de dashboard visible en flou derrière. */
+            background: var(--bg-lime);
 
             box-shadow: 8px 0 25px rgba(7, 71, 40, .15);
 
-            border-right: 1px solid var(--glass-border);
+            border-right: none;
 
             z-index: 2001;
 
