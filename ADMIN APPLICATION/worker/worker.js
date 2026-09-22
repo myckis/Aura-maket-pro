@@ -1865,6 +1865,7 @@ async function handleAutomatisationsExecuterManuel(request, env) {
     else if (cle === "verification_kyc") resultat = await traiterVerificationKyc(cfg, env);
     else if (cle === "analyse_signalements") resultat = await traiterAnalyseSignalements(cfg, env);
     else if (cle === "publication_tiktok") resultat = await traiterPublicationTiktok(cfg, env);
+    else if (cle === "commandes") resultat = await traiterCommandesBloquees(cfg, env);
     else resultat = await traiterModuleGenerique(cle, cfg, env);
   } catch (err) {
     console.error(`[automatisations] Erreur exécution manuelle ${cle} :`, err);
@@ -2300,6 +2301,91 @@ function decisionAutoOuAttente(cfg, analyse) {
   return { decisionLog: analyse.decision === "valide" ? "valide" : "rejete" };
 }
 
+/* Seuils de blocage d'une commande en_attente (vendeur n'a pas confirmé) :
+   - 48h  : signalée à l'admin pour vérification (jamais d'action auto).
+   - 7j   : annulée automatiquement SI validation_auto est activé, sinon
+            simplement laissée en attente avec le motif du blocage — un
+            admin doit alors décider lui-même. Toute annulation reste
+            réversible via /automatisations/annuler (remet la commande en
+            "en_attente", comme pour les autres automatisations). */
+const MAUT_COMMANDE_HEURES_SIGNALEMENT = 48;
+const MAUT_COMMANDE_JOURS_ANNULATION = 7;
+
+async function traiterCommandesBloquees(cfg, env) {
+  const seuilSignalementMs = MAUT_COMMANDE_HEURES_SIGNALEMENT * 60 * 60 * 1000;
+  const dateLimiteSignalement = new Date(Date.now() - seuilSignalementMs).toISOString();
+
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/commandes?statut=eq.en_attente&confirme_vendeur=eq.false&created_at=lte.${encodeURIComponent(dateLimiteSignalement)}&select=*&order=created_at.asc&limit=50`,
+    {
+      headers: {
+        apikey: env.SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        Accept: "application/json"
+      }
+    }
+  );
+  if (!res.ok) return { erreur: "Échec lecture commandes" };
+  const items = await res.json().catch(() => []);
+  if (!items.length) return { traites: 0 };
+
+  const seuilAnnulationMs = MAUT_COMMANDE_JOURS_ANNULATION * 24 * 60 * 60 * 1000;
+  let compteurs = { rejete: 0, signale_urgent: 0, laisse_en_attente: 0, erreur: 0 };
+
+  for (const item of items) {
+    try {
+      const ageMs = Date.now() - new Date(item.created_at).getTime();
+      const bloqueeDepuisJours = (ageMs / (24 * 60 * 60 * 1000)).toFixed(1);
+      const bloqueeDepuisHeures = Math.floor(ageMs / (60 * 60 * 1000));
+
+      if (ageMs >= seuilAnnulationMs) {
+        const motif = `Commande en_attente depuis ${bloqueeDepuisJours} jours sans confirmation vendeur.`;
+        if (cfg.actif && cfg.validation_auto) {
+          await appliquerAnnulationCommande(item, motif, env);
+          compteurs.rejete++;
+          await enregistrerLogAutomatisation(env, {
+            cle: "commandes", cibleTable: "commandes", cibleId: item.id,
+            decision: "rejete", confiance: null,
+            motif: `${motif} Annulée automatiquement.`
+          });
+        } else {
+          compteurs.laisse_en_attente++;
+          await enregistrerLogAutomatisation(env, {
+            cle: "commandes", cibleTable: "commandes", cibleId: item.id,
+            decision: "laisse_en_attente", confiance: null,
+            motif: `${motif} Validation automatique désactivée — annulation à confirmer par un admin.`
+          });
+        }
+      } else {
+        compteurs.signale_urgent++;
+        await enregistrerLogAutomatisation(env, {
+          cle: "commandes", cibleTable: "commandes", cibleId: item.id,
+          decision: "signale_urgent", confiance: null,
+          motif: `Commande en_attente depuis ${bloqueeDepuisHeures}h sans confirmation vendeur — à vérifier avec le vendeur.`
+        });
+      }
+    } catch (err) {
+      console.error("[commandes] Erreur item", item.id, err);
+      compteurs.erreur++;
+    }
+  }
+
+  return { traites: items.length, ...compteurs };
+}
+
+async function appliquerAnnulationCommande(item, motif, env) {
+  await fetch(`${env.SUPABASE_URL}/rest/v1/commandes?id=eq.${item.id}`, {
+    method: "PATCH",
+    headers: {
+      apikey: env.SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal"
+    },
+    body: JSON.stringify({ statut: "annulee", updated_at: new Date().toISOString() })
+  });
+}
+
 async function traiterPublicationTiktok(cfg, env) {
   if (!env.TIKTOK_ACCESS_TOKEN) {
     return { statut: "en_attente_validation_tiktok", info: "Clés TikTok non configurées — module prêt mais inactif tant que l'app n'est pas validée par TikTok for Developers." };
@@ -2319,8 +2405,12 @@ async function traiterPublicationTiktok(cfg, env) {
 }
 
 async function executerAutomatisationsCron(env) {
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY || !env.GROQ_API_KEY) {
-    console.error("[automatisations cron] Secrets manquants, exécution annulée.");
+  // GROQ_API_KEY n'est requis que par les automatisations qui analysent du
+  // contenu (modération produits/KYC/signalements) ; chacune vérifie déjà
+  // sa présence individuellement. "commandes" est une règle purement
+  // temporelle et ne doit pas être bloquée par l'absence de cette clé.
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) {
+    console.error("[automatisations cron] Secrets Supabase manquants, exécution annulée.");
     return;
   }
 
@@ -2338,6 +2428,9 @@ async function executerAutomatisationsCron(env) {
   }
   if (config.publication_tiktok?.actif) {
     rapport.publication_tiktok = await traiterPublicationTiktok(config.publication_tiktok, env).catch(err => ({ erreur: String(err) }));
+  }
+  if (config.commandes?.actif) {
+    rapport.commandes = await traiterCommandesBloquees(config.commandes, env).catch(err => ({ erreur: String(err) }));
   }
 
   const totalDecisions = Object.values(rapport).reduce((s, r) => s + (r?.valide || 0) + (r?.rejete || 0) + (r?.signale_urgent || 0), 0);
