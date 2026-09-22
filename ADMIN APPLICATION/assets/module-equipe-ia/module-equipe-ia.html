@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Équipe IA — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-equipe-ia.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="meia-topbar">
+    <button class="meia-back" id="meia-back" aria-label="Retour">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="meia-topbar-title" id="meia-topbar-title">Équipe IA</span>
+    <span class="meia-topbar-state" id="meia-topbar-state">
+      <span class="meia-dot"></span><span id="meia-topbar-state-label">Chargement…</span>
+    </span>
+  </div>
+
+  <!-- Onglets -->
+  <div class="meia-tabs" id="meia-tabs">
+    <button type="button" class="meia-tab active" data-tab="objectifs">Objectifs</button>
+    <button type="button" class="meia-tab" data-tab="equipe">Équipe</button>
+  </div>
+
+  <!-- ══════════════ VUE OBJECTIFS ══════════════ -->
+  <div class="meia-view" id="meia-view-objectifs">
+    <div class="meia-body">
+
+      <!-- Donner un ordre au DG IA -->
+      <div class="meia-ordre-card">
+        <div class="meia-ordre-head">
+          <div class="meia-ordre-avatar"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v1a4 4 0 0 1 2 3.5V14a7 7 0 0 1-14 0v-2.5A4 4 0 0 1 7 8V7a5 5 0 0 1 5-5z"/><path d="M9 20h6"/></svg></div>
+          <div>
+            <div class="meia-ordre-title">Donner un ordre au DG IA</div>
+            <div class="meia-ordre-sub">Il analyse l'objectif et le répartit lui-même dans l'équipe.</div>
+          </div>
+        </div>
+        <textarea class="meia-ordre-input" id="meia-ordre-input" rows="3"
+          placeholder="Ex : Je veux développer AuraMarket BTP à Abidjan et obtenir 100 nouveaux fournisseurs."></textarea>
+        <button type="button" class="meia-btn meia-btn-primary meia-ordre-btn" id="meia-ordre-btn">Confier au DG IA</button>
+        <div class="meia-ordre-etat" id="meia-ordre-etat" style="display:none;"></div>
+      </div>
+
+      <div class="meia-section-title">Objectifs confiés</div>
+      <div class="meia-objectifs-list" id="meia-objectifs-list">
+        <div class="meia-empty" id="meia-objectifs-loading">Chargement…</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ VUE ÉQUIPE (organigramme) ══════════════ -->
+  <div class="meia-view" id="meia-view-equipe" style="display:none;">
+    <div class="meia-body">
+      <div class="meia-section-title">Organigramme</div>
+      <div class="meia-section-desc">Chaque responsable a son domaine, ses outils et ses missions. Le DG répartit, ils exécutent.</div>
+      <div id="meia-orga">
+        <div class="meia-empty">Chargement de l'équipe…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ VUE DÉTAIL D'UN OBJECTIF ══════════════ -->
+  <div class="meia-detail" id="meia-detail" style="display:none;">
+    <div class="meia-body">
+
+      <div class="meia-detail-head">
+        <div class="meia-detail-libelle" id="meia-detail-libelle"></div>
+        <div class="meia-detail-meta" id="meia-detail-meta"></div>
+      </div>
+
+      <div class="meia-progress-wrap">
+        <div class="meia-progress"><div class="meia-progress-bar" id="meia-progress-bar"></div></div>
+        <div class="meia-progress-label" id="meia-progress-label"></div>
+      </div>
+
+      <div class="meia-rapport" id="meia-rapport" style="display:none;"></div>
+
+      <div class="meia-detail-actions">
+        <button type="button" class="meia-btn meia-btn-outline" id="meia-avancer-btn">Faire avancer maintenant</button>
+      </div>
+
+      <div class="meia-section-title">Missions</div>
+      <div class="meia-missions" id="meia-missions"></div>
+
+      <div class="meia-section-title meia-mt">Fil de l'équipe</div>
+      <div class="meia-fil" id="meia-fil"></div>
+
+    </div>
+  </div>
+
+  <!-- Modale validation / refus d'une mission -->
+  <div class="meia-modal-overlay" id="meia-valider-overlay">
+    <div class="meia-modal">
+      <div class="meia-modal-title" id="meia-valider-titre">Autoriser cette mission ?</div>
+      <div class="meia-modal-text" id="meia-valider-text"></div>
+      <textarea class="meia-ordre-input" id="meia-valider-motif" rows="2" placeholder="Motif du refus (optionnel)" style="display:none;"></textarea>
+      <div class="meia-modal-actions">
+        <button type="button" class="meia-btn meia-btn-outline" id="meia-valider-cancel">Retour</button>
+        <button type="button" class="meia-btn meia-btn-danger" id="meia-valider-refuser">Refuser</button>
+        <button type="button" class="meia-btn meia-btn-primary" id="meia-valider-ok">Autoriser</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="meia-toast" id="meia-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-equipe-ia.js"></script>
+</body>
+</html>

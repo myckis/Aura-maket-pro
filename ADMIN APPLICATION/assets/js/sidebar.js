@@ -23,6 +23,7 @@
   ];
 
   const services = [
+    { label: "Équipe IA", service: "Équipe IA", slug: "equipe-ia", module: "module-equipe-ia", gold: true, icon: `<path d="M12 2a5 5 0 0 1 5 5v1a4 4 0 0 1 2 3.5V14a7 7 0 0 1-14 0v-2.5A4 4 0 0 1 7 8V7a5 5 0 0 1 5-5z"/><path d="M9 20h6"/>` },
     { label: "Automatisation", service: "Automatisation", slug: "automatisation", module: "module-automatisation", gold: true, icon: `<path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.9 4.9 2.8 2.8"/><path d="m16.3 16.3 2.8 2.8"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="m4.9 19.1 2.8-2.8"/><path d="m16.3 7.7 2.8-2.8"/>` },
     { label: "Journal d'activité", service: "Journal d'activité", slug: "logs", icon: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>` },
     { label: "Paramètres plateforme", service: "Paramètres plateforme", slug: "parametres", icon: `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>` },

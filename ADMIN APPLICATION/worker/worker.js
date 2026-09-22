@@ -208,6 +208,12 @@ export default {
         return await handleIaObjectifDetail(request, env);
       }
 
+      if (path === "/proxy/admin/ia/agents") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaAgentsListe(request, env);
+      }
+
       if (path === "/proxy/admin/ia/executer") {
         const authError = await checkSupabaseUserAuth(request, env);
         if (authError) return authError;
@@ -3236,6 +3242,30 @@ async function handleIaObjectifDetail(request, env) {
     messages: messagesRes.ok ? await messagesRes.json().catch(() => []) : [],
     agents: agentsRes.ok ? await agentsRes.json().catch(() => []) : []
   }, 200, request);
+}
+
+/* Trombinoscope de l'équipe + charge de travail de chaque agent, pour
+   la vue "Équipe" de l'app admin (organigramme vivant). */
+async function handleIaAgentsListe(request, env) {
+  const [agentsRes, tachesRes] = await Promise.all([
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_agents?select=*&order=departement.asc,cle.asc`, { headers: entetesSupabase(env) }),
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_taches?select=agent_cle,statut&order=created_at.desc&limit=1000`, { headers: entetesSupabase(env) })
+  ]);
+  const agents = agentsRes.ok ? await agentsRes.json().catch(() => []) : [];
+  const taches = tachesRes.ok ? await tachesRes.json().catch(() => []) : [];
+
+  const statutsConnus = ["en_attente", "prete", "en_cours", "attente_validation", "terminee", "bloquee", "echec", "annulee"];
+  const charge = {};
+  taches.forEach(t => {
+    if (!charge[t.agent_cle]) {
+      charge[t.agent_cle] = { total: 0 };
+      statutsConnus.forEach(s => { charge[t.agent_cle][s] = 0; });
+    }
+    charge[t.agent_cle].total++;
+    if (charge[t.agent_cle][t.statut] !== undefined) charge[t.agent_cle][t.statut]++;
+  });
+
+  return jsonResponseCors({ agents, charge }, 200, request);
 }
 
 async function handleIaExecuter(request, env) {

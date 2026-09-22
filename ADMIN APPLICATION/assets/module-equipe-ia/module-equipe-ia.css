@@ -1,0 +1,242 @@
+/* ═══════════════════════════════════════════════
+   AURA MARKET — Module Équipe IA (Admin)
+   module-equipe-ia.css
+═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#FFFFFF;--primary-light:rgba(255,255,255,.08);--primary-dark:#D9D9D9;
+  --gold:#F0B429;--gold-light:rgba(240,180,41,.12);
+  --success:#10B981;--success-light:rgba(16,185,129,.12);
+  --warning:#F59E0B;--warning-light:rgba(245,158,11,.12);
+  --danger:#E0276F;--danger-light:rgba(224,39,111,.10);
+  --info:#3B82F6;--info-light:rgba(59,130,246,.12);
+  --bg:#0F0F0F;--bg-card:#181818;
+  --text:#FFFFFF;--text-secondary:#AAAAAA;--text-muted:#717171;
+  --border:#303030;--shadow:0 2px 16px rgba(0,0,0,.4);
+  --radius:14px;--radius-sm:8px;
+  --font:'Inter',system-ui,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}
+}
+
+/* ── TOPBAR ── */
+.meia-topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg-card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:0 16px;height:56px;
+}
+.meia-back{
+  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;border:none;
+  background:var(--primary-light);color:var(--primary);cursor:pointer;flex-shrink:0;
+}
+.meia-back svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
+.meia-topbar-title{font-size:16px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.meia-topbar-state{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--text-secondary);flex-shrink:0;}
+.meia-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted);flex-shrink:0;}
+.meia-topbar-state.ok .meia-dot{background:var(--success);box-shadow:0 0 6px var(--success);}
+.meia-topbar-state.work .meia-dot{background:var(--gold);box-shadow:0 0 6px var(--gold);animation:meia-pulse 1.6s ease-in-out infinite;}
+.meia-topbar-state.alert .meia-dot{background:var(--warning);box-shadow:0 0 6px var(--warning);}
+@keyframes meia-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── TABS ── */
+.meia-tabs{display:flex;gap:6px;padding:12px 16px 0;max-width:820px;margin:0 auto;}
+.meia-tab{
+  height:34px;padding:0 16px;border-radius:999px;border:1.5px solid var(--border);
+  background:transparent;color:var(--text-secondary);font-family:var(--font);
+  font-size:12.5px;font-weight:700;cursor:pointer;
+}
+.meia-tab.active{background:var(--primary);border-color:var(--primary);color:var(--bg);}
+
+.meia-body{padding:18px 16px 60px;max-width:820px;margin:0 auto;}
+.meia-section-title{
+  font-size:12px;font-weight:800;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px;
+}
+.meia-section-title.meia-mt{margin-top:26px;}
+.meia-section-desc{font-size:12.5px;color:var(--text-secondary);line-height:1.5;margin:-4px 0 16px;}
+.meia-empty{
+  text-align:center;padding:28px 16px;color:var(--text-muted);font-size:13px;
+  border:1.5px dashed var(--border);border-radius:var(--radius);
+}
+
+/* ── BOUTONS ── */
+.meia-btn{
+  height:40px;padding:0 16px;border-radius:var(--radius-sm);border:1.5px solid transparent;
+  font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;
+}
+.meia-btn-primary{background:var(--primary);color:var(--bg);}
+.meia-btn-outline{background:transparent;border-color:var(--border);color:var(--text);}
+.meia-btn-danger{background:var(--danger-light);border-color:var(--danger);color:var(--danger);}
+.meia-btn[disabled]{opacity:.45;cursor:not-allowed;}
+
+/* ── CARTE "DONNER UN ORDRE" ── */
+.meia-ordre-card{
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:16px;margin-bottom:26px;box-shadow:var(--shadow);
+}
+.meia-ordre-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.meia-ordre-avatar{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  background:var(--gold-light);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+}
+.meia-ordre-avatar svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.meia-ordre-title{font-size:14.5px;font-weight:800;}
+.meia-ordre-sub{font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4;}
+.meia-ordre-input{
+  width:100%;background:var(--bg);color:var(--text);
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px;font-family:var(--font);font-size:13.5px;line-height:1.5;resize:vertical;
+}
+.meia-ordre-input::placeholder{color:var(--text-muted);}
+.meia-ordre-btn{width:100%;margin-top:12px;}
+.meia-ordre-etat{
+  margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--text-secondary);
+  background:var(--primary-light);border-radius:var(--radius-sm);padding:10px 12px;
+}
+
+/* ── LISTE DES OBJECTIFS ── */
+.meia-objectifs-list{display:flex;flex-direction:column;gap:10px;}
+.meia-objectif-card{
+  width:100%;text-align:left;cursor:pointer;
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:14px;font-family:var(--font);color:var(--text);
+}
+.meia-objectif-card:hover{border-color:var(--text-muted);}
+.meia-objectif-top{display:flex;align-items:flex-start;gap:8px;justify-content:space-between;}
+.meia-objectif-libelle{font-size:13.5px;font-weight:700;line-height:1.4;flex:1;}
+.meia-objectif-bas{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.meia-objectif-date{font-size:10.5px;color:var(--text-muted);}
+.meia-objectif-avancement{font-size:10.5px;font-weight:700;color:var(--text-secondary);}
+
+/* ── BADGES DE STATUT ── */
+.meia-badge{
+  font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0;
+  text-transform:uppercase;letter-spacing:.03em;
+}
+.meia-badge.nouveau,.meia-badge.en_attente{background:var(--primary-light);color:var(--text-secondary);}
+.meia-badge.en_analyse,.meia-badge.prete{background:var(--info-light);color:var(--info);}
+.meia-badge.en_cours{background:var(--gold-light);color:var(--gold);}
+.meia-badge.attente_validation{background:var(--warning-light);color:var(--warning);}
+.meia-badge.termine,.meia-badge.terminee{background:var(--success-light);color:var(--success);}
+.meia-badge.echec,.meia-badge.bloquee{background:var(--danger-light);color:var(--danger);}
+.meia-badge.suspendu,.meia-badge.annulee{background:rgba(113,113,113,.15);color:var(--text-muted);}
+
+/* ── DÉTAIL D'UN OBJECTIF ── */
+.meia-detail-head{margin-bottom:16px;}
+.meia-detail-libelle{font-size:16px;font-weight:800;line-height:1.35;}
+.meia-detail-meta{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.meia-progress-wrap{margin-bottom:16px;}
+.meia-progress{height:6px;border-radius:999px;background:var(--border);overflow:hidden;}
+.meia-progress-bar{height:100%;width:0;background:var(--success);border-radius:999px;transition:width .4s ease;}
+.meia-progress-label{font-size:11px;color:var(--text-muted);margin-top:6px;font-weight:700;}
+.meia-rapport{
+  background:var(--success-light);border:1.5px solid rgba(16,185,129,.35);
+  border-radius:var(--radius);padding:14px;margin-bottom:18px;
+  font-size:13px;line-height:1.6;white-space:pre-wrap;
+}
+.meia-detail-actions{margin-bottom:24px;}
+.meia-detail-actions .meia-btn{width:100%;}
+
+/* ── MISSIONS ── */
+.meia-missions{display:flex;flex-direction:column;gap:10px;}
+.meia-mission{
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;
+}
+.meia-mission.is-active{border-color:var(--gold);}
+.meia-mission.is-attente{border-color:var(--warning);}
+.meia-mission-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.meia-mission-agent{
+  font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:6px;
+  background:var(--primary-light);color:var(--text);
+}
+.meia-mission-titre{font-size:13.5px;font-weight:700;margin-top:8px;line-height:1.4;}
+.meia-mission-instruction{font-size:12.5px;color:var(--text-secondary);line-height:1.5;margin-top:6px;}
+.meia-mission-resume{
+  font-size:12.5px;line-height:1.5;margin-top:10px;padding:10px 12px;
+  background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);
+}
+.meia-mission-attente{font-size:11.5px;color:var(--text-muted);margin-top:8px;font-weight:700;}
+.meia-mission-erreur{font-size:11.5px;color:var(--danger);margin-top:8px;line-height:1.4;}
+.meia-livrable{
+  margin-top:10px;font-size:12.5px;line-height:1.6;color:var(--text-secondary);
+  white-space:pre-wrap;max-height:220px;overflow-y:auto;
+  padding:10px 12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);
+}
+.meia-mission-actions{display:flex;gap:8px;margin-top:12px;}
+.meia-mission-actions .meia-btn{flex:1;height:36px;font-size:12.5px;}
+.meia-voir-plus{
+  background:none;border:none;color:var(--text-muted);font-family:var(--font);
+  font-size:11px;font-weight:700;cursor:pointer;padding:6px 0 0;text-decoration:underline;
+}
+
+/* ── FIL DE L'ÉQUIPE ── */
+.meia-fil{display:flex;flex-direction:column;gap:8px;}
+.meia-fil-item{
+  display:flex;gap:10px;padding:10px 12px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+}
+.meia-fil-agent{font-size:10.5px;font-weight:800;color:var(--gold);flex-shrink:0;width:88px;line-height:1.5;}
+.meia-fil-contenu{font-size:12.5px;line-height:1.5;color:var(--text-secondary);flex:1;}
+.meia-fil-date{font-size:10px;color:var(--text-muted);margin-top:4px;}
+
+/* ── ORGANIGRAMME ── */
+.meia-orga-dg{
+  background:var(--bg-card);border:1.5px solid var(--gold);border-radius:var(--radius);
+  padding:14px;margin-bottom:8px;box-shadow:var(--shadow);
+}
+.meia-orga-trait{width:1.5px;height:18px;background:var(--border);margin:0 auto;}
+.meia-orga-dept{margin-bottom:18px;}
+.meia-orga-dept-titre{
+  font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:.06em;margin:0 0 8px;
+}
+.meia-orga-agents{display:flex;flex-direction:column;gap:8px;}
+.meia-agent-card{
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;
+}
+.meia-agent-top{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.meia-agent-nom{font-size:13px;font-weight:700;}
+.meia-agent-mission{font-size:11.5px;color:var(--text-secondary);line-height:1.45;margin-top:6px;}
+.meia-agent-charge{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.meia-agent-stat{font-size:10.5px;font-weight:700;color:var(--text-muted);}
+.meia-agent-stat b{color:var(--text);}
+.meia-agent-valid{
+  font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;
+  background:var(--warning-light);color:var(--warning);flex-shrink:0;
+}
+
+/* ── MODALE ── */
+.meia-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;
+}
+.meia-modal-overlay.show{display:flex;}
+.meia-modal{
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:22px;max-width:400px;width:100%;box-shadow:var(--shadow);
+}
+.meia-modal-title{font-size:15px;font-weight:800;margin-bottom:10px;}
+.meia-modal-text{font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:14px;}
+.meia-modal-actions{display:flex;gap:8px;margin-top:14px;}
+.meia-modal-actions .meia-btn{flex:1;padding:0 10px;}
+
+/* ── TOAST ── */
+.meia-toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px 18px;font-size:13px;font-weight:700;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:1100;
+  max-width:calc(100vw - 32px);text-align:center;
+}
+.meia-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.meia-toast.success{border-color:var(--success);color:var(--success);}
+.meia-toast.error{border-color:var(--danger);color:var(--danger);}
+
+@media (min-width:700px){
+  .meia-orga-agents{flex-direction:row;flex-wrap:wrap;}
+  .meia-agent-card{flex:1 1 calc(50% - 4px);min-width:260px;}
+}
