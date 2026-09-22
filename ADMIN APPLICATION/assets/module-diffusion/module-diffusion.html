@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diffusion — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-diffusion.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mdif-topbar">
+    <button class="mdif-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mdif-topbar-title">Diffusion</span>
+  </div>
+
+  <div class="mdif-body">
+
+    <div class="mdif-columns">
+
+      <!-- Colonne gauche : formulaire d'envoi -->
+      <div class="mdif-col mdif-col-form">
+        <div class="mdif-section-title">Nouvelle diffusion</div>
+        <div class="mdif-section-desc">Envoie une notification à tous les comptes de la cible choisie. Elle apparaît immédiatement dans leur page Notifications.</div>
+
+        <form id="mdif-form" class="mdif-card">
+
+          <label class="mdif-label">Titre</label>
+          <input type="text" id="mdif-titre" class="mdif-input" placeholder="Ex : Maintenance prévue ce soir" maxlength="100" required>
+
+          <label class="mdif-label">Message <span class="mdif-optional">(optionnel)</span></label>
+          <textarea id="mdif-corps" class="mdif-textarea" placeholder="Détaille ton message ici..." maxlength="500" rows="4"></textarea>
+
+          <label class="mdif-label">Image <span class="mdif-optional">(optionnel — affichée en miniature dans la notification)</span></label>
+          <div class="mdif-upload-zone" id="mdif-upload-zone">
+            <input type="file" id="mdif-file-input" accept="image/*" hidden>
+            <div class="mdif-upload-empty" id="mdif-upload-empty">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><circle cx="7" cy="7" r=".01"/></svg>
+              <span>Toucher pour choisir une image</span>
+              <span class="mdif-upload-hint">JPG, PNG ou WEBP — 5 Mo max, optimisée automatiquement avant l'envoi</span>
+            </div>
+            <div class="mdif-upload-preview" id="mdif-upload-preview" style="display:none;">
+              <img id="mdif-preview-img">
+              <button type="button" class="mdif-preview-remove" id="mdif-preview-remove">Retirer</button>
+            </div>
+          </div>
+
+          <label class="mdif-label">Lien de destination <span class="mdif-optional">(optionnel — ouvert au clic sur la notification)</span></label>
+          <input type="url" id="mdif-lien" class="mdif-input" placeholder="https://...">
+
+          <label class="mdif-label">Diffuser vers</label>
+          <div class="mdif-cible-row" id="mdif-cible-row">
+            <button type="button" class="mdif-cible-btn" data-cible="client">Application client</button>
+            <button type="button" class="mdif-cible-btn" data-cible="vendeur">Application vendeur</button>
+            <button type="button" class="mdif-cible-btn active" data-cible="les_deux">Les deux</button>
+          </div>
+
+          <label class="mdif-label">Quand</label>
+          <div class="mdif-mode-row" id="mdif-mode-row">
+            <button type="button" class="mdif-mode-btn active" data-mode="maintenant">
+              <svg viewBox="0 0 24 24"><path d="M4 11v2a1 1 0 0 0 1 1h2l4 4V6L7 10H5a1 1 0 0 0-1 1z"/><path d="M16 8a5 5 0 0 1 0 8"/></svg>
+              Envoyer maintenant
+            </button>
+            <button type="button" class="mdif-mode-btn" data-mode="programmer">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              Programmer
+            </button>
+          </div>
+
+          <div class="mdif-schedule-zone" id="mdif-schedule-zone">
+            <label class="mdif-label" style="margin-top:0;">Date et heure d'envoi</label>
+            <div class="mdif-schedule-row">
+              <input type="datetime-local" id="mdif-schedule-datetime" class="mdif-input">
+            </div>
+          </div>
+
+          <button type="submit" class="mdif-btn mdif-btn-primary" id="mdif-submit-btn">Envoyer la diffusion</button>
+        </form>
+      </div>
+
+      <!-- Colonne droite : historique -->
+      <div class="mdif-col mdif-col-list">
+        <div class="mdif-section-title">Diffusions envoyées</div>
+        <div class="mdif-section-desc">Historique des annonces déjà diffusées, les plus récentes en premier.</div>
+
+        <div class="mdif-list" id="mdif-list">
+          <div class="mdif-empty" id="mdif-empty">Chargement…</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Modale de confirmation d'envoi -->
+  <div class="mdif-modal-overlay" id="mdif-confirm-overlay">
+    <div class="mdif-modal">
+      <div class="mdif-modal-title">Confirmer la diffusion</div>
+      <div class="mdif-modal-text" id="mdif-confirm-text"></div>
+      <div class="mdif-modal-actions">
+        <button type="button" class="mdif-btn mdif-btn-outline" id="mdif-confirm-cancel">Annuler</button>
+        <button type="button" class="mdif-btn mdif-btn-primary" id="mdif-confirm-ok">Confirmer l'envoi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="mdif-toast" id="mdif-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-diffusion.js"></script>
+</body>
+</html>

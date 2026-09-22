@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatisation — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-automatisation.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="maut-topbar">
+    <button class="maut-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="maut-topbar-title">Automatisation</span>
+    <span class="maut-topbar-state" id="maut-topbar-state">
+      <span class="maut-dot"></span><span id="maut-topbar-state-label">Chargement…</span>
+    </span>
+  </div>
+
+  <!-- Onglets de vue -->
+  <div class="maut-tabs" id="maut-tabs">
+    <button type="button" class="maut-tab active" data-tab="reseau">Réseau</button>
+    <button type="button" class="maut-tab" data-tab="journal">Journal</button>
+  </div>
+
+  <!-- ══════════════ VUE RÉSEAU ══════════════ -->
+  <div class="maut-view" id="maut-view-reseau">
+
+    <!-- Recherche : filtre directement les nœuds du réseau ci-dessous -->
+    <div class="maut-modules-section">
+      <div class="maut-modules-search-wrap">
+        <svg class="maut-modules-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" class="maut-modules-search" id="maut-modules-search" placeholder="Rechercher un module…" autocomplete="off">
+        <button type="button" class="maut-modules-search-clear" id="maut-modules-search-clear" aria-label="Effacer" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="maut-section-title maut-network-title">Réseau d'automatisation</div>
+    <div class="maut-network" id="maut-network">
+      <div class="maut-empty" id="maut-network-loading">Chargement du réseau…</div>
+    </div>
+    <div class="maut-empty" id="maut-network-empty-search" style="display:none;">Aucun module ne correspond à cette recherche.</div>
+
+  </div>
+
+  <!-- ══════════════ VUE JOURNAL ══════════════ -->
+  <div class="maut-view" id="maut-view-journal" style="display:none;">
+    <div class="maut-body">
+      <div class="maut-section-title">Journal des décisions</div>
+      <div class="maut-section-desc">Historique des décisions prises par l'IA, y compris celles simplement journalisées. Une décision automatique appliquée peut être annulée à tout moment.</div>
+
+      <div class="maut-logs-filter" id="maut-logs-filter"></div>
+
+      <div class="maut-logs-list" id="maut-logs-list">
+        <div class="maut-empty" id="maut-logs-loading">Chargement…</div>
+      </div>
+
+      <button type="button" class="maut-btn maut-btn-outline maut-loadmore" id="maut-logs-loadmore" style="display:none;">Charger plus</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ PANNEAU LATÉRAL DE CONFIGURATION ══════════════ -->
+  <div class="maut-panel-overlay" id="maut-panel-overlay">
+    <div class="maut-panel" id="maut-panel">
+      <div class="maut-panel-head">
+        <div class="maut-panel-icon" id="maut-panel-icon"></div>
+        <div class="maut-panel-titlewrap">
+          <div class="maut-panel-title" id="maut-panel-title"></div>
+          <div class="maut-panel-desc" id="maut-panel-desc"></div>
+        </div>
+        <button type="button" class="maut-panel-close" id="maut-panel-close" aria-label="Fermer">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="maut-panel-body">
+
+        <div class="maut-toggle-row">
+          <div>
+            <div class="maut-toggle-label">Actif</div>
+            <div class="maut-toggle-hint">Le cron traite les éléments en attente toutes les 30 min</div>
+          </div>
+          <button type="button" class="maut-switch" id="maut-panel-toggle-actif" data-action="toggle-actif" aria-label="Activer"></button>
+        </div>
+
+        <div class="maut-toggle-row">
+          <div>
+            <div class="maut-toggle-label">Validation automatique</div>
+            <div class="maut-toggle-hint">Sinon l'IA journalise seulement, sans jamais appliquer de décision</div>
+          </div>
+          <button type="button" class="maut-switch gold" id="maut-panel-toggle-valauto" data-action="toggle-valauto" aria-label="Validation automatique"></button>
+        </div>
+
+        <div class="maut-slider-row">
+          <div class="maut-slider-head">
+            <span class="maut-toggle-label">Seuil de confiance</span>
+            <span class="maut-slider-value" id="maut-panel-seuil-value">—</span>
+          </div>
+          <input type="range" class="maut-slider" id="maut-panel-seuil" min="50" max="99" step="1" value="85" data-action="seuil">
+        </div>
+
+        <div class="maut-panel-stats" id="maut-panel-stats">
+          <div class="maut-panel-stat">
+            <span class="maut-panel-stat-value" id="maut-panel-stat-exec">—</span>
+            <span class="maut-panel-stat-label">Exécutions aujourd'hui</span>
+          </div>
+          <div class="maut-panel-stat">
+            <span class="maut-panel-stat-value" id="maut-panel-stat-attente">—</span>
+            <span class="maut-panel-stat-label">Décisions en attente</span>
+          </div>
+        </div>
+
+        <div class="maut-panel-lastrun" id="maut-panel-lastrun"></div>
+
+        <div class="maut-card-actions">
+          <button type="button" class="maut-btn maut-btn-outline" id="maut-panel-run" data-action="run">Lancer maintenant</button>
+        </div>
+
+        <button type="button" class="maut-panel-link" id="maut-panel-journal-link">Voir le journal de ce module →</button>
+
+        <div class="maut-panel-deconnect-row" id="maut-panel-deconnect-row" style="display:none;">
+          <button type="button" class="maut-btn maut-btn-danger" id="maut-panel-deconnect">Déconnecter ce module du noyau</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale confirmation "Lancer maintenant" -->
+  <div class="maut-modal-overlay" id="maut-run-overlay">
+    <div class="maut-modal">
+      <div class="maut-modal-title">Lancer le traitement</div>
+      <div class="maut-modal-text" id="maut-run-text"></div>
+      <div class="maut-modal-actions">
+        <button type="button" class="maut-btn maut-btn-outline" id="maut-run-cancel">Annuler</button>
+        <button type="button" class="maut-btn maut-btn-primary" id="maut-run-ok">Lancer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale confirmation activation validation_auto -->
+  <div class="maut-modal-overlay" id="maut-valauto-overlay">
+    <div class="maut-modal">
+      <div class="maut-modal-title">Activer la validation automatique ?</div>
+      <div class="maut-modal-text" id="maut-valauto-text">À partir de ce seuil de confiance, l'IA appliquera elle-même ses décisions (sans attendre un admin). Toute décision reste annulable dans le journal.</div>
+      <div class="maut-modal-actions">
+        <button type="button" class="maut-btn maut-btn-outline" id="maut-valauto-cancel">Annuler</button>
+        <button type="button" class="maut-btn maut-btn-primary" id="maut-valauto-ok">Activer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale annulation d'une décision -->
+  <div class="maut-modal-overlay" id="maut-annuler-overlay">
+    <div class="maut-modal">
+      <div class="maut-modal-title">Annuler cette décision</div>
+      <div class="maut-modal-text" id="maut-annuler-text"></div>
+      <div class="maut-modal-actions">
+        <button type="button" class="maut-btn maut-btn-outline" id="maut-annuler-cancel">Retour</button>
+        <button type="button" class="maut-btn maut-btn-danger" id="maut-annuler-ok">Annuler la décision</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="maut-toast" id="maut-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-automatisation.js"></script>
+</body>
+</html>

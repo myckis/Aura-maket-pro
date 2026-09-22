@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contenus — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-contenus.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mcnt-topbar">
+    <button class="mcnt-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mcnt-topbar-title">Contenus</span>
+  </div>
+
+  <div class="mcnt-body">
+
+    <!-- SWITCH D'ONGLETS -->
+    <div class="mcnt-tabswitch">
+      <a href="../module-marketing/module-marketing.html">Marketing</a>
+      <a href="module-contenus.html" class="active">Contenus</a>
+    </div>
+
+    <div class="mcnt-columns">
+
+      <!-- Colonne gauche : wizard -->
+      <div class="mcnt-col mcnt-col-form">
+
+        <!-- STEPPER -->
+        <div class="mcnt-stepper" id="mcnt-stepper">
+          <div class="mcnt-step active" data-step="1"><span class="mcnt-step-num">1</span><span class="mcnt-step-label" id="mcnt-step1-label">Personnages</span></div>
+          <div class="mcnt-step-line"></div>
+          <div class="mcnt-step" data-step="2"><span class="mcnt-step-num">2</span><span class="mcnt-step-label">Histoire</span></div>
+          <div class="mcnt-step-line"></div>
+          <div class="mcnt-step" data-step="3"><span class="mcnt-step-num">3</span><span class="mcnt-step-label">Scénario</span></div>
+          <div class="mcnt-step-line"></div>
+          <div class="mcnt-step" data-step="4"><span class="mcnt-step-num">4</span><span class="mcnt-step-label">Vidéo</span></div>
+        </div>
+
+        <form id="mcnt-form" class="mcnt-card">
+
+          <!-- ═══ ÉTAPE 1 : PERSONNAGES (ou choix du mode si Pub 2D) ═══ -->
+          <div class="mcnt-panel active" data-panel="1">
+
+            <!-- Sous-mode : Histoire narrée (personnages) vs Pub 2D (motion design) -->
+            <div class="mcnt-mode-switch" id="mcnt-mode-switch">
+              <button type="button" class="mcnt-mode-btn active" data-mode="histoire">
+                <span class="mcnt-mode-btn-title">Histoire narrée</span>
+                <span class="mcnt-mode-btn-sub">Personnages + voix off</span>
+              </button>
+              <button type="button" class="mcnt-mode-btn" data-mode="pub2d">
+                <span class="mcnt-mode-btn-title">Publicité Vidéo</span>
+                <span class="mcnt-mode-btn-sub">Spot IA premium</span>
+              </button>
+              <button type="button" class="mcnt-mode-btn" data-mode="realiste">
+                <span class="mcnt-mode-btn-title">Histoire réaliste</span>
+                <span class="mcnt-mode-btn-sub">Personnages + récit libre</span>
+              </button>
+            </div>
+
+            <div id="mcnt-subpanel1-histoire" class="mcnt-subpanel active">
+              <div class="mcnt-panel-title">Qui joue dans l'histoire ?</div>
+              <div class="mcnt-panel-desc">Choisis un ou plusieurs personnages. L'ordre de sélection donne l'ordre d'apparition dans le scénario.</div>
+
+              <div class="mcnt-perso-grid" id="mcnt-perso-grid">
+                <div class="mmkt-empty-inline">Chargement des personnages…</div>
+              </div>
+              <div class="mcnt-perso-count-hint" id="mcnt-perso-count-hint"></div>
+            </div>
+
+            <div id="mcnt-subpanel1-pub2d" class="mcnt-subpanel">
+              <div class="mcnt-panel-title">Que veux-tu promouvoir ?</div>
+              <div class="mcnt-panel-desc">Choisis la cible du spot. L'IA rédigera automatiquement un script publicitaire professionnel adapté à l'étape suivante.</div>
+
+              <div class="mcnt-cible-grid" id="mcnt-pub-cible-grid">
+                <button type="button" class="mcnt-cible-card active" data-cible="client">
+                  <span class="mcnt-cible-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+                  </span>
+                  <span class="mcnt-cible-card-name">Application Client</span>
+                  <span class="mcnt-cible-card-desc">Faire télécharger l'app aux acheteurs</span>
+                </button>
+                <button type="button" class="mcnt-cible-card" data-cible="vendeur">
+                  <span class="mcnt-cible-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 13h6"/></svg>
+                  </span>
+                  <span class="mcnt-cible-card-name">Application Vendeur</span>
+                  <span class="mcnt-cible-card-desc">Attirer les commerçants sur la plateforme</span>
+                </button>
+                <button type="button" class="mcnt-cible-card" data-cible="plateforme">
+                  <span class="mcnt-cible-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+                  </span>
+                  <span class="mcnt-cible-card-name">Aura Market</span>
+                  <span class="mcnt-cible-card-desc">La plateforme dans son ensemble</span>
+                </button>
+              </div>
+
+              <div class="mcnt-ia-info-tag" style="margin-top:16px;">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                À l'étape suivante tu choisiras le style visuel, puis l'IA écrira le spot. Tu pourras aussi cibler un produit précis de la boutique.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ═══ MODAL : NOUVEAU PERSONNAGE (IA) ═══ -->
+          <div class="mcnt-perso-form-modal" id="mcnt-perso-form-modal">
+            <div class="mcnt-perso-form-sheet">
+              <div class="mcnt-perso-form-head">
+                <div class="mcnt-perso-form-title">Nouveau personnage</div>
+                <button type="button" class="mcnt-perso-form-close" onclick="fermerFormNouveauPersonnage()">
+                  <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+
+              <div class="mcnt-perso-source-switch" id="mcnt-perso-source-switch">
+                <button type="button" class="mcnt-perso-source-btn active" data-source="description">Par description</button>
+                <button type="button" class="mcnt-perso-source-btn" data-source="photo">Par photo</button>
+              </div>
+
+              <!-- Sous-mode : à partir d'une description texte (existant) -->
+              <div id="mcnt-perso-source-panel-description">
+                <label class="mcnt-label">Nom du personnage</label>
+                <input type="text" id="mcnt-perso-form-nom" class="mcnt-input" placeholder="Ex : Vendeuse (souriante)" maxlength="60">
+
+                <label class="mcnt-label" style="margin-top:12px;">Genre</label>
+                <div class="mcnt-perso-form-genres" id="mcnt-perso-form-genres-description"></div>
+
+                <label class="mcnt-label" style="margin-top:12px;">Description <span class="mcnt-optional">(apparence, tenue, âge...)</span></label>
+                <textarea id="mcnt-perso-form-desc" class="mcnt-textarea" placeholder="Ex : une jeune femme souriante, tresses courtes, chemise jaune, tenant un téléphone" maxlength="300" rows="3"></textarea>
+              </div>
+
+              <!-- Sous-mode : à partir d'une photo réelle -->
+              <div id="mcnt-perso-source-panel-photo" style="display:none;">
+                <label class="mcnt-label">Photo de la personne</label>
+                <input type="file" id="mcnt-perso-form-photo-input" accept="image/*" style="display:none;">
+                <div class="mcnt-perso-photo-drop" id="mcnt-perso-photo-drop">
+                  <div class="mcnt-perso-photo-drop-empty" id="mcnt-perso-photo-drop-empty">
+                    <svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Choisir une photo</span>
+                  </div>
+                  <img id="mcnt-perso-photo-drop-img" style="display:none;">
+                </div>
+
+                <label class="mcnt-label" style="margin-top:12px;">Nom du personnage</label>
+                <input type="text" id="mcnt-perso-form-nom-photo" class="mcnt-input" placeholder="Ex : Vendeuse (souriante)" maxlength="60">
+
+                <label class="mcnt-label" style="margin-top:12px;">Genre</label>
+                <div class="mcnt-perso-form-genres" id="mcnt-perso-form-genres-photo"></div>
+              </div>
+
+              <label class="mcnt-label" style="margin-top:12px;">Style visuel</label>
+              <div class="mcnt-perso-form-styles" id="mcnt-perso-form-styles"></div>
+
+              <div class="mcnt-perso-form-apercu" id="mcnt-perso-form-apercu"></div>
+
+              <div class="mcnt-perso-form-actions">
+                <button type="button" class="mcnt-btn mcnt-btn-outline" onclick="genererApercuPersonnage()">Générer l'aperçu</button>
+                <button type="button" class="mcnt-btn mcnt-btn-primary" id="mcnt-perso-form-save-btn" onclick="sauvegarderNouveauPersonnage()">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ ÉTAPE 2 : L'HISTOIRE ═══ -->
+          <div class="mcnt-panel" data-panel="2">
+
+            <!-- ── Sous-panel : Histoire narrée (contenu existant, inchangé) ── -->
+            <div id="mcnt-subpanel-histoire" class="mcnt-subpanel active">
+              <div class="mcnt-panel-title" id="mcnt-histoire-panel-title">Quelle histoire veux-tu raconter ?</div>
+              <div class="mcnt-panel-desc" id="mcnt-histoire-panel-desc">Décris la situation, l'IA écrit le scénario scène par scène pour chaque personnage choisi.</div>
+
+              <!-- Source du texte — visible uniquement en mode "Histoire réaliste" :
+                   soit l'IA rédige à partir d'un prompt court (comme le mode narré),
+                   soit l'utilisateur colle directement le texte complet de son récit,
+                   que l'IA se contente alors de découper en scènes. -->
+              <div class="mcnt-cible-row" id="mcnt-realiste-source-switch" style="display:none; margin-bottom:14px;">
+                <button type="button" class="mcnt-cible-btn active" data-source-histoire="prompt">L'IA écrit l'histoire</button>
+                <button type="button" class="mcnt-cible-btn" data-source-histoire="colle">Je colle mon texte</button>
+              </div>
+
+              <div id="mcnt-histoire-bloc-prompt">
+                <label class="mcnt-label">Décris la situation <span class="mcnt-optional">(contexte, objectif, chute...)</span></label>
+                <textarea id="mcnt-prompt" class="mcnt-textarea" placeholder="Ex : Un vendeur galère à vendre ses produits, jusqu'à ce qu'il découvre Aura Market Pro et voit ses ventes exploser" maxlength="500" rows="4"></textarea>
+              </div>
+
+              <div id="mcnt-histoire-bloc-colle" style="display:none;">
+                <label class="mcnt-label">Colle ton histoire <span class="mcnt-optional">(texte complet)</span></label>
+                <textarea id="mcnt-texte-colle" class="mcnt-textarea" placeholder="Colle ici le texte complet de ton histoire. L'IA la découpera en scènes, sans rien ajouter sur Aura Market." maxlength="6000" rows="8"></textarea>
+              </div>
+
+              <label class="mcnt-label">Ambiance</label>
+              <div class="mcnt-chip-row" id="mcnt-ton-chips">
+                <button type="button" class="mcnt-chip active" data-ton="humoristique">Humoristique</button>
+                <button type="button" class="mcnt-chip" data-ton="inspirant">Inspirant</button>
+                <button type="button" class="mcnt-chip" data-ton="dramatique">Dramatique (avant/après)</button>
+                <button type="button" class="mcnt-chip" data-ton="dynamique">Dynamique</button>
+                <button type="button" class="mcnt-chip" data-ton="mara">Mara — cinématique</button>
+              </div>
+
+              <label class="mcnt-label">Musique de fond</label>
+              <div class="mcnt-chip-row" id="mcnt-musique-histoire-chips">
+                <button type="button" class="mcnt-chip active" data-musique="auto">Auto (selon l'ambiance)</button>
+                <button type="button" class="mcnt-chip" data-musique="humoristique">Humoristique</button>
+                <button type="button" class="mcnt-chip" data-musique="inspirant">Inspirant</button>
+                <button type="button" class="mcnt-chip" data-musique="dramatique">Dramatique</button>
+                <button type="button" class="mcnt-chip" data-musique="dynamique">Dynamique</button>
+                <button type="button" class="mcnt-chip" data-musique="mara">Mara — cinématique</button>
+              </div>
+              <p class="mcnt-nbscenes-auto-tag">La musique et les petits effets sonores (SFX) sont ajoutés automatiquement au montage selon l'ambiance et le contenu de chaque scène.</p>
+
+              <label class="mcnt-label">Nombre de scènes</label>
+              <div class="mcnt-nbscenes-row" id="mcnt-nbscenes-row">
+                <button type="button" class="mcnt-nbscenes-btn active" data-nb="auto">Auto<small>l'IA décide</small></button>
+                <button type="button" class="mcnt-nbscenes-btn" data-nb="2">2</button>
+                <button type="button" class="mcnt-nbscenes-btn" data-nb="3">3</button>
+                <button type="button" class="mcnt-nbscenes-btn" data-nb="4">4</button>
+                <button type="button" class="mcnt-nbscenes-btn" data-nb="6">6</button>
+              </div>
+              <div class="mcnt-nbscenes-auto-tag">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                L'IA propose un découpage, tu pourras l'ajuster à l'étape suivante.
+              </div>
+            </div><!-- /subpanel histoire -->
+
+            <!-- ── Sous-panel : Pub 2D (nouveau) ── -->
+            <div id="mcnt-subpanel-pub2d" class="mcnt-subpanel">
+              <div class="mcnt-panel-title">Quelle pub veux-tu créer ?</div>
+              <div class="mcnt-panel-desc">Choisis un style, une source de contenu, l'IA rédige les textes adaptés au template.</div>
+
+              <label class="mcnt-label">Style de vidéo</label>
+              <div class="mcnt-pub2d-template-grid" id="mcnt-pub2d-template-grid"></div>
+
+              <!-- Bloc dédié au template D : upload des clips + musique. Masqué
+                   pour les templates A/B/C qui n'en ont pas besoin. -->
+              <div id="mcnt-pub2d-clips-bloc" style="display:none;">
+                <label class="mcnt-label">Ajouter des vidéos <span class="mcnt-optional">(optionnel — sinon montage à partir des images produits)</span></label>
+                <div class="mcnt-pub2d-clips-list" id="mcnt-pub2d-clips-list"></div>
+                <label for="mcnt-pub2d-clips-input" class="mcnt-pub2d-clips-add-btn">
+                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                  Ajouter des vidéos
+                </label>
+                <input type="file" id="mcnt-pub2d-clips-input" accept="video/*" multiple style="display:none;">
+
+                <label class="mcnt-label" style="margin-top:16px;">Musique de fond</label>
+                <div class="mcnt-pub2d-musique-row" id="mcnt-pub2d-musique-row">
+                  <button type="button" class="mcnt-pub2d-musique-btn active" data-musique="energique">Énergique</button>
+                  <button type="button" class="mcnt-pub2d-musique-btn" data-musique="fun">Fun & léger</button>
+                  <button type="button" class="mcnt-pub2d-musique-btn" data-musique="urbain">Urbain</button>
+                  <button type="button" class="mcnt-pub2d-musique-btn" data-musique="perso">Ma musique</button>
+                </div>
+                <input type="file" id="mcnt-pub2d-musique-input" accept="audio/*" style="display:none;">
+                <div class="mcnt-pub2d-musique-perso-info" id="mcnt-pub2d-musique-perso-info" style="display:none;"></div>
+              </div>
+
+              <label class="mcnt-label">Source du contenu</label>
+              <div class="mcnt-cible-row">
+                <button type="button" class="mcnt-cible-btn active" data-source="produit">Produit de la boutique</button>
+                <button type="button" class="mcnt-cible-btn" data-source="libre">Prompt libre</button>
+              </div>
+
+              <!-- Source : produit réel (recherche live) -->
+              <div id="mcnt-pub2d-source-produit" class="mcnt-pub2d-source-block">
+                <label class="mcnt-label">Rechercher un produit <span class="mcnt-optional">(nom, boutique...)</span></label>
+                <input type="text" id="mcnt-pub2d-produit-search" class="mcnt-input" placeholder="Ex : robe, téléphone, chaussures...">
+                <div class="mcnt-pub2d-produit-results" id="mcnt-pub2d-produit-results"></div>
+                <div class="mcnt-pub2d-produit-selected" id="mcnt-pub2d-produit-selected" style="display:none;"></div>
+              </div>
+
+              <!-- Source : prompt libre / générique -->
+              <div id="mcnt-pub2d-source-libre" class="mcnt-pub2d-source-block" style="display:none;">
+                <label class="mcnt-label">Décris ce que tu veux promouvoir</label>
+                <textarea id="mcnt-pub2d-prompt-libre" class="mcnt-textarea" placeholder="Ex : Application Aura Market, livraison rapide dans toute la ville, des milliers de produits à portée de main" maxlength="400" rows="4"></textarea>
+                <button type="button" class="mcnt-btn mcnt-btn-outline mcnt-pub2d-ia-write-btn" id="mcnt-pub2d-ia-write-btn">
+                  <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                  <span id="mcnt-pub2d-ia-write-label">Laisser l'IA écrire le spot</span>
+                </button>
+              </div>
+
+              <label class="mcnt-label">Ton de l'accroche</label>
+              <div class="mcnt-chip-row" id="mcnt-pub2d-ton-chips">
+                <button type="button" class="mcnt-chip active" data-ton="dynamique">Dynamique</button>
+                <button type="button" class="mcnt-chip" data-ton="premium">Premium</button>
+                <button type="button" class="mcnt-chip" data-ton="urgence">Urgence (promo)</button>
+                <button type="button" class="mcnt-chip" data-ton="rassurant">Rassurant</button>
+              </div>
+            </div><!-- /subpanel pub2d -->
+
+          </div>
+
+          <!-- ═══ ÉTAPE 3 : SCÉNARIO GÉNÉRÉ ═══ -->
+          <div class="mcnt-panel" data-panel="3">
+
+            <!-- ── Sous-panel : scénario du mode Histoire narrée (inchangé) ── -->
+            <div id="mcnt-subpanel3-histoire" class="mcnt-subpanel active">
+              <div class="mcnt-panel-title">Le scénario</div>
+              <div class="mcnt-panel-desc">Relis, modifie ou supprime des scènes avant de lancer la génération des images.</div>
+
+              <div id="mcnt-scenario-loading" class="mcnt-scenario-loading" style="display:none;">
+                <div class="mcnt-spinner"></div>
+                <span>L'IA écrit le scénario…</span>
+              </div>
+
+              <div class="mcnt-scene-list" id="mcnt-scene-list"></div>
+
+              <button type="button" class="mcnt-scene-add-btn" id="mcnt-scene-add-btn" style="margin-top:10px;">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Ajouter une scène
+              </button>
+
+              <div class="mcnt-ia-info-tag">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                Chaque scène sera illustrée par une image générée par IA (format vertical, prête pour Story/Reel).
+              </div>
+            </div><!-- /subpanel3 histoire -->
+
+            <!-- ── Sous-panel : textes générés du mode Pub 2D (nouveau) ── -->
+            <div id="mcnt-subpanel3-pub2d" class="mcnt-subpanel">
+              <div class="mcnt-panel-title">Les textes de la pub</div>
+              <div class="mcnt-panel-desc">Relis ou modifie les textes générés avant de lancer le rendu de la vidéo.</div>
+
+              <div id="mcnt-pub2d-texte-loading" class="mcnt-scenario-loading" style="display:none;">
+                <div class="mcnt-spinner"></div>
+                <span>L'IA rédige l'accroche…</span>
+              </div>
+
+              <div id="mcnt-pub2d-texte-fields"></div>
+
+              <div class="mcnt-ia-info-tag">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                Le rendu final est généré directement dans l'app (aucune image IA nécessaire pour ce mode).
+              </div>
+            </div><!-- /subpanel3 pub2d -->
+
+          </div><!-- /panel 3 -->
+
+          <!-- ═══ ÉTAPE 4 : VIDÉO (voix + montage / rendu pub2d) ═══ -->
+          <div class="mcnt-panel" data-panel="4">
+            <div class="mcnt-panel-title" id="mcnt-panel4-title">Voix et vidéo finale</div>
+            <div class="mcnt-panel-desc" id="mcnt-panel4-desc">Génère la narration audio de chaque scène, puis compile automatiquement la vidéo finale (image + voix) prête à publier.</div>
+
+            <div class="mcnt-video-status" id="mcnt-video-status">
+              <div class="mcnt-empty">Génère d'abord le storyboard (étape précédente), puis reviens ici pour créer la vidéo.</div>
+            </div>
+
+            <div class="mcnt-video-progress" id="mcnt-video-progress" style="display:none;">
+              <div class="mcnt-video-progress-label" id="mcnt-video-progress-label">Préparation…</div>
+              <div class="mcnt-video-progress-bar"><div class="mcnt-video-progress-fill" id="mcnt-video-progress-fill"></div></div>
+            </div>
+
+            <video id="mcnt-video-preview" style="display:none;" controls playsinline></video>
+
+            <canvas id="mcnt-video-canvas" width="720" height="1280" style="display:none;"></canvas>
+            <canvas id="mcnt-pub2d-canvas" width="720" height="1280" style="display:none;"></canvas>
+
+            <div class="mcnt-video-actions">
+              <button type="button" class="mcnt-btn mcnt-btn-primary" id="mcnt-video-generate-btn">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                <span id="mcnt-video-generate-btn-label">Générer la vidéo</span>
+              </button>
+              <button type="button" class="mcnt-btn mcnt-btn-outline" id="mcnt-video-download-btn" style="display:none;">Télécharger la vidéo</button>
+            </div>
+
+            <!-- ── Légende IA + hashtags (générée après la vidéo) ── -->
+            <div class="mcnt-caption-block" id="mcnt-caption-block" style="display:none;">
+              <div class="mcnt-caption-head">
+                <span class="mcnt-caption-title">Légende pour publication</span>
+                <button type="button" class="mcnt-caption-regen" id="mcnt-caption-regen-btn" title="Régénérer la légende">
+                  <svg viewBox="0 0 24 24"><path d="M21 2v6h-6M3 22v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L21 8M3 16l2.64 2.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+              </div>
+
+              <div class="mcnt-caption-loading" id="mcnt-caption-loading" style="display:none;">
+                <div class="mcnt-spinner"></div>
+                <span>L'IA rédige ta légende…</span>
+              </div>
+
+              <textarea class="mcnt-caption-textarea" id="mcnt-caption-textarea" rows="4" placeholder="La légende générée par l'IA apparaîtra ici…"></textarea>
+
+              <div class="mcnt-caption-hashtags" id="mcnt-caption-hashtags"></div>
+
+              <button type="button" class="mcnt-btn mcnt-btn-outline mcnt-caption-copy-btn" id="mcnt-caption-copy-btn">
+                <svg viewBox="0 0 24 24"><path d="M9 9h10v10H9zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+                Copier la légende + hashtags
+              </button>
+            </div>
+
+            <!-- ── Partage direct sur les réseaux ── -->
+            <div class="mcnt-share-block" id="mcnt-share-block" style="display:none;">
+              <div class="mcnt-caption-title" style="margin-bottom:10px;">Publier maintenant</div>
+
+              <button type="button" class="mcnt-btn mcnt-btn-primary mcnt-share-native-btn" id="mcnt-share-native-btn">
+                <svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+                Partager la vidéo
+              </button>
+
+              <div class="mcnt-share-grid">
+                <button type="button" class="mcnt-share-chip" id="mcnt-share-whatsapp" data-network="whatsapp">
+                  <span class="mcnt-share-chip-icon wa">W</span> WhatsApp
+                </button>
+                <button type="button" class="mcnt-share-chip" id="mcnt-share-facebook" data-network="facebook">
+                  <span class="mcnt-share-chip-icon fb">f</span> Facebook
+                </button>
+                <button type="button" class="mcnt-share-chip" id="mcnt-share-tiktok" data-network="tiktok">
+                  <span class="mcnt-share-chip-icon tk">T</span> TikTok
+                </button>
+                <button type="button" class="mcnt-share-chip" id="mcnt-share-linkedin" data-network="linkedin">
+                  <span class="mcnt-share-chip-icon li">in</span> LinkedIn
+                </button>
+              </div>
+
+              <div class="mcnt-ia-info-tag" id="mcnt-share-hint">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                « Partager la vidéo » ouvre le sélecteur de ton téléphone avec la vidéo déjà jointe. Pour TikTok/Facebook, si la vidéo n'apparaît pas jointe, télécharge-la d'abord (bouton ci-dessus) puis choisis l'app depuis ta galerie.
+              </div>
+            </div>
+          </div>
+
+          <!-- NAVIGATION -->
+          <div class="mcnt-wizard-nav">
+            <button type="button" class="mcnt-btn mcnt-btn-outline" id="mcnt-prev-btn" style="display:none;">Précédent</button>
+            <button type="button" class="mcnt-btn mcnt-btn-primary" id="mcnt-next-btn">Suivant</button>
+            <button type="submit" class="mcnt-btn mcnt-btn-primary" id="mcnt-submit-btn" style="display:none;">
+              <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+              <span id="mcnt-submit-btn-label">Générer le storyboard</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Colonne droite : résultat + historique -->
+      <div class="mcnt-col mcnt-col-list">
+
+        <div id="mcnt-result-wrap" style="display:none;">
+          <div class="mcnt-section-title">Storyboard</div>
+          <div class="mcnt-section-desc">Chaque scène en image, prête à publier dans l'ordre.</div>
+
+          <div class="mcnt-card mcnt-result-card" id="mcnt-result-card">
+            <canvas id="mcnt-canvas" width="1080" height="1920" style="display:none;"></canvas>
+
+            <div class="mcnt-storyboard" id="mcnt-storyboard"></div>
+
+            <div class="mcnt-result-actions">
+              <button type="button" class="mcnt-btn mcnt-btn-outline" id="mcnt-download-all-btn">Télécharger toutes les images</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mcnt-section-title" style="margin-top:24px;">Historique</div>
+        <div class="mcnt-section-desc">Tes histoires générées précédemment.</div>
+
+        <div class="mcnt-list" id="mcnt-list">
+          <div class="mcnt-empty" id="mcnt-empty">Chargement…</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="mcnt-toast" id="mcnt-toast"></div>
+
+  <!-- Modal universel de confirmation -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirmTitle">Confirmation</div>
+      <div class="confirm-msg" id="confirmMsg"></div>
+      <div class="confirm-actions">
+        <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">Annuler</button>
+        <button class="confirm-btn confirm-btn-ok" id="confirmOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-contenus.js"></script>
+</body>
+</html>

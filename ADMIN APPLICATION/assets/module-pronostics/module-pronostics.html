@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronostics — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-pronostics.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mpro-topbar">
+    <button class="mpro-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mpro-topbar-title">Pronostics</span>
+    <span class="mpro-topbar-state" id="mpro-topbar-state">
+      <span class="mpro-dot"></span><span id="mpro-topbar-state-label">Chargement…</span>
+    </span>
+  </div>
+
+  <div class="mpro-body">
+
+    <div class="mpro-section-head">
+      <div>
+        <div class="mpro-section-title">Matchs</div>
+        <div class="mpro-section-desc">Sélectionne un match pour lancer une analyse multi-IA, ou ajoute-en un nouveau.</div>
+      </div>
+      <button type="button" class="mpro-btn mpro-btn-primary mpro-btn-add" id="mpro-btn-nouveau">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Nouveau match
+      </button>
+    </div>
+
+    <button type="button" class="mpro-btn mpro-btn-outline mpro-btn-block mpro-btn-generer" id="mpro-btn-generer">
+      <svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      Générer les matchs du jour
+    </button>
+    <div class="mpro-progress-wrap" id="mpro-progress-wrap" style="display:none;">
+      <div class="mpro-progress-bar"><div class="mpro-progress-fill" id="mpro-progress-fill"></div></div>
+      <div class="mpro-progress-label" id="mpro-progress-label"></div>
+    </div>
+
+    <div class="mpro-combine-card" id="mpro-combine-card" style="display:none;"></div>
+
+    <div class="mpro-filters" id="mpro-filters">
+      <button type="button" class="mpro-filter active" data-statut="">Tous</button>
+      <button type="button" class="mpro-filter" data-statut="en_attente">En attente</button>
+      <button type="button" class="mpro-filter" data-statut="analyse">En cours</button>
+      <button type="button" class="mpro-filter" data-statut="termine">Terminés</button>
+    </div>
+
+    <div class="mpro-list" id="mpro-list">
+      <div class="mpro-empty" id="mpro-loading">Chargement des matchs…</div>
+    </div>
+    <div class="mpro-empty" id="mpro-empty" style="display:none;">Aucun match pour l'instant. Ajoute ton premier match à analyser.</div>
+
+  </div>
+
+  <!-- ══════════════ MODALE NOUVEAU MATCH ══════════════ -->
+  <div class="mpro-modal-overlay" id="mpro-nouveau-overlay">
+    <div class="mpro-modal mpro-modal-lg">
+      <div class="mpro-modal-title">Nouveau match à analyser</div>
+
+      <div class="mpro-form-row mpro-form-row-2">
+        <div class="mpro-form-field">
+          <label class="mpro-label">Équipe à domicile *</label>
+          <input type="text" class="mpro-input" id="mpro-f-domicile" placeholder="Ex : ASEC Mimosas" autocomplete="off">
+        </div>
+        <div class="mpro-form-field">
+          <label class="mpro-label">Équipe à l'extérieur *</label>
+          <input type="text" class="mpro-input" id="mpro-f-exterieur" placeholder="Ex : Africa Sports" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="mpro-form-row mpro-form-row-2">
+        <div class="mpro-form-field">
+          <label class="mpro-label">Compétition</label>
+          <input type="text" class="mpro-input" id="mpro-f-competition" placeholder="Ex : Ligue 1 Côte d'Ivoire" autocomplete="off">
+        </div>
+        <div class="mpro-form-field">
+          <label class="mpro-label">Date &amp; heure du match</label>
+          <input type="datetime-local" class="mpro-input" id="mpro-f-date">
+        </div>
+      </div>
+
+      <div class="mpro-form-field">
+        <label class="mpro-label">Statistiques / contexte (facultatif)</label>
+        <textarea class="mpro-textarea" id="mpro-f-stats" rows="4" placeholder="Forme récente, confrontations directes, absences, contexte... Plus tu donnes d'infos, plus le pronostic sera fiable."></textarea>
+        <div class="mpro-hint">Sans statistiques, les IA pourront tout de même donner un avis basé sur leur connaissance générale des équipes, mais avec une confiance plus basse.</div>
+      </div>
+
+      <div class="mpro-modal-actions">
+        <button type="button" class="mpro-btn mpro-btn-outline" id="mpro-nouveau-cancel">Annuler</button>
+        <button type="button" class="mpro-btn mpro-btn-primary" id="mpro-nouveau-ok">Créer le match</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ PANNEAU DÉTAIL MATCH ══════════════ -->
+  <div class="mpro-panel-overlay" id="mpro-panel-overlay">
+    <div class="mpro-panel" id="mpro-panel">
+      <div class="mpro-panel-head">
+        <div class="mpro-panel-titlewrap">
+          <div class="mpro-panel-title" id="mpro-panel-title"></div>
+          <div class="mpro-panel-desc" id="mpro-panel-desc"></div>
+        </div>
+        <button type="button" class="mpro-panel-close" id="mpro-panel-close" aria-label="Fermer">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="mpro-panel-body" id="mpro-panel-body">
+        <!-- injecté dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale suppression -->
+  <div class="mpro-modal-overlay" id="mpro-suppr-overlay">
+    <div class="mpro-modal">
+      <div class="mpro-modal-title">Supprimer ce match ?</div>
+      <div class="mpro-modal-text">Cette action supprimera le match ainsi que toutes les analyses IA associées. Elle est irréversible.</div>
+      <div class="mpro-modal-actions">
+        <button type="button" class="mpro-btn mpro-btn-outline" id="mpro-suppr-cancel">Annuler</button>
+        <button type="button" class="mpro-btn mpro-btn-danger" id="mpro-suppr-ok">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="mpro-toast" id="mpro-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-pronostics.js"></script>
+</body>
+</html>

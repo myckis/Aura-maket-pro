@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM & Prospection — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-crm.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mcrm-topbar">
+    <button class="mcrm-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mcrm-topbar-title">CRM & Prospection</span>
+  </div>
+
+  <div class="mcrm-body">
+
+    <div class="mcrm-columns">
+
+      <!-- Colonne gauche : formulaire de recherche -->
+      <div class="mcrm-col mcrm-col-form">
+        <div class="mcrm-section-title">Nouvelle recherche</div>
+        <div class="mcrm-section-desc">Cherche des boutiques publiques sur Instagram, Facebook et TikTok correspondant à un secteur d'activité. Les numéros détectés reçoivent un message WhatsApp généré automatiquement.</div>
+
+        <form id="mcrm-form" class="mcrm-card">
+
+          <label class="mcrm-label">Mot-clé / secteur</label>
+          <input type="text" id="mcrm-motcle" class="mcrm-input" placeholder="Ex : vêtements, chaussures, électronique" maxlength="80" required>
+
+          <label class="mcrm-label">Ville <span class="mcrm-optional">(optionnel)</span></label>
+          <input type="text" id="mcrm-ville" class="mcrm-input" placeholder="Ex : Abidjan" maxlength="60">
+
+          <label class="mcrm-label">Nombre de résultats</label>
+          <div class="mcrm-nombre-row" id="mcrm-nombre-row">
+            <button type="button" class="mcrm-nombre-btn" data-nombre="5">5</button>
+            <button type="button" class="mcrm-nombre-btn active" data-nombre="10">10</button>
+            <button type="button" class="mcrm-nombre-btn" data-nombre="15">15</button>
+            <button type="button" class="mcrm-nombre-btn" data-nombre="20">20</button>
+          </div>
+
+          <button type="submit" class="mcrm-btn mcrm-btn-primary" id="mcrm-submit-btn">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            Lancer la recherche
+          </button>
+
+          <div class="mcrm-note">Résultat non garanti à 100% : certains numéros ne sont pas visibles publiquement et devront être vérifiés manuellement sur la page.</div>
+        </form>
+      </div>
+
+      <!-- Colonne droite : résultats + historique -->
+      <div class="mcrm-col mcrm-col-list">
+
+        <div class="mcrm-tabs" id="mcrm-tabs">
+          <button type="button" class="mcrm-tab active" data-tab="resultats">Derniers résultats</button>
+          <button type="button" class="mcrm-tab" data-tab="historique">Historique complet</button>
+        </div>
+
+        <div class="mcrm-stats" id="mcrm-stats" style="display:none;">
+          <div class="mcrm-stat-card"><b id="mcrm-stat-total">0</b>trouvées</div>
+          <div class="mcrm-stat-card"><b id="mcrm-stat-tel">0</b>avec numéro</div>
+          <div class="mcrm-stat-card"><b id="mcrm-stat-sans">0</b>à vérifier</div>
+          <button type="button" class="mcrm-btn-save" id="mcrm-save-btn">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+            Sauvegarder
+          </button>
+        </div>
+
+        <div class="mcrm-list" id="mcrm-list">
+          <div class="mcrm-empty" id="mcrm-empty">Lance une recherche pour voir apparaître des prospects ici.</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="mcrm-toast" id="mcrm-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-crm.js"></script>
+</body>
+</html>

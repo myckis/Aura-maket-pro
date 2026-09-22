@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="assets/js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <title>Aura Market — Espace Admin</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="assets/img/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Aura Market Admin">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="assets/dashboard/css/admin.css">
+  <link rel="stylesheet" href="assets/module-notifications/module-notifications.css">
+  <link rel="stylesheet" href="assets/css/pwa-banners.css">
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/push-notifications.js"></script>
+  <script>
+    if (!AURA_AUTH.requireAuth()) {
+      document.write("");
+      throw new Error("redirect");
+    }
+  </script>
+</head>
+<script>
+  // Revérifie le statut is_active + synchronise permissions à chaque ouverture du dashboard
+  (async function () {
+    const user = AURA_AUTH.getUser();
+    const token = await AURA_AUTH.getValidAccessToken();
+    if (!user || !token) return;
+    try {
+      await AURA_AUTH._syncAdminRoleData(user.id, token);
+    } catch (e) {
+      AURA_AUTH.clearSession();
+      window.location.href = "index.html";
+    }
+  })();
+</script>
+<body>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div id="sidebarMount" data-sidebar-mode="app"></div>
+
+    <!-- MAIN -->
+    <div class="main-wrapper">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <div class="title-block">
+                    <div class="page-title" id="pageTitle">Vue d'ensemble</div>
+                    <div class="breadcrumb">Aura Market / <span id="breadcrumbText">Plateforme / Statistiques</span></div>
+                </div>
+                <div class="logo3d-wrap" id="logo3dWrap">
+                    <img src="assets/img/Aura.png" alt="Aura Market" class="topbar-logo-img">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher un utilisateur, une boutique...">
+                </div>
+<div id="topbarActionsMount" data-topbar-mode="app"></div>
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <main class="content" id="mainContent">
+
+            <!-- ════════════ DASHBOARD ════════════ -->
+            <div id="view-dashboard">
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Utilisateurs totaux</span>
+                            <div class="kpi-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 13.5a4.6 4.6 0 0 1 6 4.3"/></svg></div>
+                        </div>
+                        <div class="kpi-value" id="kpi-users">—</div>
+                        <div class="kpi-trend up" id="kpi-users-trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 15l7-7 7 7"/></svg> —</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Boutiques actives</span>
+                            <div class="kpi-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16l-1-5H5z"/><path d="M5 10v10h14V10"/></svg></div>
+                        </div>
+                        <div class="kpi-value" id="kpi-boutiques">—</div>
+                        <div class="kpi-trend up" id="kpi-boutiques-trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 15l7-7 7 7"/></svg> —</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">KYC en attente</span>
+                            <div class="kpi-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg></div>
+                        </div>
+                        <div class="kpi-value" id="kpi-kyc">—</div>
+                        <div class="kpi-trend down" id="kpi-kyc-trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 9l-7 7-7-7"/></svg> —</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">GMV du mois</span>
+                            <div class="kpi-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2.4l2.2 11.4A2 2 0 0 0 9.6 17h8.6a2 2 0 0 0 2-1.6L21.5 8H6.2"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg></div>
+                        </div>
+                        <div class="kpi-value" id="kpi-gmv">—</div>
+                        <div class="kpi-trend up" id="kpi-gmv-trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 15l7-7 7 7"/></svg> —</div>
+                    </div>
+                </div>
+
+                <div class="card-grid card-grid-stack">
+                    <div class="card-grid-col">
+                        <div class="panel kpi-orders-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">Commandes — Vue d'ensemble du mois</div>
+                            </div>
+                            <div class="kpi-orders-body">
+                                <div class="kpi-donut-row">
+                                    <div class="kpi-donut-wrap">
+                                        <svg viewBox="0 0 120 120" class="kpi-donut" id="kpi-orders-donut">
+                                            <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="16"/>
+                                            <circle id="donut-seg-attente" cx="60" cy="60" r="48" fill="none" stroke="#f5a623" stroke-width="16" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                                            <circle id="donut-seg-confirmees" cx="60" cy="60" r="48" fill="none" stroke="#3b82f6" stroke-width="16" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                                            <circle id="donut-seg-livrees" cx="60" cy="60" r="48" fill="none" stroke="#22c55e" stroke-width="16" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                                            <circle id="donut-seg-annulees" cx="60" cy="60" r="48" fill="none" stroke="#ef4444" stroke-width="16" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                                        </svg>
+                                        <div class="kpi-donut-center">
+                                            <div class="kpi-value" id="kpi-commandes">—</div>
+                                            <div class="kpi-donut-sublabel">commandes</div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-orders-side">
+                                        <div class="kpi-icon violet" style="margin-bottom:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                                        <div class="kpi-label" style="text-decoration:none;">Total du mois-ci</div>
+                                        <div class="kpi-trend up" id="kpi-commandes-trend" style="margin-top:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 15l7-7 7 7"/></svg> —</div>
+                                        <div class="kpi-donut-legend">
+                                            <div class="kpi-legend-item">
+                                                <span class="kpi-breakdown-dot" style="background:#f5a623;"></span>
+                                                <span class="kpi-legend-label">En attente</span>
+                                                <span class="kpi-legend-value" id="kpi-cmd-attente">—</span>
+                                            </div>
+                                            <div class="kpi-legend-item">
+                                                <span class="kpi-breakdown-dot" style="background:#3b82f6;"></span>
+                                                <span class="kpi-legend-label">Confirmées</span>
+                                                <span class="kpi-legend-value" id="kpi-cmd-confirmees">—</span>
+                                            </div>
+                                            <div class="kpi-legend-item">
+                                                <span class="kpi-breakdown-dot" style="background:#22c55e;"></span>
+                                                <span class="kpi-legend-label">Livrées</span>
+                                                <span class="kpi-legend-value" id="kpi-cmd-livrees">—</span>
+                                            </div>
+                                            <div class="kpi-legend-item">
+                                                <span class="kpi-breakdown-dot" style="background:#ef4444;"></span>
+                                                <span class="kpi-legend-label">Annulées</span>
+                                                <span class="kpi-legend-value" id="kpi-cmd-annulees">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title">Demandes KYC récentes</div>
+                                <button class="panel-action" onclick="switchTab(document.querySelector('.nav-link[onclick*=kyc]'), 'kyc')">Voir tout →</button>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>Boutique</th><th>Demandeur</th><th>Date</th><th>Statut</th></tr></thead>
+                                    <tbody id="dash-kyc-body">
+                                        <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">Chargement…</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel card-grid-tall">
+                        <div class="panel-header">
+                            <div class="panel-title">Signalements récents</div>
+                        </div>
+                        <div class="panel-body" style="display:flex; flex-direction:column; gap:14px;" id="dash-signalements-body">
+                            <div class="prod-meta" style="text-align:center;padding:16px;color:var(--text-muted);">Chargement…</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ UTILISATEURS ════════════ -->
+            <div id="view-utilisateurs" style="display:none;">
+
+                <!-- Barre de recherche sobre (style auth) -->
+                <div class="cl-search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="clientSearchInput" class="cl-search-input" placeholder="Rechercher par nom ou numéro…" oninput="filtrerClients(this.value)">
+                </div>
+
+                <!-- Compteur -->
+                <div class="cl-count" id="clientsCountLabel">Chargement…</div>
+
+                <!-- Table clients -->
+                <div class="cl-panel">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table id="clientsTable" class="cl-table">
+                            <colgroup>
+                                <col style="width:38%;">
+                                <col style="width:28%;">
+                                <col style="width:34%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Téléphone</th>
+                                    <th style="text-align:center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsBody">
+                                <tr id="clients-loading">
+                                    <td colspan="3" style="text-align:center;padding:40px;color:var(--text-muted);">Chargement des clients…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ════════════ VENDEURS ════════════ -->
+            <div id="view-vendeurs" style="display:none;">
+
+                <!-- Barre de recherche sobre (style auth) -->
+                <div class="cl-search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="vendeurSearchInput" class="cl-search-input" placeholder="Rechercher par nom ou numéro…" oninput="filtrerVendeurs(this.value)">
+                </div>
+
+                <!-- Compteur -->
+                <div class="cl-count" id="vendeursCountLabel">Chargement…</div>
+
+                <!-- Table vendeurs -->
+                <div class="cl-panel">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table id="vendeursTable" class="cl-table">
+                            <colgroup>
+                                <col style="width:30%;">
+                                <col style="width:24%;">
+                                <col style="width:46%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Vendeur</th>
+                                    <th>Téléphone</th>
+                                    <th style="text-align:center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendeursBody">
+                                <tr id="vendeurs-loading">
+                                    <td colspan="3" style="text-align:center;padding:40px;color:var(--text-muted);">Chargement des vendeurs…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ════════════ KYC ════════════ -->
+            <div id="view-kyc" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="kycSearchInput" placeholder="Rechercher par nom ou boutique…" oninput="filtrerKyc(this.value)">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="kycFilterBtn" onclick="toggleKycFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="kycFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="kycFilterDropdown"></div>
+                    </div>
+                </div>
+
+                <div class="cl-panel">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table class="cl-table">
+                            <colgroup>
+                                <col style="width:52px;">
+                                <col style="width:29%;">
+                                <col style="width:23%;">
+                                <col>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Nom &amp; prénom</th>
+                                    <th>Boutique</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kycBody">
+                                <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ VALIDATION PRODUITS ════════════ -->
+            <div id="view-validation" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="validationSearchInput" placeholder="Rechercher un produit..." oninput="filtrerValidationRecherche()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="validationFilterBtn" onclick="toggleValidationFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="validationFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="validationFilterDropdown"></div>
+                    </div>
+                </div>
+                <div class="cl-panel">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table id="validationTable" class="cl-table">
+                            <colgroup>
+                                <col style="width:52px;">
+                                <col style="width:36%;">
+                                <col style="width:28%;">
+                                <col style="width:30%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Produit</th>
+                                    <th>Prix · Date</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="validationBody">
+                                <tr id="validation-loading">
+                                    <td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ PRODUITS (modération) ════════════ -->
+            <div id="view-produits" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="produitsSearchInput" placeholder="Rechercher un produit..." oninput="filtrerProduitsCatalogue()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="produitsFilterBtn" onclick="toggleVendeurDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="produitsFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="produitsVendeurDropdown"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Produit</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produitsCatalogueBody">
+                                <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ SIGNALEMENTS ════════════ -->
+            <div id="view-signalements" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="signalementsSearchInput" placeholder="Rechercher un produit, une boutique..." oninput="filtrerSignalementsRecherche()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="signalementsFilterBtn" onclick="toggleSignalementsFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="signalementsFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="signalementsFilterDropdown"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Motif</th>
+                                    <th>Gravité</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="signalementsBody">
+                                <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="view-commandes" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="commandesSearchInput" placeholder="Rechercher une commande..." oninput="filtrerCommandes()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="commandesFilterBtn" onclick="toggleCommandesFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="commandesFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="commandesFilterDropdown"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Commande</th><th>Client</th><th>Boutique(s)</th><th>Montant</th><th>Statut</th><th>Actions</th></tr></thead>
+                            <tbody id="commandesBody">
+                                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ BOUTIQUES (annuaire) ════════════ -->
+            <div id="view-boutiques" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="boostsSearchInput" placeholder="Rechercher une demande..." oninput="filtrerBoosts()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="boostsFilterBtn" onclick="toggleBoostsFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="boostsFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="boostsFilterDropdown"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Boutique</th><th>Formule</th><th>Demandée le</th><th>Fin</th><th>Statut</th><th>Actions</th></tr></thead>
+                            <tbody id="boostsBody">
+                                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ GESTION DES ADMINISTRATEURS ════════════ -->
+            <div id="view-gestion-admins" style="display:none;">
+                <div class="panel" style="margin-bottom:16px;">
+                    <div class="panel-header">
+                        <span class="panel-title">Générer un code d'inscription admin</span>
+                    </div>
+                    <div class="panel-body">
+                        <label class="form-label">Libellé (optionnel)</label>
+                        <input type="text" class="form-input" id="gaLibelleInput" placeholder="Ex: Modérateur produits - Awa">
+
+                        <label class="form-label" style="margin-top:14px;display:block;">Accès accordés</label>
+                        <div class="ga-icones-grid" id="gaIconesGrid"></div>
+
+                        <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="genererCodeAdmin()">Générer le code</button>
+
+                        <div id="gaCodeResultBox" style="display:none;margin-top:14px;">
+                            <label class="form-label">Code généré</label>
+                            <div class="ga-code-box">
+                                <span id="gaCodeResultValue"></span>
+                                <button class="btn btn-outline btn-sm" onclick="copierCodeAdmin()">Copier</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Administrateurs</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-wrap">
+                            <table class="admins-table">
+                                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead>
+                                <tbody id="gaAdminsBody">
+                                    <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════ JOURNAL D'ACTIVITÉ ════════════ -->
+            <div id="view-logs" style="display:none;">
+                <div class="prod-search-row">
+                    <div class="prod-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="logsSearchInput" placeholder="Rechercher un admin, une action..." oninput="filtrerLogs()">
+                    </div>
+                    <div class="prod-filter-wrap">
+                        <button type="button" class="prod-filter-btn" id="logsFilterBtn" onclick="toggleLogsFilterDropdown()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <span class="prod-filter-dot" id="logsFilterDot" style="display:none;"></span>
+                        </button>
+                        <div class="prod-filter-dropdown" id="logsFilterDropdown"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="logs-table">
+                            <thead><tr><th>Quand</th><th>Administrateur</th><th>Action</th><th>Cible</th><th>Détails</th></tr></thead>
+                            <tbody id="logsBody">
+                                <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="padding:16px;text-align:center;">
+                        <button class="btn btn-outline btn-sm" id="logsLoadMoreBtn" style="display:none;" onclick="loadLogs(false)">Charger plus</button>
+                    </div>
+                </div>
+            </div>
+</div>
+    <div class="confirm-overlay" id="promptOverlay">
+      <div class="confirm-box">
+        <div class="confirm-title" id="promptTitle">Confirmation</div>
+        <div class="confirm-msg" id="promptMsg"></div>
+        <input type="text" class="form-input" id="promptInput" style="margin-bottom:18px;">
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn-cancel" id="promptCancelBtn">Annuler</button>
+          <button class="confirm-btn confirm-btn-ok" id="promptOkBtn">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <div class="confirm-title" id="confirmTitle">Confirmation</div>
+        <div class="confirm-msg" id="confirmMsg"></div>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">Annuler</button>
+          <button class="confirm-btn confirm-btn-ok" id="confirmOkBtn">OK</button>
+        </div>
+      </div>
+    </div>
+        </main>
+    </div>
+  <script src="assets/dashboard/js/admin.js"></script>
+<script src="assets/module-notifications/module-notifications.js"></script>
+<script src="assets/dashboard/js/sidebar.js"></script>
+<script src="assets/js/pwa-banners.js"></script>
+</body>
+</html>

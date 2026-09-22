@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <title>Aura Market — Espace Administrateur</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="assets/img/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Aura Market Admin">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="assets/auth/auth.css">
+  <link rel="stylesheet" href="assets/css/pwa-banners.css">
+</head>
+<body>
+
+  <header class="au-topbar">
+    <div class="au-topbar-title">
+      <svg viewBox="0 0 24 24" class="au-topbar-title-icon"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span>Espace Administrateur</span>
+    </div>
+  </header>
+
+  <div class="au-page">
+
+    <div class="au-hero">
+      <div class="au-title">Bienvenue sur <img src="assets/img/Aura.png" alt="Aura Market" class="au-title-logo"></div>
+      <div class="au-sub">Accès réservé à l'équipe Aura Market</div>
+    </div>
+
+    <div class="au-tabs">
+      <button id="tab-login" class="au-tab active" onclick="switchAuthTab('login')">Connexion</button>
+      <button id="tab-register" class="au-tab" onclick="switchAuthTab('register')">Inscription</button>
+    </div>
+
+    <!-- ─── FORMULAIRE CONNEXION ─── -->
+    <form id="form-login" class="au-card" onsubmit="handleLogin(event)">
+
+      <div class="au-field">
+        <label class="au-label">Email ou numéro</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M3 7l9 6 9-6"/><path d="M3 7h18v10H3z"/></svg>
+          <input class="au-input" type="text" id="login-identifier" placeholder="vous@auramarket.ci ou 07XXXXXXXX" autocomplete="username" required>
+        </div>
+        <span class="au-err" id="err-login-identifier"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Mot de passe</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input class="au-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+          <button class="au-toggle-pw" type="button" onclick="togglePw('login-password', this)" aria-label="Voir">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <span class="au-err" id="err-login-password"></span>
+      </div>
+
+      <button class="au-forgot-link" type="button" onclick="location.href='assets/auth/oubliemotdepasse.html'">
+        Mot de passe oublié ?
+      </button>
+
+      <button class="au-btn" type="submit" id="btn-login">
+        <span id="btn-login-txt">Se connecter</span>
+        <div class="au-loader" id="load-login"></div>
+        <svg viewBox="0 0 24 24" id="btn-login-ico"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+
+    </form>
+
+    <!-- ─── FORMULAIRE INSCRIPTION ─── -->
+    <form id="form-register" class="au-card" style="display:none" onsubmit="handleRegister(event)">
+
+      <div class="au-field">
+        <label class="au-label">Nom et prénom</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <input class="au-input" type="text" id="reg-nom" placeholder="Ex : Diabaté Awa" autocomplete="name" required>
+        </div>
+        <span class="au-err" id="err-reg-nom"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Numéro</label>
+        <div class="au-input-wrap au-input-wrap-phone">
+          <span class="au-phone-prefix">+225</span>
+          <input class="au-input au-input-phone" type="tel" inputmode="tel" id="reg-telephone" placeholder="07 XX XX XX XX" autocomplete="tel" required>
+        </div>
+        <span class="au-err" id="err-reg-telephone"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Adresse email</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input class="au-input" type="email" id="reg-email" placeholder="vous@auramarket.ci" autocomplete="email" required>
+        </div>
+        <span class="au-err" id="err-reg-email"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Code admin</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="9" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="15.5" r="1.5"/></svg>
+          <input class="au-input" type="text" id="reg-code" placeholder="AURA-ADMIN-XXXXXXXX" required style="text-transform:uppercase">
+        </div>
+        <span class="au-hint">Code à usage unique fourni par un administrateur existant</span>
+        <span class="au-err" id="err-reg-code"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Mot de passe</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input class="au-input" type="password" id="reg-password" placeholder="Min. 8 caractères" autocomplete="new-password" required oninput="updatePasswordStrength(this.value)">
+          <button class="au-toggle-pw" type="button" onclick="togglePw('reg-password', this)" aria-label="Voir">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="au-strength" id="reg-password-strength">
+          <div class="au-strength-bars">
+            <span class="au-strength-bar" id="strength-bar-1"></span>
+            <span class="au-strength-bar" id="strength-bar-2"></span>
+            <span class="au-strength-bar" id="strength-bar-3"></span>
+          </div>
+          <span class="au-strength-label" id="strength-label">Minimum 8 caractères</span>
+        </div>
+        <span class="au-err" id="err-reg-password"></span>
+      </div>
+
+      <div class="au-field">
+        <label class="au-label">Confirmer le mot de passe</label>
+        <div class="au-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input class="au-input" type="password" id="reg-confirm" placeholder="Répétez le mot de passe" autocomplete="new-password" required>
+          <button class="au-toggle-pw" type="button" onclick="togglePw('reg-confirm', this)" aria-label="Voir">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <span class="au-err" id="err-reg-confirm"></span>
+      </div>
+
+      <button class="au-btn" type="submit" id="btn-register">
+        <span id="btn-register-txt">Créer mon accès admin</span>
+        <div class="au-loader" id="load-register"></div>
+        <svg viewBox="0 0 24 24" id="btn-register-ico"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+
+    </form>
+
+    <div class="au-help">
+      <button class="au-help-link" type="button" onclick="toggleHelpMenu()">Besoin d'aide ?</button>
+      <div class="au-help-menu" id="help-menu">
+        <a class="au-help-option" href="https://wa.me/2250105347290?text=Bonjour%2C%20j%27ai%20besoin%20d%27aide%20avec%20mon%20compte%20administrateur%20Aura%20Market" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M3 21l1.6-4.8A9 9 0 1 1 8.8 19.4z"/><path d="M8.5 9.5c0 3 2.5 5.5 5.5 5.5"/></svg>
+          WhatsApp — 01 05 34 72 90
+        </a>
+        <a class="au-help-option" href="mailto:auramarketpro@gmail.com">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          auramarketpro@gmail.com
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/auth/auth.js"></script>
+  <script src="assets/js/pwa-banners.js"></script>
+</body>
+</html>

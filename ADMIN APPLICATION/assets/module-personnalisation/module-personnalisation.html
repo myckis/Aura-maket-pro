@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personnalisation — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-personnalisation.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Manrope:wght@400;600;700;800&family=Sora:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700;800&family=Roboto:wght@400;500;700;800&family=Nunito:wght@400;600;700;800&family=Work+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700;800&family=Urbanist:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;600;700;800&family=Merriweather:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mperso-topbar">
+    <button class="mperso-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mperso-topbar-title">Personnalisation</span>
+  </div>
+
+  <div class="mperso-body">
+
+    <!-- CONTENU (toujours débloqué pour l'admin) -->
+    <div id="mperso-content">
+
+      <!-- Aperçu live -->
+      <div class="mperso-section-title">Aperçu</div>
+      <div class="mperso-preview" id="mperso-preview">
+        <div class="mperso-preview-topbar">
+          <span class="mperso-preview-dot"></span>
+          <span class="mperso-preview-dot"></span>
+          <span class="mperso-preview-dot"></span>
+        </div>
+        <div class="mperso-preview-card" id="mperso-preview-card">
+          <div class="mperso-preview-title" id="mperso-preview-title">Aperçu de votre dashboard</div>
+          <div class="mperso-preview-text" id="mperso-preview-text">Voici à quoi ressembleront vos couleurs, police et style.</div>
+          <div class="mperso-preview-row">
+            <div class="mperso-preview-btn" id="mperso-preview-btn">Exemple de bouton</div>
+            <span class="mperso-preview-badge" id="mperso-preview-badge">Accent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Couleur primaire -->
+      <div class="mperso-section-title">Couleur principale</div>
+      <div class="mperso-section-desc">Utilisée pour les boutons, liens et éléments mis en avant.</div>
+      <div class="mperso-color-row" id="mperso-color-row">
+        <div class="mperso-color-dot" data-color="#FFFFFF" style="background:#FFFFFF;"></div>
+        <div class="mperso-color-dot" data-color="#F0B429" style="background:#F0B429;"></div>
+        <div class="mperso-color-dot" data-color="#10B981" style="background:#10B981;"></div>
+        <div class="mperso-color-dot" data-color="#4C8CFF" style="background:#4C8CFF;"></div>
+        <div class="mperso-color-dot" data-color="#E0276F" style="background:#E0276F;"></div>
+        <div class="mperso-color-dot" data-color="#A855F7" style="background:#A855F7;"></div>
+        <div class="mperso-color-dot" data-color="#FF6B35" style="background:#FF6B35;"></div>
+        <div class="mperso-color-dot" data-color="#06B6D4" style="background:#06B6D4;"></div>
+      </div>
+      <label class="mperso-color-custom-wrap" for="mperso-color-custom-input">
+        <div class="mperso-color-custom-swatch" id="mperso-color-custom-swatch" style="background:#FFFFFF;"></div>
+        <div class="mperso-color-custom-info">
+          <span class="mperso-color-custom-title">Couleur personnalisée</span>
+          <span class="mperso-color-custom-hex" id="mperso-color-custom-hex">#FFFFFF</span>
+        </div>
+        <input type="color" id="mperso-color-custom-input" value="#FFFFFF">
+        <svg class="mperso-color-custom-arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </label>
+
+      <!-- Couleur secondaire -->
+      <div class="mperso-section-title">Couleur secondaire (accent)</div>
+      <div class="mperso-section-desc">Utilisée pour les badges, icônes et détails d'accentuation.</div>
+      <div class="mperso-color-row" id="mperso-color2-row">
+        <div class="mperso-color-dot" data-color2="#A855F7" style="background:#A855F7;"></div>
+        <div class="mperso-color-dot" data-color2="#F0B429" style="background:#F0B429;"></div>
+        <div class="mperso-color-dot" data-color2="#10B981" style="background:#10B981;"></div>
+        <div class="mperso-color-dot" data-color2="#4C8CFF" style="background:#4C8CFF;"></div>
+        <div class="mperso-color-dot" data-color2="#E0276F" style="background:#E0276F;"></div>
+        <div class="mperso-color-dot" data-color2="#FF6B35" style="background:#FF6B35;"></div>
+        <div class="mperso-color-dot" data-color2="#06B6D4" style="background:#06B6D4;"></div>
+        <div class="mperso-color-dot" data-color2="#FFFFFF" style="background:#FFFFFF;"></div>
+      </div>
+      <label class="mperso-color-custom-wrap" for="mperso-color2-custom-input">
+        <div class="mperso-color-custom-swatch" id="mperso-color2-custom-swatch" style="background:#A855F7;"></div>
+        <div class="mperso-color-custom-info">
+          <span class="mperso-color-custom-title">Couleur personnalisée</span>
+          <span class="mperso-color-custom-hex" id="mperso-color2-custom-hex">#A855F7</span>
+        </div>
+        <input type="color" id="mperso-color2-custom-input" value="#A855F7">
+        <svg class="mperso-color-custom-arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </label>
+
+      <!-- Thème de fond -->
+      <div class="mperso-section-title">Thème de fond</div>
+      <div class="mperso-section-desc">Variantes du thème sombre pour tout le dashboard.</div>
+      <div class="mperso-bg-row" id="mperso-bg-row">
+        <div class="mperso-bg-card" data-bg="anthracite">
+          <div class="mperso-bg-swatch">
+            <span style="background:#0F0F0F;"></span><span style="background:#181818;"></span>
+          </div>
+          <span class="mperso-bg-label">Anthracite</span>
+        </div>
+        <div class="mperso-bg-card" data-bg="oled">
+          <div class="mperso-bg-swatch">
+            <span style="background:#000000;"></span><span style="background:#121212;"></span>
+          </div>
+          <span class="mperso-bg-label">Noir OLED</span>
+        </div>
+        <div class="mperso-bg-card" data-bg="gris_nuit">
+          <div class="mperso-bg-swatch">
+            <span style="background:#16181D;"></span><span style="background:#1E2128;"></span>
+          </div>
+          <span class="mperso-bg-label">Gris nuit</span>
+        </div>
+        <div class="mperso-bg-card" data-bg="bleu_nuit">
+          <div class="mperso-bg-swatch">
+            <span style="background:#0A0E1A;"></span><span style="background:#131B2E;"></span>
+          </div>
+          <span class="mperso-bg-label">Bleu nuit</span>
+        </div>
+      </div>
+      <label class="mperso-color-custom-wrap" for="mperso-bg-custom-input">
+        <div class="mperso-color-custom-swatch" id="mperso-bg-custom-swatch" style="background:#0F0F0F;"></div>
+        <div class="mperso-color-custom-info">
+          <span class="mperso-color-custom-title">Fond personnalisé</span>
+          <span class="mperso-color-custom-hex" id="mperso-bg-custom-hex">Choisir ma propre couleur de fond</span>
+        </div>
+        <input type="color" id="mperso-bg-custom-input" value="#0F0F0F">
+        <svg class="mperso-color-custom-arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </label>
+
+      <!-- Style visuel -->
+      <div class="mperso-section-title">Style visuel</div>
+      <div class="mperso-section-desc">Apparence des cartes et panneaux du dashboard.</div>
+      <div class="mperso-bg-row" id="mperso-style-row">
+        <div class="mperso-bg-card" data-style="opaque">
+          <div class="mperso-bg-swatch">
+            <span style="background:#181818;"></span><span style="background:#0F0F0F;"></span>
+          </div>
+          <span class="mperso-bg-label">Opaque</span>
+        </div>
+        <div class="mperso-bg-card" data-style="verre">
+          <div class="mperso-bg-swatch mperso-bg-swatch-glass">
+            <span></span><span></span>
+          </div>
+          <span class="mperso-bg-label">Verre</span>
+        </div>
+      </div>
+
+      <!-- Intensité du verre (visible seulement si Style visuel = Verre) -->
+      <div class="mperso-section-title" id="mperso-glass-intensity-title" style="display:none;">Intensité de l'effet verre</div>
+      <div class="mperso-section-desc" id="mperso-glass-intensity-desc" style="display:none;">Du plus discret au plus marqué.</div>
+      <div class="mperso-radius-row" id="mperso-glass-intensity-row" style="display:none;">
+        <div class="mperso-radius-card" data-glass="discret">
+          <div class="mperso-radius-preview" style="border-radius:8px;background:rgba(255,255,255,.15);"></div>
+          <span class="mperso-radius-label">Discret</span>
+        </div>
+        <div class="mperso-radius-card" data-glass="moyen">
+          <div class="mperso-radius-preview" style="border-radius:8px;background:rgba(255,255,255,.28);"></div>
+          <span class="mperso-radius-label">Moyen</span>
+        </div>
+        <div class="mperso-radius-card" data-glass="marque">
+          <div class="mperso-radius-preview" style="border-radius:8px;background:rgba(255,255,255,.42);"></div>
+          <span class="mperso-radius-label">Marqué</span>
+        </div>
+      </div>
+
+      <!-- Police -->
+      <div class="mperso-section-title">Police d'écriture</div>
+      <div class="mperso-section-desc">S'applique à l'ensemble de votre dashboard admin. 17 polices au choix.</div>
+      <div class="mperso-select-field">
+        <label class="mperso-select-label" for="mperso-font-select">Police</label>
+        <div class="mperso-select-wrap">
+          <select id="mperso-font-select" class="mperso-select">
+            <option value="Inter">Inter</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Manrope">Manrope</option>
+            <option value="Sora">Sora</option>
+            <option value="Space Grotesk">Space Grotesk</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Work Sans">Work Sans</option>
+            <option value="DM Sans">DM Sans</option>
+            <option value="Outfit">Outfit</option>
+            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+            <option value="Lexend">Lexend</option>
+            <option value="Urbanist">Urbanist</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="JetBrains Mono">JetBrains Mono</option>
+          </select>
+          <svg class="mperso-select-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="mperso-select-preview" id="mperso-font-preview">Aperçu de la police sélectionnée</div>
+      </div>
+
+      <!-- Taille de police -->
+      <div class="mperso-section-title">Taille du texte</div>
+      <div class="mperso-section-desc">Ajuste la taille de tout le texte du dashboard.</div>
+      <div class="mperso-radius-row" id="mperso-fontsize-row">
+        <div class="mperso-radius-card" data-fontsize="petite">
+          <span class="mperso-fontsize-preview" style="font-size:12px;">Aa</span>
+          <span class="mperso-radius-label">Petite</span>
+        </div>
+        <div class="mperso-radius-card" data-fontsize="normale">
+          <span class="mperso-fontsize-preview" style="font-size:16px;">Aa</span>
+          <span class="mperso-radius-label">Normale</span>
+        </div>
+        <div class="mperso-radius-card" data-fontsize="grande">
+          <span class="mperso-fontsize-preview" style="font-size:20px;">Aa</span>
+          <span class="mperso-radius-label">Grande</span>
+        </div>
+      </div>
+
+      <!-- Rayon de bordure -->
+      <div class="mperso-section-title">Style des éléments</div>
+      <div class="mperso-section-desc">Forme des boutons, cartes et champs.</div>
+      <div class="mperso-radius-row" id="mperso-radius-row">
+        <div class="mperso-radius-card" data-radius="carre">
+          <div class="mperso-radius-preview" style="border-radius:2px;"></div>
+          <span class="mperso-radius-label">Carré</span>
+        </div>
+        <div class="mperso-radius-card" data-radius="moyen">
+          <div class="mperso-radius-preview" style="border-radius:8px;"></div>
+          <span class="mperso-radius-label">Moyen</span>
+        </div>
+        <div class="mperso-radius-card" data-radius="arrondi">
+          <div class="mperso-radius-preview" style="border-radius:16px;"></div>
+          <span class="mperso-radius-label">Arrondi</span>
+        </div>
+      </div>
+
+      <!-- Épaisseur des bordures -->
+      <div class="mperso-section-title">Épaisseur des bordures</div>
+      <div class="mperso-section-desc">Finesse des contours de cartes, champs et boutons.</div>
+      <div class="mperso-radius-row" id="mperso-borderw-row">
+        <div class="mperso-radius-card" data-borderw="fine">
+          <div class="mperso-radius-preview" style="border-radius:8px;border:1px solid var(--text-muted);background:transparent;"></div>
+          <span class="mperso-radius-label">Fine</span>
+        </div>
+        <div class="mperso-radius-card" data-borderw="moyenne">
+          <div class="mperso-radius-preview" style="border-radius:8px;border:1.5px solid var(--text-muted);background:transparent;"></div>
+          <span class="mperso-radius-label">Moyenne</span>
+        </div>
+        <div class="mperso-radius-card" data-borderw="epaisse">
+          <div class="mperso-radius-preview" style="border-radius:8px;border:2.5px solid var(--text-muted);background:transparent;"></div>
+          <span class="mperso-radius-label">Épaisse</span>
+        </div>
+      </div>
+
+      <!-- Densité d'affichage -->
+      <div class="mperso-section-title">Densité d'affichage</div>
+      <div class="mperso-section-desc">Espacement entre les éléments : plus compact ou plus aéré.</div>
+      <div class="mperso-radius-row" id="mperso-densite-row">
+        <div class="mperso-radius-card" data-densite="compact">
+          <svg class="mperso-density-preview" viewBox="0 0 34 34"><line x1="4" y1="8" x2="30" y2="8"/><line x1="4" y1="15" x2="30" y2="15"/><line x1="4" y1="22" x2="30" y2="22"/></svg>
+          <span class="mperso-radius-label">Compact</span>
+        </div>
+        <div class="mperso-radius-card" data-densite="confortable">
+          <svg class="mperso-density-preview" viewBox="0 0 34 34"><line x1="4" y1="9" x2="30" y2="9"/><line x1="4" y1="17" x2="30" y2="17"/><line x1="4" y1="25" x2="30" y2="25"/></svg>
+          <span class="mperso-radius-label">Confortable</span>
+        </div>
+        <div class="mperso-radius-card" data-densite="spacieux">
+          <svg class="mperso-density-preview" viewBox="0 0 34 34"><line x1="4" y1="10" x2="30" y2="10"/><line x1="4" y1="17" x2="30" y2="17"/><line x1="4" y1="24" x2="30" y2="24"/></svg>
+          <span class="mperso-radius-label">Spacieux</span>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div class="mperso-save-bar">
+        <button class="mperso-btn mperso-btn-primary" id="mperso-save-btn">Appliquer les changements</button>
+        <button class="mperso-btn mperso-btn-outline" id="mperso-reset-btn">Réinitialiser</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-personnalisation.js"></script>
+</body>
+</html>

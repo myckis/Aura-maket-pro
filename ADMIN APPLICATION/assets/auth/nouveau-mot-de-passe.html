@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <title>Nouveau mot de passe — Espace Administrateur</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+  <header class="au-topbar">
+    <div class="au-topbar-title">
+      <span>Nouveau mot de passe</span>
+    </div>
+  </header>
+
+  <div class="au-page">
+
+    <!-- ─── ÉCRAN CHARGEMENT — Vérification du lien ─── -->
+    <div id="screen-checking">
+      <div class="au-hero" style="text-align:center;">
+        <div class="au-loader" style="display:block; margin:24px auto; width:32px; height:32px; border-color:rgba(255,255,255,.25); border-top-color:var(--text);"></div>
+        <div class="au-sub">Vérification du lien en cours…</div>
+      </div>
+    </div>
+
+    <!-- ─── ÉCRAN FORMULAIRE — Nouveau mot de passe ─── -->
+    <div id="screen-form" style="display:none;">
+
+      <div class="au-hero">
+        <div class="au-title" style="font-size:22px;">Choisissez un nouveau mot de passe</div>
+        <div class="au-sub">Votre nouveau mot de passe doit contenir au moins 8 caractères.</div>
+      </div>
+
+      <div class="au-card">
+
+        <div class="au-field">
+          <label class="au-label">Nouveau mot de passe</label>
+          <div class="au-input-wrap">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input class="au-input" id="new-password" type="password" placeholder="Min. 8 caractères" autocomplete="new-password" oninput="updatePasswordStrength(this.value)">
+            <button class="au-toggle-pw" type="button" onclick="togglePw('new-password', this)" aria-label="Voir">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="au-strength" id="reg-password-strength">
+            <div class="au-strength-bars">
+              <span class="au-strength-bar" id="strength-bar-1"></span>
+              <span class="au-strength-bar" id="strength-bar-2"></span>
+              <span class="au-strength-bar" id="strength-bar-3"></span>
+            </div>
+            <span class="au-strength-label" id="strength-label">Minimum 8 caractères</span>
+          </div>
+          <span class="au-err" id="err-new-pw"></span>
+        </div>
+
+        <div class="au-field">
+          <label class="au-label">Confirmer le mot de passe</label>
+          <div class="au-input-wrap">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input class="au-input" id="new-password-confirm" type="password" placeholder="Répétez le mot de passe" autocomplete="new-password">
+            <button class="au-toggle-pw" type="button" onclick="togglePw('new-password-confirm', this)" aria-label="Voir">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="au-err" id="err-new-confirm"></span>
+        </div>
+
+        <button class="au-btn" id="btn-update-pw" onclick="handleUpdatePassword()">
+          <span id="btn-update-pw-txt">Enregistrer le nouveau mot de passe</span>
+          <div class="au-loader" id="load-update-pw"></div>
+          <svg viewBox="0 0 24 24" id="btn-update-pw-ico"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ─── ÉCRAN SUCCÈS ─── -->
+    <div id="screen-success" style="display:none;">
+
+      <div class="au-hero" style="text-align:center;">
+        <div class="au-title" style="font-size:22px; justify-content:center;">Mot de passe mis à jour !</div>
+        <div class="au-sub">Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.</div>
+      </div>
+
+      <div class="au-card">
+        <button class="au-btn" onclick="location.href='../../index.html'">
+          <span>Se connecter</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ─── ÉCRAN LIEN EXPIRÉ / INVALIDE ─── -->
+    <div id="screen-invalid" style="display:none;">
+
+      <div class="au-hero" style="text-align:center;">
+        <div class="au-title" style="font-size:22px; justify-content:center;">Lien invalide ou expiré</div>
+        <div class="au-sub">Ce lien de réinitialisation n'est plus valide. Demandez-en un nouveau.</div>
+      </div>
+
+      <div class="au-card">
+        <button class="au-btn" onclick="location.href='oubliemotdepasse.html'">
+          <span>Demander un nouveau lien</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="nouveau-mot-de-passe.js"></script>
+</body>
+</html>

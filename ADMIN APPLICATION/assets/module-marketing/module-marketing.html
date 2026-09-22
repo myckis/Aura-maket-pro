@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing & Publicité — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-marketing.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mmkt-topbar">
+    <button class="mmkt-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mmkt-topbar-title">Marketing & Publicité</span>
+  </div>
+
+  <div class="mmkt-body">
+
+    <!-- AGENT MARKETING — suggestions du jour, générées automatiquement -->
+    <div class="mmkt-agent-wrap" id="mmkt-agent-wrap">
+      <div class="mmkt-agent-header">
+        <div class="mmkt-agent-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>Agent Marketing — Suggestions du jour</span>
+        </div>
+        <span class="mmkt-agent-progress" id="mmkt-agent-progress">—</span>
+      </div>
+      <div class="mmkt-agent-body" id="mmkt-agent-body">
+        <div class="mmkt-agent-loading">Analyse de l'activité en cours…</div>
+      </div>
+    </div>
+
+    <!-- SWITCH D'ONGLETS -->
+    <div class="mcnt-tabswitch">
+      <a href="module-marketing.html" class="active">Marketing</a>
+      <a href="../module-contenus/module-contenus.html">Contenus</a>
+    </div>
+
+    <div class="mmkt-columns">
+
+      <!-- Colonne gauche : wizard -->
+      <div class="mmkt-col mmkt-col-form">
+
+        <!-- STEPPER -->
+        <div class="mmkt-stepper" id="mmkt-stepper">
+          <div class="mmkt-step active" data-step="1"><span class="mmkt-step-num">1</span><span class="mmkt-step-label">Application</span></div>
+          <div class="mmkt-step-line"></div>
+          <div class="mmkt-step" data-step="2"><span class="mmkt-step-num">2</span><span class="mmkt-step-label">Réseaux</span></div>
+          <div class="mmkt-step-line"></div>
+          <div class="mmkt-step" data-step="3"><span class="mmkt-step-num">3</span><span class="mmkt-step-label">Contenu</span></div>
+          <div class="mmkt-step-line"></div>
+          <div class="mmkt-step" data-step="4"><span class="mmkt-step-num">4</span><span class="mmkt-step-label">Message</span></div>
+          <div class="mmkt-step-line"></div>
+          <div class="mmkt-step" data-step="5"><span class="mmkt-step-num">5</span><span class="mmkt-step-label">Format</span></div>
+        </div>
+
+        <form id="mmkt-form" class="mmkt-card">
+
+          <!-- ═══ ÉTAPE 1 : APPLICATION CIBLE ═══ -->
+          <div class="mmkt-panel active" data-panel="1">
+            <div class="mmkt-panel-title">Pour quelle application ?</div>
+            <div class="mmkt-panel-desc">Le message et le visuel s'adaptent automatiquement à ton choix.</div>
+
+            <div class="mmkt-app-grid">
+              <button type="button" class="mmkt-app-card" data-app="pro">
+                <div class="mmkt-app-logo"><img src="../img/Logovendeur.png" alt=""></div>
+                <div class="mmkt-app-name">Aura Market Pro</div>
+                <div class="mmkt-app-sub">Recruter des vendeurs</div>
+              </button>
+              <button type="button" class="mmkt-app-card" data-app="ci">
+                <div class="mmkt-app-logo"><img src="../img/Logouniversel.png" alt=""></div>
+                <div class="mmkt-app-name">Aura Market CI</div>
+                <div class="mmkt-app-sub">Attirer des clients</div>
+              </button>
+              <button type="button" class="mmkt-app-card" data-app="les_deux">
+                <div class="mmkt-app-logo mmkt-app-logo-double">
+                  <img src="../img/Logovendeur.png" alt="">
+                  <img src="../img/Logouniversel.png" alt="">
+                </div>
+                <div class="mmkt-app-name">Les deux</div>
+                <div class="mmkt-app-sub">Achat & vente</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- ═══ ÉTAPE 2 : PLATEFORMES ═══ -->
+          <div class="mmkt-panel" data-panel="2">
+            <div class="mmkt-panel-title">Où veux-tu publier ?</div>
+            <div class="mmkt-panel-desc">Sélectionne un ou plusieurs réseaux. Un texte adapté sera généré pour chacun.</div>
+
+            <div class="mmkt-platform-grid" id="mmkt-platform-grid">
+              <button type="button" class="mmkt-platform-card" data-platform="tiktok">
+                <svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                <span>TikTok</span>
+              </button>
+              <button type="button" class="mmkt-platform-card" data-platform="facebook">
+                <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <span>Facebook</span>
+              </button>
+              <button type="button" class="mmkt-platform-card" data-platform="whatsapp">
+                <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2z"/><path d="M8.5 8.5c.3-.7.6-.7 1-.7h.6c.2 0 .5 0 .7.5s.8 1.9.8 2.1.1.3 0 .5-.2.3-.4.5-.4.4-.5.6-.3.3-.1.6a7 7 0 0 0 1.4 1.7 6.5 6.5 0 0 0 2 1.2c.2.1.4.1.5-.1s.6-.7.8-1 .4-.2.6-.1l1.8.9c.2.1.4.2.4.4s0 1-.4 1.5-1.4 1-2.5 1a8.5 8.5 0 0 1-4.4-1.7 9 9 0 0 1-2.9-3.1c-.2-.4-1.4-2-1.4-3.8s.9-2.6 1.1-3z"/></svg>
+                <span>WhatsApp <small>(Statut)</small></span>
+              </button>
+              <button type="button" class="mmkt-platform-card" data-platform="linkedin">
+                <svg viewBox="0 0 24 24"><path d="M6.5 8.5v11M6.5 5v.01M11.5 19.5v-6.5c0-1.7 1-3 3-3s3 1.3 3 3v6.5M11.5 13v6.5"/><rect x="2" y="2" width="20" height="20" rx="3"/></svg>
+                <span>LinkedIn</span>
+              </button>
+            </div>
+            <button type="button" class="mmkt-select-all-btn" id="mmkt-select-all-platforms">Tout sélectionner</button>
+          </div>
+
+          <!-- ═══ ÉTAPE 3 : CONTENU (dépend de l'étape 1) ═══ -->
+          <div class="mmkt-panel" data-panel="3">
+
+            <!-- Sous-bloc VENDEUR -->
+            <div id="mmkt-contenu-vendeur" style="display:none;">
+              <div class="mmkt-panel-title">Quel est l'objectif de cette affiche ?</div>
+              <div class="mmkt-panel-desc">Le message et le style s'adaptent selon ce que tu veux accomplir.</div>
+
+              <div class="mmkt-cible-row mmkt-cible-row-3">
+                <button type="button" class="mmkt-cible-btn active" data-vendeur-mode="motivation">Motivation<small>Vendeurs déjà inscrits</small></button>
+                <button type="button" class="mmkt-cible-btn" data-vendeur-mode="recrutement">Recrutement<small>Convaincre de nouveaux vendeurs</small></button>
+                <button type="button" class="mmkt-cible-btn" data-vendeur-mode="boutiques">Promotion boutique<small>Mettre en avant une boutique précise</small></button>
+              </div>
+
+              <div id="mmkt-boutiques-picker-wrap" style="display:none;">
+                <label class="mmkt-label">Boutiques à l'honneur</label>
+                <div class="mmkt-boutique-search-wrap">
+                  <input type="text" id="mmkt-boutique-search" class="mmkt-input" placeholder="Rechercher une boutique...">
+                </div>
+                <div class="mmkt-boutique-list" id="mmkt-boutique-list">
+                  <div class="mmkt-empty-inline">Chargement des boutiques…</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sous-bloc CLIENT -->
+            <div id="mmkt-contenu-client" style="display:none;">
+              <div class="mmkt-panel-title">Catégories à promouvoir</div>
+              <div class="mmkt-panel-desc">Choisis une ou plusieurs catégories. Les images seront piochées parmi les vrais produits en ligne.</div>
+
+              <div class="mmkt-category-grid" id="mmkt-category-grid">
+                <div class="mmkt-empty-inline">Chargement des catégories…</div>
+              </div>
+
+              <label class="mmkt-label">Nombre d'images</label>
+              <div class="mmkt-nbimg-row" id="mmkt-nbimg-row">
+                <button type="button" class="mmkt-nbimg-btn active" data-nb="1">1</button>
+                <button type="button" class="mmkt-nbimg-btn" data-nb="2">2</button>
+                <button type="button" class="mmkt-nbimg-btn" data-nb="4">4</button>
+                <button type="button" class="mmkt-nbimg-btn" data-nb="6">6</button>
+              </div>
+            </div>
+
+            <!-- Sous-bloc LES DEUX -->
+            <div id="mmkt-contenu-combo" style="display:none;">
+              <div class="mmkt-panel-title">Message combiné achat & vente</div>
+              <div class="mmkt-panel-desc">On va parler à la fois aux vendeurs (rejoindre) et aux clients (acheter). Les images mêlent produits phares et esprit "marketplace".</div>
+              <label class="mmkt-label">Nombre d'images produits</label>
+              <div class="mmkt-nbimg-row" id="mmkt-nbimg-row-combo">
+                <button type="button" class="mmkt-nbimg-btn active" data-nb="1">1</button>
+                <button type="button" class="mmkt-nbimg-btn" data-nb="2">2</button>
+                <button type="button" class="mmkt-nbimg-btn" data-nb="4">4</button>
+              </div>
+            </div>
+
+            <!-- Couleur thème (commun) -->
+            <label class="mmkt-label" style="margin-top:18px;">Couleur dominante</label>
+            <div class="mmkt-color-row" id="mmkt-color-row">
+              <button type="button" class="mmkt-color-swatch active" data-color="#F0B429" style="background:#F0B429;"></button>
+              <button type="button" class="mmkt-color-swatch" data-color="#E0276F" style="background:#E0276F;"></button>
+              <button type="button" class="mmkt-color-swatch" data-color="#10B981" style="background:#10B981;"></button>
+              <button type="button" class="mmkt-color-swatch" data-color="#2563EB" style="background:#2563EB;"></button>
+              <button type="button" class="mmkt-color-swatch" data-color="#7C3AED" style="background:#7C3AED;"></button>
+              <button type="button" class="mmkt-color-swatch" data-color="#111111" style="background:#111111;border:1.5px solid #444;"></button>
+              <label class="mmkt-color-swatch mmkt-color-custom" title="Personnalisée">
+                <input type="color" id="mmkt-color-custom-input" value="#F0B429">
+              </label>
+            </div>
+          </div>
+
+          <!-- ═══ ÉTAPE 4 : MESSAGE ═══ -->
+          <div class="mmkt-panel" data-panel="4">
+            <div class="mmkt-panel-title">Le message</div>
+            <div class="mmkt-panel-desc">Choisis une accroche suggérée ou écris la tienne.</div>
+
+            <label class="mmkt-label" id="mmkt-suggestions-label" style="display:none;">Suggestions de l'IA <span class="mmkt-optional">(clique pour utiliser)</span></label>
+            <div class="mmkt-suggestions-wrap" id="mmkt-suggestions-wrap" style="display:none;">
+              <div class="mmkt-suggestions-loading" id="mmkt-suggestions-loading">
+                <div class="mmkt-spinner"></div>
+                <span>L'IA prépare des idées…</span>
+              </div>
+              <div class="mmkt-suggestions-list" id="mmkt-suggestions-list"></div>
+              <button type="button" class="mmkt-suggestions-refresh" id="mmkt-suggestions-refresh">↻ D'autres idées</button>
+            </div>
+
+            <label class="mmkt-label">Décris ce que tu veux dire <span class="mmkt-optional">(occasion, promo, ambiance...)</span></label>
+            <textarea id="mmkt-prompt" class="mmkt-textarea" placeholder="Ex : Promo -20% ce week-end, ton festif et urgent" maxlength="400" rows="3"></textarea>
+
+            <label class="mmkt-label">Ton</label>
+            <div class="mmkt-chip-row" id="mmkt-ton-chips">
+              <button type="button" class="mmkt-chip active" data-ton="dynamique">Dynamique</button>
+              <button type="button" class="mmkt-chip" data-ton="professionnel">Professionnel</button>
+              <button type="button" class="mmkt-chip" data-ton="fun">Fun</button>
+              <button type="button" class="mmkt-chip" data-ton="urgent">Urgent / Promo</button>
+            </div>
+          </div>
+
+          <!-- ═══ ÉTAPE 5 : FORMAT ═══ -->
+          <div class="mmkt-panel" data-panel="5">
+            <div class="mmkt-panel-title">Format final</div>
+            <div class="mmkt-panel-desc">Choisis ce que tu veux générer.</div>
+
+            <div class="mmkt-cible-row">
+              <button type="button" class="mmkt-cible-btn active" data-type="les_deux">Texte + Image</button>
+              <button type="button" class="mmkt-cible-btn" data-type="texte">Texte seul</button>
+              <button type="button" class="mmkt-cible-btn" data-type="image">Image seule</button>
+            </div>
+
+            <div id="mmkt-mode-image-wrap">
+              <label class="mmkt-label">Style du visuel</label>
+              <div class="mmkt-cible-row" id="mmkt-mode-image-row">
+                <button type="button" class="mmkt-cible-btn active" data-mode-image="canvas">Montage pro (vraies photos)</button>
+                <button type="button" class="mmkt-cible-btn" data-mode-image="ia">Génération IA</button>
+                <button type="button" class="mmkt-cible-btn" data-mode-image="corporate" id="mmkt-mode-corporate-btn" style="display:none;">Affiche Corporate</button>
+              </div>
+            </div>
+
+            <div id="mmkt-template-wrap">
+              <label class="mmkt-label">Modèle de montage</label>
+              <div class="mmkt-cible-row">
+                <button type="button" class="mmkt-cible-btn active" data-template-mode="aleatoire">Aléatoire</button>
+                <button type="button" class="mmkt-cible-btn" data-template-mode="manuel">Choisir le style</button>
+              </div>
+              <div class="mmkt-template-grid" id="mmkt-template-grid" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- NAVIGATION -->
+          <div class="mmkt-wizard-nav">
+            <button type="button" class="mmkt-btn mmkt-btn-outline" id="mmkt-prev-btn" style="display:none;">Précédent</button>
+            <button type="button" class="mmkt-btn mmkt-btn-primary" id="mmkt-next-btn">Suivant</button>
+            <button type="submit" class="mmkt-btn mmkt-btn-primary" id="mmkt-submit-btn" style="display:none;">
+              <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+              Générer
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Colonne droite : résultat + historique -->
+      <div class="mmkt-col mmkt-col-list">
+
+        <div id="mmkt-result-wrap" style="display:none;">
+          <div class="mmkt-section-title">Résultat</div>
+          <div class="mmkt-section-desc">Prêt à publier. Télécharge l'image ou copie le texte pour poster.</div>
+
+          <!-- Tabs par plateforme -->
+          <div class="mmkt-result-tabs" id="mmkt-result-tabs"></div>
+
+          <div class="mmkt-card mmkt-result-card" id="mmkt-result-card">
+            <canvas id="mmkt-canvas" width="1080" height="1080" style="display:none;"></canvas>
+            <div class="mmkt-result-img-wrap" id="mmkt-result-img-wrap" style="display:none;">
+              <img id="mmkt-result-img" alt="Visuel généré">
+              <div class="mmkt-result-img-loading" id="mmkt-result-img-loading">
+                <div class="mmkt-spinner"></div>
+                <span>Création du visuel…</span>
+              </div>
+            </div>
+
+            <div id="mmkt-result-texte-wrap" style="display:none;">
+              <textarea id="mmkt-result-texte" class="mmkt-textarea mmkt-result-textarea" rows="6" readonly></textarea>
+            </div>
+
+            <div class="mmkt-result-actions">
+              <button type="button" class="mmkt-btn mmkt-btn-outline" id="mmkt-copy-texte-btn" style="display:none;">Copier le texte</button>
+              <button type="button" class="mmkt-btn mmkt-btn-outline" id="mmkt-download-img-btn" style="display:none;">Télécharger l'image</button>
+            </div>
+
+            <div class="mmkt-share-row" id="mmkt-share-row" style="display:none;">
+              <span class="mmkt-share-label">Partager vers</span>
+              <div class="mmkt-share-buttons">
+                <button type="button" class="mmkt-share-btn" id="mmkt-share-whatsapp" title="WhatsApp">
+                  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2z"/><path d="M8.5 8.5c.3-.7.6-.7 1-.7h.6c.2 0 .5 0 .7.5s.8 1.9.8 2.1.1.3 0 .5-.2.3-.4.5-.4.4-.5.6-.3.3-.1.6a7 7 0 0 0 1.4 1.7 6.5 6.5 0 0 0 2 1.2c.2.1.4.1.5-.1s.6-.7.8-1 .4-.2.6-.1l1.8.9c.2.1.4.2.4.4s0 1-.4 1.5-1.4 1-2.5 1a8.5 8.5 0 0 1-4.4-1.7 9 9 0 0 1-2.9-3.1c-.2-.4-1.4-2-1.4-3.8s.9-2.6 1.1-3z"/></svg>
+                </button>
+                <button type="button" class="mmkt-share-btn" id="mmkt-share-facebook" title="Facebook">
+                  <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </button>
+                <button type="button" class="mmkt-share-btn" id="mmkt-share-tiktok" title="TikTok">
+                  <svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                </button>
+                <button type="button" class="mmkt-share-btn" id="mmkt-share-linkedin" title="LinkedIn">
+                  <svg viewBox="0 0 24 24"><path d="M6.5 8.5v11M6.5 5v.01M11.5 19.5v-6.5c0-1.7 1-3 3-3s3 1.3 3 3v6.5M11.5 13v6.5"/><rect x="2" y="2" width="20" height="20" rx="3"/></svg>
+                </button>
+              </div>
+              <div class="mmkt-share-hint">TikTok ne permet pas de pré-remplir un post : l'image sera téléchargée, ouvre l'app TikTok pour la publier.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mmkt-section-title" style="margin-top:24px;">Historique</div>
+        <div class="mmkt-section-desc">Tes contenus générés précédemment.</div>
+
+        <div class="mmkt-list" id="mmkt-list">
+          <div class="mmkt-empty" id="mmkt-empty">Chargement…</div>
+        </div>
+
+        <!-- Nettoyage du stockage -->
+        <div class="mmkt-section-title" style="margin-top:24px;">Stockage</div>
+        <div class="mmkt-section-desc">Supprime les visuels générés qui ne servent plus, pour libérer de l'espace.</div>
+        <div class="mmkt-card mmkt-storage-card">
+          <div class="mmkt-storage-info" id="mmkt-storage-info">Lance une analyse pour voir l'espace récupérable.</div>
+          <div class="mmkt-storage-actions">
+            <button type="button" class="mmkt-btn mmkt-btn-outline" id="mmkt-storage-scan-btn">Analyser le stockage</button>
+            <button type="button" class="mmkt-btn mmkt-btn-danger" id="mmkt-storage-clean-btn" style="display:none;">Supprimer les inutilisées</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="mmkt-toast" id="mmkt-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-marketing.js"></script>
+</body>
+</html>

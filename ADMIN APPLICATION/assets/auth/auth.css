@@ -1,0 +1,353 @@
+/* ============================================================
+   AURA MARKET — Espace Administrateur / Connexion-Inscription
+   Fichier : assets/auth/auth.css
+   (style aligné sur VENDOR APPLICATION)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary:        #FFFFFF;
+  --primary-dark:   #D9D9D9;
+  --primary-light:  #272727;
+  --primary-soft:   #3D3D3D;
+  --white:          #181818;
+  --bg:             #0F0F0F;
+  --text:           #FFFFFF;
+  --text-secondary: #AAAAAA;
+  --text-muted:     #717171;
+  --border:         #303030;
+  --success:        #10B981;
+  --danger:         #E0276F;
+  --shadow-sm:      0 1px 2px 0 rgba(0,0,0,.4);
+  --radius:         8px;
+  --radius-md:      12px;
+  --radius-lg:      16px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: hidden; }
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Topbar ──────────────────────────────────────────────── */
+.au-topbar {
+  height: 64px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.au-topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.au-topbar-title-icon { width: 19px; height: 19px; stroke: var(--text); stroke-width: 2; fill: none; }
+
+/* ─── Page wrapper ────────────────────────────────────────── */
+.au-page {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 60px;
+}
+
+.au-page > * { width: 100%; max-width: 420px; }
+
+/* ─── Hero ────────────────────────────────────────────────── */
+.au-hero { text-align: left; padding: 4px 2px 8px; }
+.au-title { font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.au-title-logo { height: 68px; width: auto; object-fit: contain; }
+.au-sub { font-size: 13.5px; color: var(--text-muted); margin-top: 6px; font-weight: 400; }
+
+/* ─── Tabs ────────────────────────────────────────────────── */
+.au-tabs {
+  display: flex;
+  gap: 12px;
+  margin: 24px auto 0;
+}
+.au-tab {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--primary-light);
+  color: var(--text-muted);
+  transition: color .2s, background .2s;
+  font-family: 'Inter', sans-serif;
+}
+.au-tab.active {
+  color: var(--bg);
+  background: var(--text);
+  font-weight: 700;
+}
+.au-tab:not(.active):hover { color: var(--text-secondary); background: var(--primary-soft); }
+
+/* ─── Card / form ─────────────────────────────────────────── */
+.au-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 24px 2px 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.au-field { display: flex; flex-direction: column; gap: 7px; }
+.au-field:focus-within .au-label { color: var(--text); }
+.au-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); transition: color .2s; }
+
+.au-input-wrap { position: relative; display: flex; align-items: center; }
+.au-input-wrap > svg {
+  position: absolute; right: 2px;
+  width: 16px; height: 16px;
+  stroke: var(--text-muted); stroke-width: 1.8; fill: none;
+  pointer-events: none;
+  transition: stroke .2s;
+}
+.au-input-wrap:focus-within > svg { stroke: var(--text); }
+.au-input {
+  width: 100%; height: 44px;
+  padding: 0 26px 0 4px;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  border-radius: 0;
+  font-size: 14.5px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  background: transparent;
+  outline: none;
+  transition: border-color .2s, border-bottom-width .2s;
+}
+.au-input:focus { border-bottom-color: var(--text); border-bottom-width: 2px; }
+.au-input.error { border-bottom-color: var(--danger); }
+
+.au-toggle-pw {
+  position: absolute; right: 4px;
+  background: none; border: none;
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center;
+  z-index: 1;
+}
+.au-toggle-pw svg { width: 17px; height: 17px; stroke: var(--text-muted); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
+.au-toggle-pw:hover svg { stroke: var(--text); }
+.au-input-wrap:has(.au-toggle-pw) > svg:not(.au-toggle-pw svg) { display: none; }
+
+.au-hint { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.au-err  { font-size: 12px; color: var(--danger); font-weight: 600; display: none; }
+.au-err:not(:empty) { display: block; }
+
+/* ─── Indicatif téléphone +225 ───────────────────────────────── */
+.au-input-wrap-phone { gap: 8px; }
+.au-phone-prefix {
+  flex-shrink: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1.5px solid var(--border);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+.au-input-phone { padding-left: 0; }
+
+/* ─── Indicateur de force du mot de passe ───────────────────── */
+.au-strength { display: flex; align-items: center; gap: 10px; }
+.au-strength-bars { display: flex; gap: 4px; flex: 0 0 auto; }
+.au-strength-bar {
+  width: 28px; height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background .2s;
+}
+.au-strength-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color .2s;
+}
+
+/* ─── Lien mot de passe oublié ──────────────────────────────── */
+.au-forgot-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  cursor: pointer;
+  padding: 0;
+  margin-top: -8px;
+  font-family: 'Inter', sans-serif;
+  align-self: flex-end;
+}
+.au-forgot-link:hover { color: var(--text); text-decoration: underline; }
+
+/* ─── Besoin d'aide ? ────────────────────────────────────────── */
+.au-help { position: relative; text-align: center; margin-top: 28px; }
+.au-help-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  text-decoration: underline;
+}
+.au-help-link:hover { color: var(--text-secondary); }
+.au-help-menu {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  min-width: 240px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  z-index: 50;
+}
+.au-help-menu.show { display: flex; }
+.au-help-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.au-help-option:hover { background: var(--primary-light); }
+.au-help-option svg { width: 16px; height: 16px; stroke: var(--text-secondary); fill: none; stroke-width: 1.8; flex-shrink: 0; }
+
+/* ─── Case consentement CGU / Confidentialité ───────────────── */
+.au-consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.au-consent-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  margin-top: 0;
+  flex-shrink: 0;
+  border: 1.5px solid var(--text-muted);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: background .15s, border-color .15s;
+}
+.au-consent-checkbox:checked {
+  background: var(--text);
+  border-color: var(--text);
+}
+.au-consent-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px; top: 2px;
+  width: 5px; height: 10px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.au-consent-checkbox.error { border-color: var(--danger); }
+.au-consent-label {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  font-weight: 400;
+  cursor: pointer;
+}
+.au-consent-label a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.au-consent-label a:hover { color: var(--text-secondary); }
+
+/* ─── Bouton principal ────────────────────────────────────── */
+.au-btn {
+  height: 50px;
+  border-radius: 10px;
+  border: none;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14.5px; font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: none;
+  transition: opacity .2s, transform .15s;
+  margin-top: 4px;
+  position: relative;
+}
+.au-btn:hover  { opacity: .88; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.au-btn:active { transform: scale(.98); box-shadow: none; }
+.au-btn:disabled { opacity: .5; cursor: not-allowed; }
+.au-btn svg { width: 16px; height: 16px; stroke: var(--bg); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.au-loader {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(15,15,15,.25);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: au-spin .7s linear infinite;
+}
+@keyframes au-spin { to { transform: rotate(360deg); } }
+
+/* ─── États de chargement (gérés en JS via display) ─────────
+   quand load-* est visible on masque le texte/l'icône         */
+#btn-login[disabled] #btn-login-ico,
+#btn-register[disabled] #btn-register-ico { display: none; }
+
+/* ─── Responsive tablette / desktop ─────────────────────────
+   même logique que profile.css                                */
+@media (min-width: 640px) {
+  .au-page  { padding: 20px 14px 50px; }
+  .au-card  { padding: 22px 2px 0; }
+}
+
+@media (min-width: 900px) {
+  .au-topbar { padding: 0 40px; }
+  .au-title { font-size: 30px; }
+  .au-title-logo { height: 74px; }
+  .au-input { padding-left: 2px; }
+  .au-btn { height: 50px; }
+  .au-page { align-items: center; justify-content: center; min-height: calc(100vh - 64px); padding: 40px 24px; }
+}

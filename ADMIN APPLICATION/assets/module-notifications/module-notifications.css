@@ -1,0 +1,123 @@
+/* ════════════════════════════════════════════════════════════
+   MODULE NOTIFICATIONS — cloche topbar (dropdown)
+   Style aligné sur admin.css (noir/blanc, bordures fines, zéro fill)
+════════════════════════════════════════════════════════════ */
+
+.notif-wrap { position: relative; }
+
+.notif-btn {
+  width: 42px; height: 42px; border-radius: 14px;
+  border: none; background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; position: relative;
+  transition: transform .2s ease;
+}
+.notif-btn:hover { transform: translateY(-1px); }
+.notif-btn svg { width: 20px; height: 20px; fill: none; stroke: var(--text); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.notif-badge {
+  position: absolute; top: 4px; right: 4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px;
+  background: var(--danger); color: #fff;
+  font-size: 10px; font-weight: 800; line-height: 16px; text-align: center;
+  border: 2px solid var(--bg);
+  display: none;
+}
+.notif-badge.show { display: block; }
+
+/* ── Panneau déroulant ─────────────────────────────────────────── */
+.notif-dropdown {
+  display: none;
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 360px; max-width: calc(100vw - 24px);
+  max-height: 480px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  overflow: hidden;
+  flex-direction: column;
+}
+.notif-dropdown.open { display: flex; }
+
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.notif-header-title { font-size: 14px; font-weight: 800; color: var(--text); }
+.notif-header-count { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+
+.notif-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notif-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.notif-empty svg { width: 30px; height: 30px; stroke: var(--text-muted); margin-bottom: 10px; opacity: .6; }
+
+.notif-section-label {
+  font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted);
+  padding: 12px 16px 6px;
+}
+
+.notif-item {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 11px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: rgba(255,255,255,0.03); }
+
+.notif-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.notif-icon svg { width: 16px; height: 16px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.notif-icon.icon-warn svg { stroke: #F5A623; }
+.notif-icon.icon-danger svg { stroke: var(--danger); }
+.notif-icon.icon-info svg { stroke: #3B82F6; }
+
+.notif-content { flex: 1; min-width: 0; }
+.notif-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.35; }
+.notif-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.notif-count-pill {
+  flex-shrink: 0;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10.5px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.notif-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  flex-shrink: 0;
+}
+.notif-footer-btn {
+  background: transparent; border: none;
+  color: var(--text-muted); font-size: 12px; font-weight: 700;
+  cursor: pointer; padding: 4px;
+  transition: color .15s;
+}
+.notif-footer-btn:hover { color: var(--text); }
+
+@media (max-width: 480px) {
+  .notif-dropdown { position: fixed; top: 64px; right: 8px; left: 8px; width: auto; }
+}

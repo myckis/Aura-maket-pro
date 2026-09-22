@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bannière publicitaire — Aura Market Admin</title>
+  <link rel="stylesheet" href="module-bannieres.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="mban-topbar">
+    <button class="mban-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="mban-topbar-title">Bannière publicitaire</span>
+  </div>
+
+  <div class="mban-body">
+
+    <div class="mban-columns">
+
+      <!-- Colonne gauche : formulaire de création -->
+      <div class="mban-col mban-col-form">
+        <div class="mban-section-title">Nouvelle bannière</div>
+        <div class="mban-section-desc">Elle s'affichera juste avant « Nouveautés » côté client, et juste avant les statistiques côté vendeur.</div>
+
+        <form id="mban-form" class="mban-card">
+
+          <label class="mban-label">Titre <span class="mban-optional">(optionnel — affiché en overlay sur l'image)</span></label>
+          <input type="text" id="mban-titre" class="mban-input" placeholder="Ex : Vendredi Fou -30% sur toute la boutique" maxlength="80">
+
+          <label class="mban-label">Image ou vidéo</label>
+          <div class="mban-upload-zone" id="mban-upload-zone">
+            <input type="file" id="mban-file-input" accept="image/*,video/*" hidden>
+            <div class="mban-upload-empty" id="mban-upload-empty">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><circle cx="7" cy="7" r=".01"/></svg>
+              <span>Toucher pour choisir un fichier</span>
+              <span class="mban-upload-hint">JPG, PNG, WEBP ou MP4 — 5 Mo max</span>
+            </div>
+            <div class="mban-upload-preview" id="mban-upload-preview" style="display:none;">
+              <img id="mban-preview-img" style="display:none;">
+              <video id="mban-preview-video" muted loop autoplay playsinline style="display:none;"></video>
+              <button type="button" class="mban-preview-remove" id="mban-preview-remove">Retirer</button>
+            </div>
+          </div>
+
+          <label class="mban-label">Diffuser vers</label>
+          <div class="mban-cible-row" id="mban-cible-row">
+            <button type="button" class="mban-cible-btn" data-cible="client">Application client</button>
+            <button type="button" class="mban-cible-btn" data-cible="vendeur">Application vendeur</button>
+            <button type="button" class="mban-cible-btn active" data-cible="les_deux">Les deux</button>
+          </div>
+
+          <label class="mban-label">Lien de destination <span class="mban-optional">(optionnel — ouvert au clic)</span></label>
+          <input type="url" id="mban-lien" class="mban-input" placeholder="https://...">
+
+          <div class="mban-toggle-row">
+            <div>
+              <div class="mban-toggle-label">Bannière active</div>
+              <div class="mban-toggle-sub">Diffusée immédiatement si activée</div>
+            </div>
+            <label class="mban-switch">
+              <input type="checkbox" id="mban-actif" checked>
+              <span class="mban-switch-track"></span>
+            </label>
+          </div>
+
+          <button type="submit" class="mban-btn mban-btn-primary" id="mban-submit-btn">Publier la bannière</button>
+        </form>
+      </div>
+
+      <!-- Colonne droite : liste des bannières existantes -->
+      <div class="mban-col mban-col-list">
+        <div class="mban-section-title">Bannières existantes</div>
+        <div class="mban-section-desc">Glisser une carte pour changer son ordre d'affichage dans le carrousel.</div>
+
+        <div class="mban-list" id="mban-list">
+          <div class="mban-empty" id="mban-empty">Chargement…</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="mban-toast" id="mban-toast"></div>
+
+  <script src="../js/config.js"></script>
+  <script src="module-bannieres.js"></script>
+</body>
+</html>

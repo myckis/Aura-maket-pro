@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <title>Mot de passe oublié — Espace Administrateur</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+  <header class="au-topbar">
+    <div class="au-topbar-title">
+      <button class="au-back-btn" onclick="history.back()" aria-label="Retour" style="background:none;border:none;position:absolute;left:16px;cursor:pointer;display:flex;">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--text);stroke-width:2;fill:none;"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span>Mot de passe oublié</span>
+    </div>
+  </header>
+
+  <div class="au-page">
+
+    <!-- ─── ÉCRAN 1 — SAISIE DE L'EMAIL ─── -->
+    <div id="screen-request">
+
+      <div class="au-hero">
+        <div class="au-title" style="font-size:22px;">Mot de passe oublié ?</div>
+        <div class="au-sub">Entrez votre adresse email. Nous vous envoyons un lien pour réinitialiser votre mot de passe.</div>
+      </div>
+
+      <div class="au-card">
+
+        <div class="au-field">
+          <label class="au-label">Adresse email</label>
+          <div class="au-input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input class="au-input" id="reset-email" type="email" placeholder="vous@auramarket.ci" autocomplete="email">
+          </div>
+          <span class="au-err" id="err-reset-email"></span>
+        </div>
+
+        <button class="au-btn" id="btn-reset" onclick="handleRequestReset()">
+          <span id="btn-reset-txt">Envoyer le lien</span>
+          <div class="au-loader" id="load-reset"></div>
+          <svg viewBox="0 0 24 24" id="btn-reset-ico"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <button class="au-forgot-link" type="button" style="align-self:center;" onclick="location.href='../../index.html'">
+          Retour à la connexion
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ─── ÉCRAN 2 — CONFIRMATION D'ENVOI ─── -->
+    <div id="screen-sent" style="display:none;">
+
+      <div class="au-hero" style="text-align:center;">
+        <div class="au-title" style="font-size:22px; justify-content:center;">Vérifiez votre boîte mail</div>
+        <div class="au-sub">
+          Un lien de réinitialisation a été envoyé à<br>
+          <span id="sent-email-target" style="font-weight:700; color:var(--text);">—</span>
+        </div>
+      </div>
+
+      <div class="au-card">
+
+        <p style="font-size:13px; color:var(--text-muted); text-align:center; line-height:1.6;">
+          Cliquez sur le lien reçu par email pour choisir un nouveau mot de passe.
+          Pensez à vérifier vos spams si vous ne le trouvez pas.
+        </p>
+
+        <button class="au-forgot-link" type="button" id="btn-resend-reset" style="align-self:center;" onclick="handleResendReset()">
+          Je n'ai rien reçu — Renvoyer le lien
+        </button>
+
+        <button class="au-btn" onclick="location.href='../../index.html'">
+          <span>Retour à la connexion</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="oubliemotdepasse.js"></script>
+</body>
+</html>

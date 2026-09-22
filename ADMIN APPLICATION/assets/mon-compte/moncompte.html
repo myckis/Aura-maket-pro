@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="../js/theme-engine.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <title>Mon compte — Aura Market Admin</title>
+  <link rel="stylesheet" href="../mon-compte/moncompte.css">
+  <script src="../js/config.js"></script>
+  <script>
+    if (!AURA_AUTH.requireAuth()) {
+      document.write("");
+      throw new Error("redirect");
+    }
+  </script>
+</head>
+<body>
+
+  <header class="mc-topbar">
+    <button class="mc-back" onclick="window.location.href='../../dashboard.html'">
+      <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <span>Mon compte</span>
+    <span class="mc-spacer"></span>
+  </header>
+
+  <main class="mc-page">
+
+    <div class="mc-hero">
+      <div class="mc-avatar" id="mc-avatar">?</div>
+      <div class="mc-hero-info">
+        <div class="mc-hero-name" id="mc-nom">—</div>
+        <div class="mc-hero-sub" id="mc-email">—</div>
+        <div class="mc-badge" id="mc-role">Admin</div>
+      </div>
+    </div>
+
+    <div class="mc-card">
+      <div class="mc-card-header">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span>Informations personnelles</span>
+      </div>
+      <div class="mc-row">
+        <span class="mc-label">Nom</span>
+        <span class="mc-value" id="info-nom">—</span>
+      </div>
+      <div class="mc-row">
+        <span class="mc-label">Téléphone</span>
+        <span class="mc-value" id="info-telephone">—</span>
+      </div>
+      <div class="mc-row">
+        <span class="mc-label">Email</span>
+        <span class="mc-value" id="info-email">—</span>
+      </div>
+      <div class="mc-row mc-row-last">
+        <span class="mc-label">Rôle</span>
+        <span class="mc-value" id="info-role">—</span>
+      </div>
+    </div>
+
+    <div class="mc-card">
+      <div class="mc-card-header">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Paramètres</span>
+      </div>
+      <button class="mc-action" onclick="ouvrirModalMotDePasse()">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>Changer le mot de passe</span>
+        <svg class="mc-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button class="mc-action" id="btn-gerer-roles" disabled style="opacity:.4;cursor:not-allowed;" title="Fonctionnalité à venir">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 8a4 4 0 0 1 0 7.75"/><path d="M22 21a7 7 0 0 0-6.4-6.97"/></svg>
+        <span>Gérer les rôles admin</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-muted);">Bientôt</span>
+      </button>
+    </div>
+
+    <button class="mc-logout-btn" onclick="openLogoutModal()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Se déconnecter
+    </button>
+
+  </main>
+
+  <div id="modal-logout" class="mc-modal-overlay">
+    <div class="mc-modal-card">
+      <div class="mc-modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+      <h3 class="mc-modal-title">Se déconnecter ?</h3>
+      <p class="mc-modal-text">Vous devrez vous reconnecter pour accéder à l'espace administrateur.</p>
+      <div class="mc-modal-actions">
+        <button class="mc-modal-btn mc-modal-btn-cancel" onclick="closeLogoutModal()">Annuler</button>
+        <button class="mc-modal-btn mc-modal-btn-confirm" onclick="confirmLogout()">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-password" class="mc-modal-overlay">
+    <div class="mc-modal-card">
+      <div class="mc-modal-icon" style="background:var(--primary-light);">
+        <svg viewBox="0 0 24 24" stroke="var(--text)"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      </div>
+      <h3 class="mc-modal-title">Changer le mot de passe</h3>
+      <p class="mc-modal-text" id="mc-password-text">Un lien de réinitialisation sera envoyé à votre adresse e-mail.</p>
+      <div class="mc-modal-actions">
+        <button class="mc-modal-btn mc-modal-btn-cancel" onclick="closePasswordModal()" id="mc-password-cancel">Annuler</button>
+        <button class="mc-modal-btn mc-modal-btn-confirm" onclick="confirmPasswordReset()" id="mc-password-confirm" style="background:var(--primary);color:#000;">Envoyer le lien</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../mon-compte/moncompte.js"></script>
+</body>
+</html>
