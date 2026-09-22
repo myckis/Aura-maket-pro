@@ -1866,6 +1866,7 @@ async function handleAutomatisationsExecuterManuel(request, env) {
     else if (cle === "analyse_signalements") resultat = await traiterAnalyseSignalements(cfg, env);
     else if (cle === "publication_tiktok") resultat = await traiterPublicationTiktok(cfg, env);
     else if (cle === "commandes") resultat = await traiterCommandesBloquees(cfg, env);
+    else if (cle === "vendeurs") resultat = await traiterResponsableVendeur(cfg, env);
     else resultat = await traiterModuleGenerique(cle, cfg, env);
   } catch (err) {
     console.error(`[automatisations] Erreur exécution manuelle ${cle} :`, err);
@@ -2386,6 +2387,139 @@ async function appliquerAnnulationCommande(item, motif, env) {
   });
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   "Responsable Vendeur IA" — module externe "vendeurs"
+   ══════════════════════════════════════════════════════════════════════
+   Ne prend AUCUNE décision destructive (jamais de changement de statut) :
+   son seul travail est de repérer les vendeurs bloqués dans leur parcours
+   et de préparer le message + lien WhatsApp de relance, prêts à être
+   envoyés par l'admin. Tant que l'API WhatsApp Business (envoi sans clic
+   humain) n'est pas branchée, c'est la meilleure automatisation possible :
+   elle retire la charge de "se souvenir de qui relancer", pas le clic.
+   Deux cas repérés :
+   1) Inscrit mais KYC jamais entamé après 48h (statut='en_attente' et
+      aucune ligne kyc_vendeurs, ou kyc_vendeurs.statut='non_soumis').
+   2) Approuvé mais aucun produit posté après 3 jours (statut='approuve'
+      et produits_count=0).
+   Une relance déjà journalisée pour un vendeur dans les derniers
+   MAUT_VENDEUR_RELANCE_COOLDOWN_JOURS n'est pas répétée à chaque cron. */
+const MAUT_VENDEUR_HEURES_AVANT_RELANCE_KYC = 48;
+const MAUT_VENDEUR_JOURS_AVANT_RELANCE_PRODUIT = 3;
+const MAUT_VENDEUR_RELANCE_COOLDOWN_JOURS = 3;
+const MAUT_VENDEUR_APP_URL = "https://auramarket1pro.pages.dev";
+
+async function traiterResponsableVendeur(cfg, env) {
+  const candidatsKyc = await trouverVendeursKycNonSoumis(env);
+  const candidatsProduit = await trouverVendeursSansProduit(env);
+  const candidats = [...candidatsKyc, ...candidatsProduit];
+  if (!candidats.length) return { traites: 0 };
+
+  let compteurs = { signale_urgent: 0, ignores_cooldown: 0, erreur: 0 };
+
+  for (const c of candidats) {
+    try {
+      const dejaRelance = await relanceRecente(env, "users_vendeurs", c.id, MAUT_VENDEUR_RELANCE_COOLDOWN_JOURS);
+      if (dejaRelance) {
+        compteurs.ignores_cooldown++;
+        continue;
+      }
+
+      const message = c.typeRelance === "kyc_non_soumis"
+        ? `Bonjour ${c.nom_responsable} 👋 Ta boutique "${c.nom_boutique}" sur AuraMarket est presque prête ! Il ne manque que la vérification d'identité (KYC) pour commencer à vendre. Termine-la ici : ${MAUT_VENDEUR_APP_URL} — on est là si besoin 🙌`
+        : `Bonjour ${c.nom_responsable} 👋 Ta boutique "${c.nom_boutique}" est validée sur AuraMarket, bravo ! Il ne manque plus qu'un premier produit pour commencer à vendre. Poste-le dès maintenant : ${MAUT_VENDEUR_APP_URL}`;
+      const telephoneWa = (c.telephone || "").replace(/\D/g, "");
+      const lienWhatsapp = telephoneWa ? `https://wa.me/${telephoneWa}?text=${encodeURIComponent(message)}` : null;
+
+      await enregistrerLogAutomatisation(env, {
+        cle: "vendeurs",
+        cibleTable: "users_vendeurs",
+        cibleId: c.id,
+        decision: "signale_urgent",
+        confiance: null,
+        motif: c.typeRelance === "kyc_non_soumis"
+          ? `KYC jamais soumis, inscrit depuis ${c.ancienneteLabel}.`
+          : `Approuvé mais aucun produit posté depuis ${c.ancienneteLabel}.`,
+        rawReponseIa: { type_relance: c.typeRelance, message, lien_whatsapp: lienWhatsapp }
+      });
+      compteurs.signale_urgent++;
+    } catch (err) {
+      console.error("[vendeurs] Erreur candidat", c.id, err);
+      compteurs.erreur++;
+    }
+  }
+
+  return { traites: candidats.length, ...compteurs };
+}
+
+async function trouverVendeursKycNonSoumis(env) {
+  const dateLimite = new Date(Date.now() - MAUT_VENDEUR_HEURES_AVANT_RELANCE_KYC * 60 * 60 * 1000).toISOString();
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/users_vendeurs?statut=eq.en_attente&created_at=lte.${encodeURIComponent(dateLimite)}&select=id,nom_responsable,nom_boutique,telephone,created_at&order=created_at.asc&limit=50`,
+    { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`, Accept: "application/json" } }
+  );
+  if (!res.ok) return [];
+  const vendeurs = await res.json().catch(() => []);
+  if (!vendeurs.length) return [];
+
+  const ids = vendeurs.map(v => v.id);
+  const kycRes = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/kyc_vendeurs?vendeur_id=in.(${ids.join(",")})&select=vendeur_id,statut`,
+    { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`, Accept: "application/json" } }
+  );
+  const kycRows = kycRes.ok ? await kycRes.json().catch(() => []) : [];
+  const kycParVendeur = new Map(kycRows.map(k => [k.vendeur_id, k.statut]));
+
+  return vendeurs
+    .filter(v => {
+      const statutKyc = kycParVendeur.get(v.id);
+      return !statutKyc || statutKyc === "non_soumis";
+    })
+    .map(v => ({
+      id: v.id,
+      nom_responsable: v.nom_responsable,
+      nom_boutique: v.nom_boutique,
+      telephone: v.telephone,
+      typeRelance: "kyc_non_soumis",
+      ancienneteLabel: formaterAncienneteJours(v.created_at)
+    }));
+}
+
+async function trouverVendeursSansProduit(env) {
+  const dateLimite = new Date(Date.now() - MAUT_VENDEUR_JOURS_AVANT_RELANCE_PRODUIT * 24 * 60 * 60 * 1000).toISOString();
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/users_vendeurs?statut=eq.approuve&produits_count=eq.0&created_at=lte.${encodeURIComponent(dateLimite)}&select=id,nom_responsable,nom_boutique,telephone,created_at&order=created_at.asc&limit=50`,
+    { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`, Accept: "application/json" } }
+  );
+  if (!res.ok) return [];
+  const vendeurs = await res.json().catch(() => []);
+  return vendeurs.map(v => ({
+    id: v.id,
+    nom_responsable: v.nom_responsable,
+    nom_boutique: v.nom_boutique,
+    telephone: v.telephone,
+    typeRelance: "produit_manquant",
+    ancienneteLabel: formaterAncienneteJours(v.created_at)
+  }));
+}
+
+function formaterAncienneteJours(iso) {
+  const jours = Math.floor((Date.now() - new Date(iso).getTime()) / (24 * 60 * 60 * 1000));
+  return jours <= 0 ? "moins d'un jour" : `${jours} jour${jours > 1 ? "s" : ""}`;
+}
+
+/* Évite de relancer le même vendeur à chaque cron (30 min) tant qu'une
+   relance du même type est déjà journalisée récemment. */
+async function relanceRecente(env, cibleTable, cibleId, joursMin) {
+  const dateLimite = new Date(Date.now() - joursMin * 24 * 60 * 60 * 1000).toISOString();
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/automatisation_logs?cible_table=eq.${cibleTable}&cible_id=eq.${cibleId}&created_at=gte.${encodeURIComponent(dateLimite)}&select=id&limit=1`,
+    { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`, Accept: "application/json" } }
+  );
+  if (!res.ok) return false;
+  const rows = await res.json().catch(() => []);
+  return rows.length > 0;
+}
+
 async function traiterPublicationTiktok(cfg, env) {
   if (!env.TIKTOK_ACCESS_TOKEN) {
     return { statut: "en_attente_validation_tiktok", info: "Clés TikTok non configurées — module prêt mais inactif tant que l'app n'est pas validée par TikTok for Developers." };
@@ -2431,6 +2565,9 @@ async function executerAutomatisationsCron(env) {
   }
   if (config.commandes?.actif) {
     rapport.commandes = await traiterCommandesBloquees(config.commandes, env).catch(err => ({ erreur: String(err) }));
+  }
+  if (config.vendeurs?.actif) {
+    rapport.vendeurs = await traiterResponsableVendeur(config.vendeurs, env).catch(err => ({ erreur: String(err) }));
   }
 
   const totalDecisions = Object.values(rapport).reduce((s, r) => s + (r?.valide || 0) + (r?.rejete || 0) + (r?.signale_urgent || 0), 0);

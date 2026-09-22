@@ -420,6 +420,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   background:rgba(113,113,113,.15);padding:2px 7px;border-radius:6px;
 }
 
+.maut-log-whatsapp{
+  display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+  font-size:11.5px;font-weight:700;color:#25D366;
+  background:rgba(37,211,102,.12);padding:6px 10px;border-radius:8px;
+  text-decoration:none;width:fit-content;
+}
+.maut-log-whatsapp svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+
 .maut-log-annuler{
   width:32px;height:32px;border-radius:8px;border:none;flex-shrink:0;
   background:var(--danger-light);color:var(--danger);
