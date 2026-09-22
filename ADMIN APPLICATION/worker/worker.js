@@ -186,6 +186,40 @@ export default {
         return await handleAutomatisationsDeconnecter(request, env);
       }
 
+      /* ══════════════════════════════════════════════════════════════
+         ÉQUIPE IA — routes (DG IA + missions des agents)
+         ══════════════════════════════════════════════════════════════ */
+
+      if (path === "/proxy/admin/ia/objectifs" && request.method === "POST") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaObjectifCreer(request, env);
+      }
+
+      if (path === "/proxy/admin/ia/objectifs") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaObjectifsListe(request, env);
+      }
+
+      if (path === "/proxy/admin/ia/objectif") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaObjectifDetail(request, env);
+      }
+
+      if (path === "/proxy/admin/ia/executer") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaExecuter(request, env);
+      }
+
+      if (path === "/proxy/admin/ia/valider") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaValiderTache(request, env);
+      }
+
       /*
        * Route générique admin : DOIT rester après toutes les routes
        * /proxy/admin/... personnalisées ci-dessus, sinon elle les
@@ -221,6 +255,7 @@ export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(executerCronCrmHebdo(env));
     ctx.waitUntil(executerAutomatisationsCron(env)); // <-- module Automatisation
+    ctx.waitUntil(executerEquipeIaCron(env).catch(err => console.error("[equipe ia cron] Erreur :", err))); // <-- Équipe IA : fait avancer les missions en cours
     ctx.waitUntil(executerGenerationPronosticsDuJour(env).catch(err => console.error("[pronostics cron] Erreur :", err))); // <-- module Pronostics, matchs+analyses prêts à l'ouverture
   }
 };
@@ -2673,6 +2708,606 @@ async function executerAutomatisationsCron(env) {
 
 /* ══════════════════════════════════════════════════════════════════════
    MODULE AUTOMATISATION — fin
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉQUIPE IA — début
+   ══════════════════════════════════════════════════════════════════════
+
+   L'admin donne UN objectif en français au DG IA. Le DG le décompose en
+   missions (ia_taches), chacune confiée à un agent (ia_agents) avec ses
+   dépendances. La boucle d'exécution fait avancer les missions prêtes :
+   chaque agent reçoit en contexte le RÉSULTAT des missions dont il dépend
+   (mémoire partagée — personne ne refait le travail d'un autre), produit
+   sa sortie, et passe le relais via ia_messages.
+
+   L'humain n'intervient que sur les missions marquées
+   requiert_validation_humaine (tout ce qui part vers un client/vendeur ou
+   engage la plateforme) : elles s'arrêtent en "attente_validation" et
+   n'ouvrent la suite de la chaîne qu'une fois approuvées.
+
+   Routes :
+     POST /proxy/admin/ia/objectifs          → créer + faire décomposer par le DG
+     GET  /proxy/admin/ia/objectifs          → liste des objectifs
+     GET  /proxy/admin/ia/objectif?id=...    → détail (missions + fil des agents)
+     POST /proxy/admin/ia/executer           → faire avancer maintenant
+     POST /proxy/admin/ia/valider            → approuver une mission en attente
+   ══════════════════════════════════════════════════════════════════════ */
+
+const IA_MODELE_GROQ = "llama-3.3-70b-versatile";
+const IA_MAX_TACHES_PAR_OBJECTIF = 12;
+const IA_MAX_TACHES_PAR_PASSAGE = 3;
+const IA_MAX_TENTATIVES = 2;
+
+const IA_CONTEXTE_PLATEFORME = `AuraMarket est une marketplace e-commerce ivoirienne (Abidjan) : des vendeurs/boutiques y publient des produits, des clients commandent et paient par mobile money (Wave, MTN MoMo, Orange Money). Un vendeur doit passer une vérification d'identité (KYC) puis publier des produits pour vendre. AuraMarket BTP est la déclinaison destinée aux fournisseurs du bâtiment. Les échanges avec les vendeurs et clients se font principalement sur WhatsApp, en français ivoirien accessible.`;
+
+async function chargerAgentsIa(env) {
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/ia_agents?actif=eq.true&select=*&order=cle.asc`,
+    { headers: entetesSupabase(env) }
+  );
+  if (!res.ok) return [];
+  return await res.json().catch(() => []);
+}
+
+function entetesSupabase(env, extra = {}) {
+  return {
+    apikey: env.SUPABASE_SERVICE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+    Accept: "application/json",
+    ...extra
+  };
+}
+
+/* ── Appel Groq générique renvoyant du JSON structuré ─────────────── */
+async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 2000 }) {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+    body: JSON.stringify({
+      model: IA_MODELE_GROQ,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent }
+      ],
+      temperature: 0.3,
+      max_tokens: maxTokens,
+      response_format: { type: "json_object" }
+    })
+  });
+  if (!res.ok) throw new Error("Groq indisponible : " + (await res.text().catch(() => res.status)));
+  const data = await res.json();
+  const raw = data?.choices?.[0]?.message?.content?.trim();
+  if (!raw) throw new Error("Réponse Groq vide");
+  return JSON.parse(raw);
+}
+
+/* ══════════════════ DG IA : décomposition d'un objectif ══════════════════ */
+
+async function handleIaObjectifCreer(request, env) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) {
+    return jsonResponseCors({ error: "Configuration Supabase manquante" }, 500, request);
+  }
+  if (!env.GROQ_API_KEY) {
+    return jsonResponseCors({ error: "GROQ_API_KEY non configurée : le DG IA ne peut pas analyser l'objectif" }, 500, request);
+  }
+
+  const body = await request.json().catch(() => null);
+  const libelle = (body?.libelle || "").trim();
+  if (!libelle) return jsonResponseCors({ error: "libelle (l'objectif) est requis" }, 400, request);
+
+  const objectifId = crypto.randomUUID();
+  const creerRes = await fetch(`${env.SUPABASE_URL}/rest/v1/ia_objectifs`, {
+    method: "POST",
+    headers: entetesSupabase(env, { "Content-Type": "application/json", Prefer: "return=representation" }),
+    body: JSON.stringify({
+      id: objectifId,
+      libelle,
+      contexte: body?.contexte || {},
+      statut: "en_analyse",
+      cree_par: body?.admin_id || null
+    })
+  });
+  if (!creerRes.ok) {
+    return jsonResponseCors({ error: "Échec création de l'objectif", detail: await creerRes.text().catch(() => "") }, 502, request);
+  }
+
+  let plan;
+  try {
+    plan = await demanderPlanAuDg(libelle, body?.contexte || {}, env);
+  } catch (err) {
+    await patchObjectif(objectifId, { statut: "echec", updated_at: new Date().toISOString() }, env);
+    return jsonResponseCors({ error: "Le DG IA n'a pas pu décomposer l'objectif", detail: String(err?.message || err) }, 502, request);
+  }
+
+  const taches = await enregistrerPlan(objectifId, plan, env);
+  if (!taches.length) {
+    await patchObjectif(objectifId, { statut: "echec", updated_at: new Date().toISOString() }, env);
+    return jsonResponseCors({ error: "Le plan produit ne contenait aucune mission exploitable" }, 502, request);
+  }
+
+  await patchObjectif(objectifId, { statut: "en_cours", updated_at: new Date().toISOString() }, env);
+  await ecrireMessageIa(env, {
+    objectifId,
+    deAgent: "dg",
+    contenu: `Objectif reçu : « ${libelle} ». ${plan.analyse || ""} ${taches.length} mission(s) confiée(s) à l'équipe.`
+  });
+
+  return jsonResponseCors({ objectif_id: objectifId, analyse: plan.analyse || null, taches }, 200, request);
+}
+
+async function demanderPlanAuDg(libelle, contexte, env) {
+  const agents = await chargerAgentsIa(env);
+  const equipe = agents
+    .filter(a => a.cle !== "dg")
+    .map(a => `- ${a.cle} (${a.libelle}) : ${a.mission}`)
+    .join("\n");
+
+  const dg = agents.find(a => a.cle === "dg");
+  const systemPrompt = `${dg?.mission || "Tu es le Directeur Général IA d'AuraMarket."}
+
+${IA_CONTEXTE_PLATEFORME}
+
+Ton équipe disponible :
+${equipe}
+
+Règles de décomposition :
+- Maximum ${IA_MAX_TACHES_PAR_OBJECTIF} missions, chacune confiée à UN agent existant (utilise exactement sa cle).
+- Ordonne les missions par dépendances réelles : une mission ne dépend d'une autre QUE si elle a besoin de son résultat. Les missions indépendantes doivent pouvoir tourner en parallèle (depend_de vide).
+- "depend_de" contient les INDEX (à partir de 0) des missions dont celle-ci a besoin dans ce même tableau. Jamais son propre index, jamais un index supérieur au sien.
+- "instruction" doit être précise et exécutable par l'agent seul, en français, en rappelant ce qu'il doit produire concrètement.
+- Mets "requiert_validation_humaine": true pour toute mission dont le résultat serait envoyé à de vrais clients/vendeurs, publié publiquement, ou engagerait de l'argent.
+- Termine toujours par une mission confiée à l'agent "analyse" qui mesure le résultat de l'objectif.
+
+Réponds UNIQUEMENT en JSON valide :
+{ "analyse": "ta lecture de l'objectif en 2 phrases",
+  "taches": [ { "agent_cle": "prospection", "titre": "...", "instruction": "...", "depend_de": [], "requiert_validation_humaine": false } ] }`;
+
+  const plan = await appelerGroqJson({
+    env,
+    systemPrompt,
+    userContent: `Objectif de l'administrateur : "${libelle}"\nContexte fourni : ${JSON.stringify(contexte || {})}`,
+    maxTokens: 2500
+  });
+  if (!Array.isArray(plan?.taches)) throw new Error("Plan invalide : aucune liste de missions");
+  return plan;
+}
+
+/* Transforme le plan du DG en lignes ia_taches : filtre les agents
+   inconnus, génère les UUID côté Worker pour résoudre les dépendances
+   (index -> uuid) en une seule insertion. */
+async function enregistrerPlan(objectifId, plan, env) {
+  const agents = await chargerAgentsIa(env);
+  const clesValides = new Set(agents.map(a => a.cle));
+  const agentsParCle = new Map(agents.map(a => [a.cle, a]));
+
+  const brutes = plan.taches.slice(0, IA_MAX_TACHES_PAR_OBJECTIF)
+    .filter(t => t && clesValides.has(t.agent_cle) && t.titre && t.instruction);
+  if (!brutes.length) return [];
+
+  const ids = brutes.map(() => crypto.randomUUID());
+  const lignes = brutes.map((t, i) => {
+    const depends = Array.isArray(t.depend_de) ? t.depend_de : [];
+    const depend_de = depends
+      .map(d => Number(d))
+      .filter(d => Number.isInteger(d) && d >= 0 && d < i) // jamais soi-même ni une mission postérieure
+      .map(d => ids[d]);
+    const agent = agentsParCle.get(t.agent_cle);
+    return {
+      id: ids[i],
+      objectif_id: objectifId,
+      agent_cle: t.agent_cle,
+      titre: String(t.titre).slice(0, 200),
+      instruction: String(t.instruction).slice(0, 4000),
+      ordre: i,
+      depend_de,
+      statut: depend_de.length ? "en_attente" : "prete",
+      requiert_validation_humaine: !!t.requiert_validation_humaine || !!agent?.requiert_validation
+    };
+  });
+
+  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/ia_taches`, {
+    method: "POST",
+    headers: entetesSupabase(env, { "Content-Type": "application/json", Prefer: "return=representation" }),
+    body: JSON.stringify(lignes)
+  });
+  if (!res.ok) {
+    console.error("[equipe ia] Échec insertion des missions :", await res.text().catch(() => ""));
+    return [];
+  }
+  return await res.json().catch(() => []);
+}
+
+/* ══════════════════ Boucle d'exécution de l'équipe ══════════════════ */
+
+async function executerEquipeIaCron(env) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY || !env.GROQ_API_KEY) {
+    console.error("[equipe ia] Secrets manquants, exécution annulée.");
+    return { traitees: 0 };
+  }
+
+  const objectifsRes = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/ia_objectifs?statut=in.(en_cours,attente_validation)&select=*&order=created_at.asc&limit=5`,
+    { headers: entetesSupabase(env) }
+  );
+  const objectifs = objectifsRes.ok ? await objectifsRes.json().catch(() => []) : [];
+  if (!objectifs.length) return { traitees: 0 };
+
+  let traitees = 0;
+  for (const objectif of objectifs) {
+    const res = await avancerObjectif(objectif, env).catch(err => {
+      console.error("[equipe ia] Erreur objectif", objectif.id, err);
+      return { traitees: 0 };
+    });
+    traitees += res.traitees || 0;
+    if (traitees >= IA_MAX_TACHES_PAR_PASSAGE) break;
+  }
+  return { traitees };
+}
+
+async function avancerObjectif(objectif, env) {
+  const tachesRes = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/ia_taches?objectif_id=eq.${objectif.id}&select=*&order=ordre.asc`,
+    { headers: entetesSupabase(env) }
+  );
+  const taches = tachesRes.ok ? await tachesRes.json().catch(() => []) : [];
+  if (!taches.length) return { traitees: 0 };
+
+  const parId = new Map(taches.map(t => [t.id, t]));
+  let traitees = 0;
+
+  for (const tache of taches) {
+    if (traitees >= IA_MAX_TACHES_PAR_PASSAGE) break;
+    if (tache.statut !== "en_attente" && tache.statut !== "prete") continue;
+
+    const deps = (tache.depend_de || []).map(id => parId.get(id)).filter(Boolean);
+    if (deps.some(d => d.statut === "echec" || d.statut === "annulee")) {
+      await patchTache(tache.id, { statut: "bloquee", erreur: "Une mission dont celle-ci dépend a échoué." }, env);
+      continue;
+    }
+    if (deps.some(d => d.statut !== "terminee")) continue; // pas encore son tour
+
+    await executerTache(tache, deps, objectif, env);
+    traitees++;
+  }
+
+  await finaliserObjectifSiTermine(objectif, env);
+  return { traitees };
+}
+
+async function executerTache(tache, deps, objectif, env) {
+  await patchTache(tache.id, { statut: "en_cours", started_at: new Date().toISOString(), tentatives: (tache.tentatives || 0) + 1 }, env);
+
+  try {
+    const sortie = await executerAgent(tache, deps, objectif, env);
+    const doitEtreValide = !!tache.requiert_validation_humaine;
+
+    await patchTache(tache.id, {
+      statut: doitEtreValide ? "attente_validation" : "terminee",
+      resultat: sortie.resultat || {},
+      resume: (sortie.resume || "").slice(0, 2000),
+      finished_at: doitEtreValide ? null : new Date().toISOString(),
+      erreur: null
+    }, env);
+
+    await ecrireMessageIa(env, {
+      objectifId: objectif.id,
+      tacheId: tache.id,
+      deAgent: tache.agent_cle,
+      contenu: doitEtreValide
+        ? `Mission « ${tache.titre} » prête, en attente de ton autorisation : ${sortie.resume || ""}`
+        : `Mission « ${tache.titre} » terminée : ${sortie.resume || ""}`
+    });
+
+    if (doitEtreValide) {
+      await patchObjectif(objectif.id, { statut: "attente_validation", updated_at: new Date().toISOString() }, env);
+      await envoyerPushAuxAdmins(env, "Équipe IA — validation requise 🧠", `« ${tache.titre} » attend ton autorisation.`);
+    }
+  } catch (err) {
+    const tentatives = (tache.tentatives || 0) + 1;
+    const definitif = tentatives >= IA_MAX_TENTATIVES;
+    console.error(`[equipe ia] Mission ${tache.id} (${tache.agent_cle}) en erreur :`, err);
+    await patchTache(tache.id, {
+      statut: definitif ? "echec" : "prete",
+      erreur: String(err?.message || err).slice(0, 1000),
+      finished_at: definitif ? new Date().toISOString() : null
+    }, env);
+  }
+}
+
+/* Contexte partagé : ce que l'agent reçoit du travail déjà fait par les
+   autres. C'est le cœur du "personne ne refait le travail d'un autre". */
+function construireContextePartage(deps) {
+  if (!deps.length) return "Aucun travail préalable : tu démarres cette chaîne.";
+  return deps.map(d =>
+    `— ${d.agent_cle} / « ${d.titre} »\n  Résumé : ${d.resume || "(aucun)"}\n  Données : ${JSON.stringify(d.resultat || {}).slice(0, 3000)}`
+  ).join("\n\n");
+}
+
+async function executerAgent(tache, deps, objectif, env) {
+  const contextePartage = construireContextePartage(deps);
+
+  switch (tache.agent_cle) {
+    case "prospection":
+      return await agentProspection(tache, objectif, contextePartage, env);
+    case "vendeur":
+      return await agentVendeur(tache, env);
+    case "client":
+      return await agentClient(tache, env);
+    case "operations":
+      return await agentOperations(tache, env);
+    default:
+      // qualification, crm, marketing, contenu, analyse, support_vendeur, dg :
+      // agents de raisonnement — ils produisent un livrable structuré à
+      // partir du contexte partagé et des données plateforme.
+      return await agentRaisonnement(tache, objectif, contextePartage, env);
+  }
+}
+
+/* ── Agents branchés sur des capacités réelles existantes ─────────── */
+
+async function agentProspection(tache, objectif, contextePartage, env) {
+  if (!env.SERPER_API_KEY) {
+    return { resume: "Recherche impossible : SERPER_API_KEY non configurée.", resultat: { erreur: "serper_absent" } };
+  }
+
+  const criteres = await appelerGroqJson({
+    env,
+    systemPrompt: `Tu prépares une recherche web de prospects pour AuraMarket en Côte d'Ivoire. À partir de l'objectif et de l'instruction, déduis les mots-clés de recherche les plus efficaces (secteur/produit, en français, tels qu'une boutique locale se décrirait) et la ville. Réponds UNIQUEMENT en JSON : { "mots_cles": ["..."], "ville": "", "nombre_par_mot_cle": 15 }`,
+    userContent: `Objectif : ${objectif.libelle}\nInstruction : ${tache.instruction}\nTravail déjà fait :\n${contextePartage}`,
+    maxTokens: 400
+  });
+
+  const motsCles = (Array.isArray(criteres?.mots_cles) ? criteres.mots_cles : []).slice(0, 3);
+  if (!motsCles.length) throw new Error("Aucun mot-clé de prospection déduit");
+  const ville = criteres?.ville || "";
+  const nombre = Math.min(Math.max(Number(criteres?.nombre_par_mot_cle) || 15, 5), 20);
+
+  let total = 0, avecTelephone = 0;
+  const detail = [];
+  for (const motCle of motsCles) {
+    const r = await effectuerProspectionEtSauvegarde(motCle, ville, nombre, env).catch(err => {
+      console.error("[equipe ia/prospection] Erreur", motCle, err);
+      return { total: 0, avecTelephone: 0 };
+    });
+    total += r.total || 0;
+    avecTelephone += r.avecTelephone || 0;
+    detail.push({ mot_cle: motCle, trouves: r.total || 0, avec_telephone: r.avecTelephone || 0 });
+  }
+
+  return {
+    resume: `${total} prospect(s) enregistré(s) dont ${avecTelephone} avec téléphone exploitable (mots-clés : ${motsCles.join(", ")}${ville ? ` — ${ville}` : ""}).`,
+    resultat: { mots_cles: motsCles, ville, total, avec_telephone: avecTelephone, detail, table: "crm_prospects" }
+  };
+}
+
+async function agentVendeur(tache, env) {
+  const r = await traiterResponsableVendeur({ actif: true, validation_auto: false }, env);
+  return {
+    resume: r.traites
+      ? `${r.signale_urgent || 0} vendeur(s) bloqué(s) relancé(s) sur ${r.traites} examiné(s).`
+      : "Aucun vendeur bloqué à relancer actuellement.",
+    resultat: r
+  };
+}
+
+async function agentClient(tache, env) {
+  const r = await traiterResponsableClient({ actif: true, validation_auto: false }, env);
+  return {
+    resume: r.traites
+      ? `${r.signale_urgent || 0} client(s) relancé(s) sur ${r.traites} examiné(s).`
+      : "Aucun client à relancer actuellement.",
+    resultat: r
+  };
+}
+
+async function agentOperations(tache, env) {
+  const compter = async (chemin) => {
+    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/${chemin}&select=id`, {
+      headers: entetesSupabase(env, { Prefer: "count=exact", Range: "0-0" })
+    });
+    const plage = res.headers.get("content-range") || "";
+    const total = Number(plage.split("/")[1]);
+    return Number.isFinite(total) ? total : 0;
+  };
+
+  const etat = {
+    commandes_en_attente: await compter("commandes?statut=eq.en_attente"),
+    kyc_a_verifier: await compter("kyc_vendeurs?statut=eq.en_attente"),
+    produits_a_moderer: await compter("produits_validation?statut=eq.en_attente"),
+    signalements_nouveaux: await compter("signalements?statut=eq.nouveau"),
+    missions_ia_en_echec: await compter("ia_taches?statut=eq.echec")
+  };
+  const points = Object.entries(etat).filter(([, v]) => v > 0).map(([k, v]) => `${k.replace(/_/g, " ")} : ${v}`);
+
+  return {
+    resume: points.length ? `Points de blocage : ${points.join(" | ")}.` : "Aucun blocage détecté sur la plateforme.",
+    resultat: etat
+  };
+}
+
+/* ── Agents de raisonnement (livrable texte structuré) ────────────── */
+
+async function agentRaisonnement(tache, objectif, contextePartage, env) {
+  const agents = await chargerAgentsIa(env);
+  const agent = agents.find(a => a.cle === tache.agent_cle);
+
+  const sortie = await appelerGroqJson({
+    env,
+    systemPrompt: `${agent?.mission || "Tu es un agent de l'équipe IA d'AuraMarket."}
+
+${IA_CONTEXTE_PLATEFORME}
+
+Tu travailles au sein d'une équipe : le travail déjà réalisé par tes collègues t'est fourni, ne le refais pas, appuie-toi dessus. Reste factuel : si une donnée te manque pour conclure, dis-le explicitement au lieu d'inventer des chiffres.
+
+Réponds UNIQUEMENT en JSON valide :
+{ "resume": "2 phrases maximum, ce que tu as produit concrètement",
+  "livrable": "ton travail complet en texte (stratégie, messages rédigés, analyse, classement...)",
+  "points_cles": ["..."],
+  "pour_equipe": "ce que le prochain agent doit savoir, ou null" }`,
+    userContent: `Objectif global : ${objectif.libelle}
+Ta mission : ${tache.titre}
+Instruction : ${tache.instruction}
+
+Travail déjà réalisé par l'équipe :
+${contextePartage}`,
+    maxTokens: 2500
+  });
+
+  return {
+    resume: sortie?.resume || "Livrable produit.",
+    resultat: {
+      livrable: sortie?.livrable || "",
+      points_cles: Array.isArray(sortie?.points_cles) ? sortie.points_cles : [],
+      pour_equipe: sortie?.pour_equipe || null
+    }
+  };
+}
+
+/* ══════════════════ Clôture d'un objectif ══════════════════ */
+
+async function finaliserObjectifSiTermine(objectif, env) {
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/ia_taches?objectif_id=eq.${objectif.id}&select=statut,agent_cle,titre,resume,resultat&order=ordre.asc`,
+    { headers: entetesSupabase(env) }
+  );
+  const taches = res.ok ? await res.json().catch(() => []) : [];
+  if (!taches.length) return;
+
+  const enCours = taches.filter(t => !["terminee", "annulee", "echec", "bloquee"].includes(t.statut));
+  if (enCours.length) return; // il reste du travail (ou une validation humaine)
+
+  const synthese = taches.map(t => `- [${t.statut}] ${t.agent_cle} / ${t.titre} : ${t.resume || "(sans résumé)"}`).join("\n");
+  let rapport = synthese;
+  try {
+    const r = await appelerGroqJson({
+      env,
+      systemPrompt: `Tu es le DG IA d'AuraMarket. À partir du bilan des missions, rédige un rapport court et honnête pour l'administrateur : ce qui a été obtenu, ce qui a échoué, et les 2-3 décisions qu'il doit prendre maintenant. Pas de flatterie, pas de chiffres inventés. Réponds UNIQUEMENT en JSON : { "rapport": "..." }`,
+      userContent: `Objectif : ${objectif.libelle}\n\nBilan des missions :\n${synthese}`,
+      maxTokens: 1200
+    });
+    if (r?.rapport) rapport = r.rapport;
+  } catch (err) {
+    console.error("[equipe ia] Rapport final indisponible :", err);
+  }
+
+  const echecs = taches.filter(t => t.statut === "echec" || t.statut === "bloquee").length;
+  await patchObjectif(objectif.id, {
+    statut: echecs === taches.length ? "echec" : "termine",
+    rapport_final: rapport,
+    termine_le: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }, env);
+
+  await ecrireMessageIa(env, { objectifId: objectif.id, deAgent: "dg", contenu: `Objectif clôturé. ${rapport}`.slice(0, 4000) });
+  await envoyerPushAuxAdmins(env, "Équipe IA — objectif terminé ✅", `« ${objectif.libelle} » : rapport disponible dans l'app.`);
+}
+
+/* ══════════════════ Routes de consultation et de validation ══════════════════ */
+
+async function handleIaObjectifsListe(request, env) {
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/ia_objectifs?select=*&order=created_at.desc&limit=30`,
+    { headers: entetesSupabase(env) }
+  );
+  if (!res.ok) return jsonResponseCors({ error: "Échec lecture des objectifs" }, 502, request);
+  return jsonResponseCors({ objectifs: await res.json().catch(() => []) }, 200, request);
+}
+
+async function handleIaObjectifDetail(request, env) {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (!id) return jsonResponseCors({ error: "id requis" }, 400, request);
+
+  const [objRes, tachesRes, messagesRes, agentsRes] = await Promise.all([
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_objectifs?id=eq.${id}&select=*&limit=1`, { headers: entetesSupabase(env) }),
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_taches?objectif_id=eq.${id}&select=*&order=ordre.asc`, { headers: entetesSupabase(env) }),
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_messages?objectif_id=eq.${id}&select=*&order=created_at.asc&limit=100`, { headers: entetesSupabase(env) }),
+    fetch(`${env.SUPABASE_URL}/rest/v1/ia_agents?select=cle,libelle,departement&order=cle.asc`, { headers: entetesSupabase(env) })
+  ]);
+
+  const objectifs = objRes.ok ? await objRes.json().catch(() => []) : [];
+  if (!objectifs[0]) return jsonResponseCors({ error: "Objectif introuvable" }, 404, request);
+
+  return jsonResponseCors({
+    objectif: objectifs[0],
+    taches: tachesRes.ok ? await tachesRes.json().catch(() => []) : [],
+    messages: messagesRes.ok ? await messagesRes.json().catch(() => []) : [],
+    agents: agentsRes.ok ? await agentsRes.json().catch(() => []) : []
+  }, 200, request);
+}
+
+async function handleIaExecuter(request, env) {
+  const resultat = await executerEquipeIaCron(env);
+  return jsonResponseCors({ ...resultat }, 200, request);
+}
+
+/* Validation humaine : approuve une mission en attente, ce qui débloque
+   la suite de la chaîne au passage suivant de la boucle. */
+async function handleIaValiderTache(request, env) {
+  const body = await request.json().catch(() => null);
+  const tacheId = body?.tache_id;
+  if (!tacheId) return jsonResponseCors({ error: "tache_id requis" }, 400, request);
+
+  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/ia_taches?id=eq.${tacheId}&select=*&limit=1`, { headers: entetesSupabase(env) });
+  const taches = res.ok ? await res.json().catch(() => []) : [];
+  const tache = taches[0];
+  if (!tache) return jsonResponseCors({ error: "Mission introuvable" }, 404, request);
+  if (tache.statut !== "attente_validation") {
+    return jsonResponseCors({ error: `Cette mission n'attend pas de validation (statut : ${tache.statut})` }, 409, request);
+  }
+
+  const refus = body?.refuser === true;
+  await patchTache(tacheId, {
+    statut: refus ? "annulee" : "terminee",
+    validee_par: body?.admin_id || null,
+    validee_le: new Date().toISOString(),
+    finished_at: new Date().toISOString(),
+    erreur: refus ? (body?.motif || "Refusée par l'administrateur").slice(0, 1000) : null
+  }, env);
+
+  await patchObjectif(tache.objectif_id, { statut: "en_cours", updated_at: new Date().toISOString() }, env);
+  await ecrireMessageIa(env, {
+    objectifId: tache.objectif_id,
+    tacheId,
+    deAgent: "dg",
+    contenu: refus
+      ? `L'administrateur a refusé « ${tache.titre} » : ${body?.motif || "sans motif"}.`
+      : `L'administrateur a validé « ${tache.titre} ». La suite de la chaîne est débloquée.`
+  });
+
+  return jsonResponseCors({ tache_id: tacheId, statut: refus ? "annulee" : "terminee" }, 200, request);
+}
+
+/* ── Petits utilitaires d'écriture ────────────────────────────────── */
+
+async function patchObjectif(id, patch, env) {
+  await fetch(`${env.SUPABASE_URL}/rest/v1/ia_objectifs?id=eq.${id}`, {
+    method: "PATCH",
+    headers: entetesSupabase(env, { "Content-Type": "application/json", Prefer: "return=minimal" }),
+    body: JSON.stringify(patch)
+  }).catch(err => console.error("[equipe ia] patchObjectif :", err));
+}
+
+async function patchTache(id, patch, env) {
+  await fetch(`${env.SUPABASE_URL}/rest/v1/ia_taches?id=eq.${id}`, {
+    method: "PATCH",
+    headers: entetesSupabase(env, { "Content-Type": "application/json", Prefer: "return=minimal" }),
+    body: JSON.stringify(patch)
+  }).catch(err => console.error("[equipe ia] patchTache :", err));
+}
+
+async function ecrireMessageIa(env, { objectifId, tacheId = null, deAgent, versAgent = null, contenu }) {
+  await fetch(`${env.SUPABASE_URL}/rest/v1/ia_messages`, {
+    method: "POST",
+    headers: entetesSupabase(env, { "Content-Type": "application/json", Prefer: "return=minimal" }),
+    body: JSON.stringify({ objectif_id: objectifId, tache_id: tacheId, de_agent: deAgent, vers_agent: versAgent, contenu: String(contenu).slice(0, 4000) })
+  }).catch(err => console.error("[equipe ia] ecrireMessageIa :", err));
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉQUIPE IA — fin
    ══════════════════════════════════════════════════════════════════════ */
 
 
