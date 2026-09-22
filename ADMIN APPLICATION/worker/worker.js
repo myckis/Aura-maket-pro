@@ -1867,6 +1867,7 @@ async function handleAutomatisationsExecuterManuel(request, env) {
     else if (cle === "publication_tiktok") resultat = await traiterPublicationTiktok(cfg, env);
     else if (cle === "commandes") resultat = await traiterCommandesBloquees(cfg, env);
     else if (cle === "vendeurs") resultat = await traiterResponsableVendeur(cfg, env);
+    else if (cle === "utilisateurs") resultat = await traiterResponsableClient(cfg, env);
     else resultat = await traiterModuleGenerique(cle, cfg, env);
   } catch (err) {
     console.error(`[automatisations] Erreur exécution manuelle ${cle} :`, err);
@@ -2408,6 +2409,24 @@ const MAUT_VENDEUR_JOURS_AVANT_RELANCE_PRODUIT = 3;
 const MAUT_VENDEUR_RELANCE_COOLDOWN_JOURS = 3;
 const MAUT_VENDEUR_APP_URL = "https://auramarket1pro.pages.dev";
 
+/* Construit un lien wa.me à partir d'un numéro ivoirien, quel que soit son
+   format en base : international avec "+" (users_vendeurs, ex.
+   "+2250575630394") ou local avec un "0" initial (users_client, ex.
+   "0575630394"). Retourne null si le format est inattendu plutôt que de
+   deviner un numéro invalide. */
+function construireLienWhatsapp(telephoneBrut, message) {
+  if (!telephoneBrut) return null;
+  let chiffres = telephoneBrut.replace(/\D/g, "");
+  if (chiffres.startsWith("225") && chiffres.length >= 12) {
+    // déjà au format international, rien à faire
+  } else if (chiffres.startsWith("0") && chiffres.length === 10) {
+    chiffres = "225" + chiffres;
+  } else {
+    return null;
+  }
+  return `https://wa.me/${chiffres}?text=${encodeURIComponent(message)}`;
+}
+
 async function traiterResponsableVendeur(cfg, env) {
   const candidatsKyc = await trouverVendeursKycNonSoumis(env);
   const candidatsProduit = await trouverVendeursSansProduit(env);
@@ -2427,8 +2446,7 @@ async function traiterResponsableVendeur(cfg, env) {
       const message = c.typeRelance === "kyc_non_soumis"
         ? `Bonjour ${c.nom_responsable} 👋 Ta boutique "${c.nom_boutique}" sur AuraMarket est presque prête ! Il ne manque que la vérification d'identité (KYC) pour commencer à vendre. Termine-la ici : ${MAUT_VENDEUR_APP_URL} — on est là si besoin 🙌`
         : `Bonjour ${c.nom_responsable} 👋 Ta boutique "${c.nom_boutique}" est validée sur AuraMarket, bravo ! Il ne manque plus qu'un premier produit pour commencer à vendre. Poste-le dès maintenant : ${MAUT_VENDEUR_APP_URL}`;
-      const telephoneWa = (c.telephone || "").replace(/\D/g, "");
-      const lienWhatsapp = telephoneWa ? `https://wa.me/${telephoneWa}?text=${encodeURIComponent(message)}` : null;
+      const lienWhatsapp = construireLienWhatsapp(c.telephone, message);
 
       await enregistrerLogAutomatisation(env, {
         cle: "vendeurs",
@@ -2520,6 +2538,74 @@ async function relanceRecente(env, cibleTable, cibleId, joursMin) {
   return rows.length > 0;
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   "Responsable Client IA" — module externe "utilisateurs"
+   ══════════════════════════════════════════════════════════════════════
+   Même philosophie que Responsable Vendeur IA : jamais de modification
+   d'état, seulement une relance suggérée + lien WhatsApp prêt à envoyer.
+   Deux cas :
+   1) Client inscrit depuis 3+ jours, jamais commandé (commandes_count=0)
+      et sans favori → message de bienvenue générique.
+   2) Client avec des favoris mais toujours aucune commande → message
+      ciblé sur ses favoris (intention d'achat plus forte, message plus
+      direct). Cooldown de 7 jours (plus long que les vendeurs : on ne
+      veut pas harceler un client comme on relance un vendeur bloqué). */
+const MAUT_CLIENT_JOURS_AVANT_RELANCE = 3;
+const MAUT_CLIENT_RELANCE_COOLDOWN_JOURS = 7;
+const MAUT_CLIENT_APP_URL = "https://auramarketci.com";
+
+async function traiterResponsableClient(cfg, env) {
+  const dateLimite = new Date(Date.now() - MAUT_CLIENT_JOURS_AVANT_RELANCE * 24 * 60 * 60 * 1000).toISOString();
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/users_client?commandes_count=eq.0&is_active=eq.true&created_at=lte.${encodeURIComponent(dateLimite)}&select=id,nom,telephone,favoris_count,created_at&order=created_at.asc&limit=50`,
+    { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`, Accept: "application/json" } }
+  );
+  if (!res.ok) return { erreur: "Échec lecture users_client" };
+  const clients = await res.json().catch(() => []);
+  if (!clients.length) return { traites: 0 };
+
+  let compteurs = { signale_urgent: 0, ignores_cooldown: 0, ignores_telephone: 0, erreur: 0 };
+
+  for (const client of clients) {
+    try {
+      const dejaRelance = await relanceRecente(env, "users_client", client.id, MAUT_CLIENT_RELANCE_COOLDOWN_JOURS);
+      if (dejaRelance) {
+        compteurs.ignores_cooldown++;
+        continue;
+      }
+
+      const aDesFavoris = (client.favoris_count || 0) > 0;
+      const prenom = (client.nom || "").split(" ")[0] || "là";
+      const message = aDesFavoris
+        ? `Bonjour ${prenom} 👋 Tu as des articles dans tes favoris sur AuraMarket, ne les laisse pas filer ! Finalise ta commande ici : ${MAUT_CLIENT_APP_URL}`
+        : `Bonjour ${prenom} 👋 Bienvenue sur AuraMarket ! Plein de bonnes affaires t'attendent. Découvre les boutiques ici : ${MAUT_CLIENT_APP_URL}`;
+      const lienWhatsapp = construireLienWhatsapp(client.telephone, message);
+      if (!lienWhatsapp) {
+        compteurs.ignores_telephone++;
+        continue;
+      }
+
+      await enregistrerLogAutomatisation(env, {
+        cle: "utilisateurs",
+        cibleTable: "users_client",
+        cibleId: client.id,
+        decision: "signale_urgent",
+        confiance: null,
+        motif: aDesFavoris
+          ? `Client avec des favoris mais aucune commande, inscrit depuis ${formaterAncienneteJours(client.created_at)}.`
+          : `Client jamais passé à l'achat, inscrit depuis ${formaterAncienneteJours(client.created_at)}.`,
+        rawReponseIa: { type_relance: aDesFavoris ? "favoris_sans_commande" : "bienvenue_premier_achat", message, lien_whatsapp: lienWhatsapp }
+      });
+      compteurs.signale_urgent++;
+    } catch (err) {
+      console.error("[utilisateurs] Erreur client", client.id, err);
+      compteurs.erreur++;
+    }
+  }
+
+  return { traites: clients.length, ...compteurs };
+}
+
 async function traiterPublicationTiktok(cfg, env) {
   if (!env.TIKTOK_ACCESS_TOKEN) {
     return { statut: "en_attente_validation_tiktok", info: "Clés TikTok non configurées — module prêt mais inactif tant que l'app n'est pas validée par TikTok for Developers." };
@@ -2568,6 +2654,9 @@ async function executerAutomatisationsCron(env) {
   }
   if (config.vendeurs?.actif) {
     rapport.vendeurs = await traiterResponsableVendeur(config.vendeurs, env).catch(err => ({ erreur: String(err) }));
+  }
+  if (config.utilisateurs?.actif) {
+    rapport.utilisateurs = await traiterResponsableClient(config.utilisateurs, env).catch(err => ({ erreur: String(err) }));
   }
 
   const totalDecisions = Object.values(rapport).reduce((s, r) => s + (r?.valide || 0) + (r?.rejete || 0) + (r?.signale_urgent || 0), 0);

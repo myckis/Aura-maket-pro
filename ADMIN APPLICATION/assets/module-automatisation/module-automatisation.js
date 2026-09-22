@@ -86,7 +86,7 @@ const MAUT_HUB_ICON = `<rect x="4" y="4" width="16" height="16" rx="3"/><path d=
    dashboard (pas de page séparée dans ce module). */
 const MAUT_TOUS_MODULES = [
   { categorie: "Gestion", cle: "dashboard", libelle: "Vue d'ensemble", icon: `<path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>`, connectable: false },
-  { categorie: "Gestion", cle: "utilisateurs", libelle: "Utilisateurs", icon: `<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 13.5a4.6 4.6 0 0 1 6 4.3"/>`, description: "Module externe connecté au noyau AURA. Logique métier à configurer.", connectable: true },
+  { categorie: "Gestion", cle: "utilisateurs", libelle: "Utilisateurs", icon: `<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 13.5a4.6 4.6 0 0 1 6 4.3"/>`, description: "Responsable Client IA : repère les clients inscrits depuis 3+ jours sans aucun achat (message ciblé s'ils ont des favoris en attente) et prépare le message + lien WhatsApp de relance dans le journal. Ne modifie jamais le compte du client.", connectable: true },
   { categorie: "Gestion", cle: "vendeurs", libelle: "Vendeurs", icon: `<path d="M4 10h16l-1-5H5z"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>`, description: "Responsable Vendeur IA : repère les vendeurs bloqués (KYC jamais soumis après 48h, ou approuvés sans produit posté après 3 jours) et prépare le message + lien WhatsApp de relance dans le journal. Ne modifie jamais le statut d'un vendeur — juste un rappel prêt à envoyer.", connectable: true },
   { categorie: "Gestion", cle: "gestion_admins", libelle: "Gestion des administrateurs", icon: `<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M19 3l1.5 1.5L23 2"/>`, description: "Module externe connecté au noyau AURA. Logique métier à configurer.", connectable: true },
 
@@ -935,8 +935,9 @@ function buildLogItem(log) {
   // ce n'est qu'une relance suggérée. Proposer "Annuler" reviendrait à
   // remettre de force le vendeur en statut "en_attente" (dangereux pour
   // un vendeur déjà approuvé), donc on l'exclut explicitement ici.
+  const MAUT_CLES_RELANCE_SEULE = ["vendeurs", "utilisateurs"]; // ne changent jamais l'état de la cible
   const peutAnnuler = (decision === "valide" || decision === "rejete" || decision === "signale_urgent")
-    && log.automatisation_cle !== "vendeurs" && !estAnnule;
+    && !MAUT_CLES_RELANCE_SEULE.includes(log.automatisation_cle) && !estAnnule;
   const lienWhatsapp = log.raw_reponse_ia?.lien_whatsapp || null;
 
   el.innerHTML = `
