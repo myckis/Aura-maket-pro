@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIKRAM · Profil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card" aria-label="Profil de VIKRAM">
+
+    <!-- ===== En-tête du profil ===== -->
+    <header class="profile">
+      <div class="profile__top">
+        <div>
+          <h1 class="profile__name">VIKRAM</h1>
+          <p class="profile__handle">uix.vikram</p>
+        </div>
+        <div class="avatar avatar--lg">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#face"/></svg>
+        </div>
+      </div>
+
+      <p class="profile__bio">
+        🚀 Freelance web &amp; App designer | Create with
+        <a href="#">@figma</a> <a href="#">@framer</a>
+        collaborate with me send message to Email ✉️ vikramtech69@gmail.com
+      </p>
+
+      <div class="profile__meta">
+        <div class="followers">
+          <span class="followers__stack">
+            <span class="mini mini--1"></span>
+            <span class="mini mini--2"></span>
+            <span class="mini mini--3"></span>
+          </span>
+          <span>153 Followers · uix.vikram.framer.website</span>
+        </div>
+        <div class="profile__icons">
+          <button class="icon-btn" aria-label="Statistiques">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8.5 16v-4M12 16V8M15.5 16v-6"/></svg>
+          </button>
+          <button class="icon-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".6" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn--wide">Edit Profile</button>
+    </header>
+
+    <!-- ===== Onglets ===== -->
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" role="tab" aria-selected="true">Threads</button>
+      <button class="tab" role="tab" aria-selected="false">Replies</button>
+      <button class="tab" role="tab" aria-selected="false">Reposts</button>
+      <span class="tabs__indicator"></span>
+    </nav>
+
+    <!-- ===== Composer ===== -->
+    <form class="composer" id="composer">
+      <div class="avatar avatar--sm"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#face"/></svg></div>
+      <input class="composer__input" id="composerInput" type="text" placeholder="What's new?" autocomplete="off">
+      <button class="btn btn--pill" type="submit">Post</button>
+    </form>
+
+    <!-- ===== Fil ===== -->
+    <section id="feed">
+      <article class="post">
+        <div class="avatar avatar--sm"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#face"/></svg></div>
+        <div class="post__body">
+          <div class="post__head">
+            <strong>uix.vikram</strong> <time>01/28/2025</time>
+          </div>
+          <p class="post__loc">Kerala, India</p>
+
+          <p class="post__text">
+            I Designed Google Notes looks like more attractive and more privacy ✒️
+            then reminde easily. 🌚🌏<br>.<br>
+            Follow <a href="#">@uix.vikram</a> for more design Tips.<br>
+            #googlenotes #uidesign #uxdesign #uiuxdesign #designinspiration
+            #uiuxdesigner #webdesign #webdevelopment
+          </p>
+
+          <!-- Deux maquettes d'écrans de notes -->
+          <div class="shots">
+            <!-- Maquette 1 -->
+            <div class="shot">
+              <div class="col">
+                <div class="note">
+                  <div class="tags"><i class="tag tag--pink">PRIVATE</i><i class="tag tag--yellow">WORK</i><i class="tag tag--red">NEW</i></div>
+                  <h4>Super secret password</h4>
+                  <div class="lines blur"><span></span><span></span><span></span><span></span></div>
+                  <div class="lock"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><rect x="9.5" y="10.5" width="5" height="4" rx=".8" class="lock__body"/><path d="M10.5 10.5V9a1.5 1.5 0 0 1 3 0v1.5" class="lock__shackle"/></svg></div>
+                  <div class="lines blur"><span></span><span></span></div>
+                  <footer><span>YESTERDAY</span><b>•••</b></footer>
+                </div>
+                <div class="note">
+                  <div class="tags"><i class="tag tag--green">ROUTINE</i></div>
+                  <h4>Back Routine</h4>
+                  <div class="lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <footer><span>FRI, JUN 20</span><b>•••</b></footer>
+                </div>
+              </div>
+              <div class="col">
+                <div class="note note--tall">
+                  <h4 class="muted">Untitled</h4>
+                  <footer><span>TODAY</span><b>•••</b></footer>
+                </div>
+                <div class="note">
+                  <h4>Guide to Creating a Website That...</h4>
+                  <div class="lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <footer><span>THU, JUN 20</span><b>•••</b></footer>
+                </div>
+              </div>
+            </div>
+
+            <!-- Maquette 2 -->
+            <div class="shot">
+              <div class="col">
+                <div class="note">
+                  <h4>Content Ideas 🍿</h4>
+                  <p class="sub">Product Launch</p>
+                  <ol class="list"><li>Product Image</li><li>Product Details</li><li>Pricing</li></ol>
+                  <div class="lines"><span></span></div>
+                  <footer><span>FRI, JUN 20</span><b>•••</b></footer>
+                </div>
+                <div class="note">
+                  <div class="tags"><i class="tag tag--purple">PRIVATE NOTE</i></div>
+                  <div class="lines blur"><span></span><span></span><span></span><span></span><span></span></div>
+                  <div class="lock"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><rect x="9.5" y="10.5" width="5" height="4" rx=".8" class="lock__body"/><path d="M10.5 10.5V9a1.5 1.5 0 0 1 3 0v1.5" class="lock__shackle"/></svg></div>
+                  <div class="lines blur"><span></span><span></span></div>
+                  <footer><span>FRI, JUN 20</span><b>•••</b></footer>
+                </div>
+              </div>
+              <div class="col">
+                <div class="note">
+                  <div class="tags"><i class="tag tag--green">IDEA</i></div>
+                  <h4>Draft Template</h4>
+                  <div class="lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <footer><span>SAT, JUN 20</span><b>•••</b></footer>
+                </div>
+                <div class="note note--mid">
+                  <h4>Important Note</h4>
+                  <div class="lines"><span></span><span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="actions">
+            <button class="action" data-action="like" data-count="19300" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>
+              <span>19.3k</span>
+            </button>
+            <button class="action" aria-label="Répondre">
+              <svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-11.8 7l-4.2 1.2 1.2-4A8 8 0 1 1 20 11.5z"/></svg>
+              <span>66</span>
+            </button>
+            <button class="action" data-action="repost" data-count="239" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><path d="M7 7h10a3 3 0 0 1 3 3v1M17 17H7a3 3 0 0 1-3-3v-1M9 4 6 7l3 3M15 20l3-3-3-3"/></svg>
+              <span>239</span>
+            </button>
+            <button class="action" aria-label="Partager">
+              <svg viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5 2.5 7z M21 3 10 13"/></svg>
+              <span>376</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Avatar illustré réutilisable -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="face">
+        <circle cx="32" cy="32" r="32" fill="#fff"/>
+        <!-- cheveux -->
+        <path d="M15 30c-2-11 5-19 16-19 9-1 17 4 18 13 1 3 0 6-1 8l-2-6c-3 2-8 2-12 0-3 3-9 4-13 2l-2 6z" fill="#111"/>
+        <path d="M19 17l-3-4 5 2M27 12l-1-5 4 4M36 12l2-5 1 5M44 16l4-3-2 5" stroke="#111" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <!-- visage -->
+        <path d="M18 31c0 11 6 20 14 20s14-9 14-20c-3 1-7 1-10-1-3 2-10 3-14 1z" fill="#fff" stroke="#111" stroke-width="2"/>
+        <!-- oreilles -->
+        <path d="M18 33c-3-1-4 4-1 6M46 33c3-1 4 4 1 6" stroke="#111" stroke-width="2" fill="#fff"/>
+        <!-- lunettes -->
+        <circle cx="26" cy="35" r="5" fill="none" stroke="#111" stroke-width="2.4"/>
+        <circle cx="38" cy="35" r="5" fill="none" stroke="#111" stroke-width="2.4"/>
+        <path d="M31 35h2" stroke="#111" stroke-width="2.4"/>
+        <circle cx="26" cy="35" r="1.3" fill="#111"/>
+        <circle cx="38" cy="35" r="1.3" fill="#111"/>
+        <!-- sourire -->
+        <path d="M28 44c2 2 6 2 8 0" stroke="#111" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- cou / t-shirt -->
+        <path d="M22 64c1-6 5-10 10-10s9 4 10 10z" fill="#111"/>
+      </g>
+    </defs>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
