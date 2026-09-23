@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>myckis · Portfolio</title>
+  <meta name="description" content="myckis — développeur web autodidacte à Abidjan, créateur d'Auramarket Pro.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card" aria-label="Portfolio de myckis">
+
+    <!-- ===== En-tête ===== -->
+    <header class="profile">
+      <div class="profile__top">
+        <div>
+          <h1 class="profile__name">MYCKIS</h1>
+          <p class="profile__handle">Développeur web · Abidjan 🇨🇮</p>
+        </div>
+        <div class="avatar avatar--lg avatar--mono" aria-hidden="true">M</div>
+      </div>
+
+      <p class="profile__bio">
+        🚀 Développeur autodidacte, 21 ans. J'ai construit
+        <a href="https://auramarketci.com" target="_blank" rel="noopener">@auramarketpro</a>
+        seul, sur téléphone, en 7 semaines — une marketplace qui digitalise les vendeurs
+        WhatsApp d'Abidjan 🛍️ Vanilla JS · Firebase · Cloudflare Workers · IA.
+      </p>
+
+      <div class="profile__meta">
+        <div class="followers">
+          <span class="followers__stack">
+            <span class="mini mini--1"></span>
+            <span class="mini mini--2"></span>
+            <span class="mini mini--3"></span>
+          </span>
+          <span>18 marchands · auramarketci.com</span>
+        </div>
+        <div class="profile__icons">
+          <a class="icon-btn" href="#stats" aria-label="Métriques" data-goto="1">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8.5 16v-4M12 16V8M15.5 16v-6"/></svg>
+          </a>
+          <a class="icon-btn" href="https://github.com/myckis" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <a class="btn btn--wide" href="https://github.com/myckis" target="_blank" rel="noopener">Me contacter</a>
+    </header>
+
+    <!-- ===== Onglets ===== -->
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-projets">Projets</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-stats">Métriques</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-about">À propos</button>
+      <span class="tabs__indicator"></span>
+    </nav>
+
+    <!-- ===== Projets ===== -->
+    <section class="panel is-active" id="p-projets" role="tabpanel">
+      <article class="post">
+        <div class="avatar avatar--sm avatar--mono" aria-hidden="true">M</div>
+        <div class="post__body">
+          <div class="post__head"><strong>myckis</strong> <time>Mars 2026</time></div>
+          <p class="post__loc">Abidjan, Côte d'Ivoire</p>
+
+          <p class="post__text">
+            🛍️ <b>Auramarket Pro</b> est en production ! Une marketplace complète pensée pour
+            le marché ivoirien : boutique pro pour chaque vendeur, assistant IA intégré
+            (Nouchi, Dioula, Bambara 🇨🇮) et paiement mobile money natif — Wave, MTN MoMo,
+            Orange Money.<br>.<br>
+            3 applications : client, dashboard vendeur et panel admin.<br>
+            <span class="hashtags">#vanillajs #firebase #cloudflareworkers #pwa #ia #abidjan</span>
+          </p>
+
+          <div class="gallery">
+            <figure class="phone" data-src="assets/client.jpg" data-caption="Interface Client — auramarketci.com">
+              <img src="assets/client.jpg" alt="Interface client d'Auramarket Pro" loading="lazy">
+              <figcaption>Client</figcaption>
+            </figure>
+            <figure class="phone" data-src="assets/vendeur.jpg" data-caption="Dashboard Vendeur — auramarket1pro.pages.dev">
+              <img src="assets/vendeur.jpg" alt="Dashboard vendeur d'Auramarket Pro" loading="lazy">
+              <figcaption>Vendeur</figcaption>
+            </figure>
+            <figure class="phone" data-src="assets/admin.jpg" data-caption="Panel Admin — supervision de la plateforme">
+              <img src="assets/admin.jpg" alt="Panel admin d'Auramarket Pro" loading="lazy">
+              <figcaption>Admin</figcaption>
+            </figure>
+          </div>
+
+          <div class="actions">
+            <button class="action" data-action="like" aria-pressed="false" aria-label="J'aime">
+              <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>
+            </button>
+            <a class="action" href="https://auramarketci.com" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z"/></svg>
+              <span>Visiter</span>
+            </a>
+            <a class="action" href="https://auramarket1pro.pages.dev" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8.5 16v-4M12 16V8M15.5 16v-6"/></svg>
+              <span>Vendeur</span>
+            </a>
+            <a class="action" href="https://github.com/myckis/Aura-maket-pro" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>
+              <span>Code</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="avatar avatar--sm avatar--mono" aria-hidden="true">M</div>
+        <div class="post__body">
+          <div class="post__head"><strong>myckis</strong> <time>Stack</time></div>
+          <p class="post__text">Ce que j'utilise au quotidien 🛠️</p>
+          <ul class="chips">
+            <li>HTML / CSS / JS</li><li>Firebase Firestore</li><li>Firebase Auth</li>
+            <li>Cloud Messaging</li><li>Cloudflare Workers</li><li>Groq · Llama</li>
+            <li>Jeko Africa</li><li>EmailJS</li><li>PWA</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== Métriques ===== -->
+    <section class="panel" id="p-stats" role="tabpanel" hidden>
+      <article class="post">
+        <div class="avatar avatar--sm avatar--mono" aria-hidden="true">M</div>
+        <div class="post__body">
+          <div class="post__head"><strong>myckis</strong> <time>Mars 2026</time></div>
+          <p class="post__text">📊 Les chiffres réels d'Auramarket Pro ce mois-ci :</p>
+          <div class="stats">
+            <div class="stat"><b>41</b><span>commandes traitées</span></div>
+            <div class="stat"><b>18</b><span>marchands inscrits<br>dont 11 certifiés</span></div>
+            <div class="stat"><b>462k</b><span>FCFA de volume vendeur</span></div>
+            <div class="stat"><b>22</b><span>conversations IA simultanées</span></div>
+          </div>
+          <p class="post__text">✅ Indexé sur Google — fiche établissement active.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== À propos ===== -->
+    <section class="panel" id="p-about" role="tabpanel" hidden>
+      <article class="post">
+        <div class="avatar avatar--sm avatar--mono" aria-hidden="true">M</div>
+        <div class="post__body">
+          <div class="post__head"><strong>myckis</strong> <time>À propos</time></div>
+          <p class="post__loc">Abidjan, Côte d'Ivoire</p>
+          <p class="post__text">
+            J'ai 21 ans et je suis autodidacte 👨‍💻 Pas de formation académique spécialisée :
+            tout ce que je sais, je l'ai appris en construisant.<br><br>
+            Avant de coder, j'étais vendeur en ligne à Abidjan. Auramarket Pro, c'est l'outil
+            que j'aurais voulu avoir — construit seul, sur mon téléphone, en 7 semaines.<br><br>
+            Ce qui compte pour moi : des produits adaptés au marché local 🇨🇮 — mobile d'abord
+            (95 % du marché), paiement mobile money, et une IA qui parle comme les gens d'ici.
+          </p>
+          <ul class="chips">
+            <li>🔐 Sécurité par rôles</li><li>📱 Mobile-first</li><li>🤖 IA appliquée</li><li>💸 Mobile money</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Visionneuse d'images -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" aria-label="Fermer">×</button>
+    <img alt="">
+    <p class="lightbox__caption"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
