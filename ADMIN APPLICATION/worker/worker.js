@@ -214,6 +214,12 @@ export default {
         return await handleIaAgentsListe(request, env);
       }
 
+      if (path === "/proxy/admin/ia/diagnostic") {
+        const authError = await checkSupabaseUserAuth(request, env);
+        if (authError) return authError;
+        return await handleIaDiagnostic(request, env);
+      }
+
       if (path === "/proxy/admin/ia/executer") {
         const authError = await checkSupabaseUserAuth(request, env);
         if (authError) return authError;
@@ -2741,8 +2747,14 @@ async function executerAutomatisationsCron(env) {
      POST /proxy/admin/ia/valider            → approuver une mission en attente
    ══════════════════════════════════════════════════════════════════════ */
 
-const IA_MODELE_GROQ = "llama-3.3-70b-versatile";
-const IA_MAX_TACHES_PAR_OBJECTIF = 12;
+/* Modèles Groq essayés dans l'ordre. Groq retire régulièrement des
+   modèles : garder une solution de repli évite que toute l'équipe IA
+   tombe le jour où le premier disparaît. */
+const IA_MODELES_GROQ = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+/* 8 missions suffisent largement pour un objectif, et un plan plus court
+   limite le risque que la réponse JSON soit tronquée en plein milieu
+   (ce qui ferait échouer toute la décomposition). */
+const IA_MAX_TACHES_PAR_OBJECTIF = 8;
 const IA_MAX_TACHES_PAR_PASSAGE = 3;
 const IA_MAX_TENTATIVES = 2;
 
@@ -2766,27 +2778,70 @@ function entetesSupabase(env, extra = {}) {
   };
 }
 
-/* ── Appel Groq générique renvoyant du JSON structuré ─────────────── */
+/* ── Appel Groq générique renvoyant du JSON structuré ───────────────
+   Essaie les modèles dans l'ordre : si le premier est indisponible
+   (modèle retiré par Groq, quota, surcharge), on bascule sur le suivant
+   au lieu de faire échouer toute l'équipe. En cas d'échec total,
+   l'erreur remontée contient la raison EXACTE de chaque modèle —
+   c'est ce message qui s'affiche dans l'app, pour ne pas avoir à
+   deviner dans les logs. */
 async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 2000 }) {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
-    body: JSON.stringify({
-      model: IA_MODELE_GROQ,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent }
-      ],
-      temperature: 0.3,
-      max_tokens: maxTokens,
-      response_format: { type: "json_object" }
-    })
-  });
-  if (!res.ok) throw new Error("Groq indisponible : " + (await res.text().catch(() => res.status)));
-  const data = await res.json();
-  const raw = data?.choices?.[0]?.message?.content?.trim();
-  if (!raw) throw new Error("Réponse Groq vide");
-  return JSON.parse(raw);
+  if (!env.GROQ_API_KEY) throw new Error("GROQ_API_KEY absente du Worker");
+
+  const echecs = [];
+  for (const modele of IA_MODELES_GROQ) {
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+        body: JSON.stringify({
+          model: modele,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContent }
+          ],
+          temperature: 0.3,
+          max_tokens: maxTokens,
+          response_format: { type: "json_object" }
+        })
+      });
+
+      if (!res.ok) {
+        const corps = await res.text().catch(() => "");
+        echecs.push(`${modele} → HTTP ${res.status} ${corps.slice(0, 200)}`);
+        continue;
+      }
+
+      const data = await res.json();
+      const raw = data?.choices?.[0]?.message?.content?.trim();
+      if (!raw) {
+        echecs.push(`${modele} → réponse vide`);
+        continue;
+      }
+      return extraireJsonGroq(raw);
+    } catch (err) {
+      echecs.push(`${modele} → ${String(err?.message || err).slice(0, 200)}`);
+    }
+  }
+
+  throw new Error(echecs.join(" | "));
+}
+
+/* Certains modèles renvoient le JSON entouré de texte ou de ```json
+   malgré response_format : on récupère quand même l'objet. */
+function extraireJsonGroq(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch (e) { /* on tente l'extraction ci-dessous */ }
+
+  const debut = raw.indexOf("{");
+  const fin = raw.lastIndexOf("}");
+  if (debut !== -1 && fin > debut) {
+    try {
+      return JSON.parse(raw.slice(debut, fin + 1));
+    } catch (e) { /* vraiment pas du JSON */ }
+  }
+  throw new Error("réponse non-JSON : " + raw.slice(0, 150));
 }
 
 /* ══════════════════ DG IA : décomposition d'un objectif ══════════════════ */
@@ -2823,14 +2878,24 @@ async function handleIaObjectifCreer(request, env) {
   try {
     plan = await demanderPlanAuDg(libelle, body?.contexte || {}, env);
   } catch (err) {
-    await patchObjectif(objectifId, { statut: "echec", updated_at: new Date().toISOString() }, env);
-    return jsonResponseCors({ error: "Le DG IA n'a pas pu décomposer l'objectif", detail: String(err?.message || err) }, 502, request);
+    const raison = String(err?.message || err);
+    console.error("[equipe ia] Décomposition impossible :", raison);
+    await patchObjectif(objectifId, { statut: "echec", rapport_final: `Décomposition impossible : ${raison}`.slice(0, 2000), updated_at: new Date().toISOString() }, env);
+    // La raison exacte est renvoyée dans "error" (et pas seulement dans
+    // "detail") parce que c'est ce champ que l'app affiche : sans ça,
+    // l'admin voit un échec sans pouvoir savoir ce qui cloche.
+    return jsonResponseCors({ error: `Le DG IA n'a pas pu décomposer l'objectif — ${raison}`.slice(0, 500), detail: raison }, 502, request);
   }
 
   const taches = await enregistrerPlan(objectifId, plan, env);
   if (!taches.length) {
-    await patchObjectif(objectifId, { statut: "echec", updated_at: new Date().toISOString() }, env);
-    return jsonResponseCors({ error: "Le plan produit ne contenait aucune mission exploitable" }, 502, request);
+    const agents = await chargerAgentsIa(env);
+    const raison = agents.length
+      ? `le plan renvoyé ne contenait aucune mission valide (agents connus : ${agents.map(a => a.cle).join(", ")})`
+      : "aucun agent n'est enregistré dans la table ia_agents";
+    console.error("[equipe ia] Plan inexploitable :", raison, JSON.stringify(plan).slice(0, 500));
+    await patchObjectif(objectifId, { statut: "echec", rapport_final: `Plan inexploitable : ${raison}`.slice(0, 2000), updated_at: new Date().toISOString() }, env);
+    return jsonResponseCors({ error: `Plan inexploitable — ${raison}`.slice(0, 500) }, 502, request);
   }
 
   await patchObjectif(objectifId, { statut: "en_cours", updated_at: new Date().toISOString() }, env);
@@ -2874,7 +2939,7 @@ Réponds UNIQUEMENT en JSON valide :
     env,
     systemPrompt,
     userContent: `Objectif de l'administrateur : "${libelle}"\nContexte fourni : ${JSON.stringify(contexte || {})}`,
-    maxTokens: 2500
+    maxTokens: 4000
   });
   if (!Array.isArray(plan?.taches)) throw new Error("Plan invalide : aucune liste de missions");
   return plan;
@@ -3266,6 +3331,52 @@ async function handleIaAgentsListe(request, env) {
   });
 
   return jsonResponseCors({ agents, charge }, 200, request);
+}
+
+/* Diagnostic : vérifie d'un coup les trois dépendances de l'équipe IA
+   (Supabase, table ia_agents, Groq) et renvoie un rapport lisible dans
+   l'app, pour ne pas avoir à ouvrir les logs Cloudflare. */
+async function handleIaDiagnostic(request, env) {
+  const rapport = {};
+
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) {
+    rapport.supabase = "échec : SUPABASE_URL ou SUPABASE_SERVICE_KEY absente du Worker";
+  } else {
+    try {
+      const res = await fetch(`${env.SUPABASE_URL}/rest/v1/ia_agents?select=cle&actif=eq.true`, { headers: entetesSupabase(env) });
+      if (!res.ok) {
+        rapport.supabase = `échec : HTTP ${res.status} ${(await res.text().catch(() => "")).slice(0, 200)}`;
+      } else {
+        const agents = await res.json().catch(() => []);
+        rapport.supabase = "ok";
+        rapport.agents = agents.length
+          ? `${agents.length} agent(s) : ${agents.map(a => a.cle).join(", ")}`
+          : "échec : aucun agent dans ia_agents";
+      }
+    } catch (err) {
+      rapport.supabase = "échec : " + String(err?.message || err).slice(0, 200);
+    }
+  }
+
+  if (!env.GROQ_API_KEY) {
+    rapport.groq = "échec : GROQ_API_KEY absente du Worker";
+  } else {
+    const debut = Date.now();
+    try {
+      const essai = await appelerGroqJson({
+        env,
+        systemPrompt: 'Tu réponds uniquement en JSON valide, au format {"ok": true}.',
+        userContent: "Test de connexion.",
+        maxTokens: 50
+      });
+      rapport.groq = `ok en ${Date.now() - debut} ms — ${JSON.stringify(essai).slice(0, 120)}`;
+    } catch (err) {
+      rapport.groq = "échec : " + String(err?.message || err).slice(0, 400);
+    }
+  }
+
+  rapport.modeles_essayes = IA_MODELES_GROQ;
+  return jsonResponseCors(rapport, 200, request);
 }
 
 async function handleIaExecuter(request, env) {

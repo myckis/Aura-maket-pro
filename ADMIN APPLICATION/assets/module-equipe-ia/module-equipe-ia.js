@@ -106,6 +106,35 @@ function onBack() {
 
 function initOrdre() {
   document.getElementById("meia-ordre-btn").addEventListener("click", donnerOrdre);
+  document.getElementById("meia-diagnostic-btn").addEventListener("click", lancerDiagnostic);
+}
+
+/* Vérifie Supabase, la table des agents et Groq, et affiche le résultat
+   en clair : quand un objectif échoue, c'est presque toujours l'une de
+   ces trois dépendances. */
+async function lancerDiagnostic() {
+  const btn = document.getElementById("meia-diagnostic-btn");
+  const zone = document.getElementById("meia-diagnostic-etat");
+  btn.disabled = true;
+  btn.textContent = "Test en cours…";
+  zone.style.display = "block";
+  zone.textContent = "Vérification de Supabase, des agents et de Groq…";
+
+  try {
+    const r = await API.get("/admin/ia/diagnostic");
+    const lignes = [
+      `Supabase : ${r.supabase || "?"}`,
+      `Agents : ${r.agents || "?"}`,
+      `Groq (le moteur des agents) : ${r.groq || "?"}`
+    ];
+    zone.textContent = lignes.join("\n");
+    zone.style.whiteSpace = "pre-wrap";
+  } catch (err) {
+    zone.textContent = "Diagnostic impossible : " + (err?.message || "erreur inconnue");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Tester la connexion de l'équipe IA";
+  }
 }
 
 async function donnerOrdre() {
@@ -173,6 +202,9 @@ function renderObjectifs() {
       <div class="meia-objectif-bas">
         <span class="meia-objectif-date">${escapeHtml(formatDate(o.created_at))}</span>
       </div>
+      ${o.statut === "echec" && o.rapport_final
+        ? `<div class="meia-mission-erreur">${escapeHtml(o.rapport_final)}</div>`
+        : ""}
     </button>
   `).join("");
 
@@ -249,6 +281,7 @@ function renderDetail() {
   if (objectif.rapport_final) {
     rapportEl.style.display = "block";
     rapportEl.textContent = objectif.rapport_final;
+    rapportEl.classList.toggle("is-echec", objectif.statut === "echec");
   } else {
     rapportEl.style.display = "none";
   }
