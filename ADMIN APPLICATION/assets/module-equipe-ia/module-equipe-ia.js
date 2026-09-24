@@ -125,6 +125,8 @@ async function lancerDiagnostic() {
     const lignes = [
       `Supabase : ${r.supabase || "?"}`,
       `Agents : ${r.agents || "?"}`,
+      `Modèles utilisables : ${r.modeles_utilisables || "?"}`,
+      `Modèle choisi : ${r.modele_choisi || "aucun"}`,
       `Groq (le moteur des agents) : ${r.groq || "?"}`
     ];
     zone.textContent = lignes.join("\n");

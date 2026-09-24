@@ -2759,16 +2759,27 @@ async function executerAutomatisationsCron(env) {
    liste d'ordre n'est qu'une préférence, pas une obligation. */
 const IA_MODELES_GROQ_PREFERES = [
   "llama-3.3-70b-versatile",
-  "llama-3.1-70b-versatile",
+  "openai/gpt-oss-120b",
+  "moonshotai/kimi-k2-instruct",
+  "qwen/qwen3-32b",
+  "deepseek-r1-distill-llama-70b",
   "llama-3.1-8b-instant",
   "llama3-70b-8192",
+  "gemma2-9b-it",
   "mixtral-8x7b-32768",
-  "gemma2-9b-it"
+  "openai/gpt-oss-20b"
 ];
 
-/* Modèles inutilisables pour du raisonnement en JSON (audio, sécurité,
-   embeddings) : à écarter du choix automatique. */
-const IA_MODELES_GROQ_EXCLUS = /whisper|tts|embed|guard|moderation|vision|ocr/i;
+/* Le catalogue Groq contient aussi des modèles de voix, de sécurité et
+   d'embeddings. En prendre un par erreur fait échouer toute l'équipe
+   (un modèle de synthèse vocale ne sait pas répondre en JSON), donc on
+   les écarte explicitement. */
+const IA_MODELES_GROQ_EXCLUS = /whisper|tts|stt|speech|audio|voice|orpheus|canopylabs|playai|guard|safety|moderation|embed|rerank|ocr|vision/i;
+
+/* Familles connues comme conversationnelles. Si aucun modèle préféré
+   n'est disponible, on se rabat sur un modèle de ces familles plutôt que
+   sur un inconnu pris au hasard dans le catalogue. */
+const IA_MODELES_GROQ_FAMILLES_CHAT = /llama|gpt-oss|kimi|qwen|mistral|mixtral|gemma|deepseek|phi|olmo|command|instruct/i;
 
 let _iaModelesGroqCache = null; // mémoire de l'isolate, évite un appel par requête
 
@@ -2785,18 +2796,30 @@ async function listerModelesGroq(env) {
   const ids = (data?.data || []).map(m => m?.id).filter(Boolean);
   if (!ids.length) throw new Error("aucun modèle disponible pour cette clé Groq");
 
+  _iaModelesGroqCache = ids;
+  return ids;
+}
+
+/* Modèles réellement utilisables pour du raisonnement, du plus au moins
+   souhaitable. */
+async function modelesChatGroq(env) {
+  const ids = await listerModelesGroq(env);
   const utilisables = ids.filter(id => !IA_MODELES_GROQ_EXCLUS.test(id));
-  if (!utilisables.length) {
-    throw new Error("aucun modèle de conversation parmi : " + ids.join(", "));
+
+  const ordonnes = [
+    ...IA_MODELES_GROQ_PREFERES.filter(p => utilisables.includes(p)),
+    ...utilisables.filter(id => !IA_MODELES_GROQ_PREFERES.includes(id) && IA_MODELES_GROQ_FAMILLES_CHAT.test(id))
+  ];
+  if (!ordonnes.length) {
+    throw new Error("aucun modèle de conversation dans le catalogue : " + ids.join(", "));
   }
-  _iaModelesGroqCache = utilisables;
-  return utilisables;
+  return ordonnes;
 }
 
 async function choisirModeleGroq(env, exclus = []) {
-  const disponibles = (await listerModelesGroq(env)).filter(id => !exclus.includes(id));
+  const disponibles = (await modelesChatGroq(env)).filter(id => !exclus.includes(id));
   if (!disponibles.length) throw new Error("plus aucun modèle Groq utilisable");
-  return IA_MODELES_GROQ_PREFERES.find(p => disponibles.includes(p)) || disponibles[0];
+  return disponibles[0];
 }
 
 /* Variante qui n'échoue jamais, pour les appels Groq historiques des
@@ -2848,57 +2871,60 @@ async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 200
   if (!env.GROQ_API_KEY) throw new Error("GROQ_API_KEY absente du Worker");
 
   const echecs = [];
-  const modelesEcartes = [];
+  let candidats;
+  try {
+    candidats = await modelesChatGroq(env);
+  } catch (err) {
+    throw new Error(String(err?.message || err).slice(0, 300));
+  }
 
-  // Deux tentatives : si le modèle choisi est refusé (retiré entre-temps,
-  // surcharge), on l'écarte, on vide le cache et on en choisit un autre.
-  for (let tentative = 0; tentative < 2; tentative++) {
-    let modele;
-    try {
-      modele = await choisirModeleGroq(env, modelesEcartes);
-    } catch (err) {
-      echecs.push(String(err?.message || err).slice(0, 250));
-      break;
-    }
-
-    try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
-        body: JSON.stringify({
+  // On essaie jusqu'à 3 modèles. Pour chacun : d'abord le mode JSON strict
+  // de Groq, puis — si ce mode échoue (certains modèles le refusent avec
+  // "json_validate_failed") — un second essai sans ce mode, en comptant
+  // sur extraireJsonGroq pour récupérer l'objet dans la réponse.
+  for (const modele of candidats.slice(0, 3)) {
+    for (const jsonStrict of [true, false]) {
+      try {
+        const corpsRequete = {
           model: modele,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userContent }
           ],
           temperature: 0.3,
-          max_tokens: maxTokens,
-          response_format: { type: "json_object" }
-        })
-      });
+          max_tokens: maxTokens
+        };
+        if (jsonStrict) corpsRequete.response_format = { type: "json_object" };
 
-      if (!res.ok) {
-        const corps = await res.text().catch(() => "");
-        echecs.push(`${modele} → HTTP ${res.status} ${corps.slice(0, 200)}`);
-        modelesEcartes.push(modele);
-        _iaModelesGroqCache = null;
-        continue;
-      }
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+          body: JSON.stringify(corpsRequete)
+        });
 
-      const data = await res.json();
-      const raw = data?.choices?.[0]?.message?.content?.trim();
-      if (!raw) {
-        echecs.push(`${modele} → réponse vide`);
-        modelesEcartes.push(modele);
-        continue;
+        if (!res.ok) {
+          const corps = await res.text().catch(() => "");
+          echecs.push(`${modele}${jsonStrict ? "" : " (sans mode JSON)"} → HTTP ${res.status} ${corps.slice(0, 160)}`);
+          // Le mode JSON strict est le seul en cause : on retente le même
+          // modèle sans lui. Toute autre erreur condamne ce modèle.
+          if (jsonStrict && corps.includes("json_validate_failed")) continue;
+          break;
+        }
+
+        const data = await res.json();
+        const raw = data?.choices?.[0]?.message?.content?.trim();
+        if (!raw) {
+          echecs.push(`${modele}${jsonStrict ? "" : " (sans mode JSON)"} → réponse vide`);
+          continue;
+        }
+        return extraireJsonGroq(raw);
+      } catch (err) {
+        echecs.push(`${modele}${jsonStrict ? "" : " (sans mode JSON)"} → ${String(err?.message || err).slice(0, 160)}`);
       }
-      return extraireJsonGroq(raw);
-    } catch (err) {
-      echecs.push(`${modele} → ${String(err?.message || err).slice(0, 200)}`);
-      modelesEcartes.push(modele);
     }
   }
 
+  _iaModelesGroqCache = null; // le catalogue a peut-être changé depuis la mise en cache
   throw new Error(echecs.join(" | "));
 }
 
@@ -3438,11 +3464,11 @@ async function handleIaDiagnostic(request, env) {
   } else {
     _iaModelesGroqCache = null; // un diagnostic doit refléter l'état réel, pas le cache
     try {
-      const modeles = await listerModelesGroq(env);
-      rapport.modeles_disponibles = modeles.join(", ");
-      rapport.modele_choisi = await choisirModeleGroq(env);
+      const utilisables = await modelesChatGroq(env);
+      rapport.modeles_utilisables = utilisables.slice(0, 6).join(", ");
+      rapport.modele_choisi = utilisables[0];
     } catch (err) {
-      rapport.modeles_disponibles = "échec : " + String(err?.message || err).slice(0, 300);
+      rapport.modeles_utilisables = "échec : " + String(err?.message || err).slice(0, 300);
     }
 
     const debut = Date.now();
