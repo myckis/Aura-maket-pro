@@ -572,7 +572,7 @@ async function handleMarketingTexte(request, env) {
       "Authorization": `Bearer ${env.GROQ_API_KEY}`
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: await modeleGroqOuDefaut(env),
       messages: [
         {
           role: "system",
@@ -784,7 +784,7 @@ async function handleContenusScenario(request, env) {
       "Authorization": `Bearer ${env.GROQ_API_KEY}`
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: await modeleGroqOuDefaut(env),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: texteComplet || prompt }
@@ -1083,7 +1083,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans 
       "Authorization": `Bearer ${env.GROQ_API_KEY}`
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: await modeleGroqOuDefaut(env),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: body.sujet }
@@ -1219,7 +1219,7 @@ async function handleAgentComprendre(request, env) {
       "Authorization": `Bearer ${env.GROQ_API_KEY}`
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: await modeleGroqOuDefaut(env),
       messages: [
         {
           role: "system",
@@ -1587,7 +1587,7 @@ async function genererMessageAccroche(candidat, motCle, ville, env) {
         "Authorization": `Bearer ${env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: await modeleGroqOuDefaut(env),
         messages: [
           {
             role: "system",
@@ -2298,6 +2298,11 @@ Réponds UNIQUEMENT avec un JSON valide :
 
 async function analyserContenuAvecGroq({ env, systemPrompt, userContent }) {
   try {
+    // Modèle résolu dynamiquement (voir choisirModeleGroq) : un nom en dur
+    // ici a déjà fait tomber silencieusement toutes les automatisations le
+    // jour où Groq a retiré le modèle.
+    const modele = await choisirModeleGroq(env);
+
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -2305,7 +2310,7 @@ async function analyserContenuAvecGroq({ env, systemPrompt, userContent }) {
         "Authorization": `Bearer ${env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: modele,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userContent }
@@ -2747,10 +2752,64 @@ async function executerAutomatisationsCron(env) {
      POST /proxy/admin/ia/valider            → approuver une mission en attente
    ══════════════════════════════════════════════════════════════════════ */
 
-/* Modèles Groq essayés dans l'ordre. Groq retire régulièrement des
-   modèles : garder une solution de repli évite que toute l'équipe IA
-   tombe le jour où le premier disparaît. */
-const IA_MODELES_GROQ = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+/* Groq renomme et retire ses modèles régulièrement : coder un nom en dur
+   condamne l'app à tomber le jour du changement (c'est exactement ce qui
+   est arrivé). On demande donc la liste des modèles réellement
+   accessibles à la clé, et on choisit le meilleur disponible — cette
+   liste d'ordre n'est qu'une préférence, pas une obligation. */
+const IA_MODELES_GROQ_PREFERES = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-70b-versatile",
+  "llama-3.1-8b-instant",
+  "llama3-70b-8192",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it"
+];
+
+/* Modèles inutilisables pour du raisonnement en JSON (audio, sécurité,
+   embeddings) : à écarter du choix automatique. */
+const IA_MODELES_GROQ_EXCLUS = /whisper|tts|embed|guard|moderation|vision|ocr/i;
+
+let _iaModelesGroqCache = null; // mémoire de l'isolate, évite un appel par requête
+
+async function listerModelesGroq(env) {
+  if (_iaModelesGroqCache) return _iaModelesGroqCache;
+
+  const res = await fetch("https://api.groq.com/openai/v1/models", {
+    headers: { Authorization: `Bearer ${env.GROQ_API_KEY}` }
+  });
+  if (!res.ok) {
+    throw new Error(`liste des modèles refusée : HTTP ${res.status} ${(await res.text().catch(() => "")).slice(0, 200)}`);
+  }
+  const data = await res.json().catch(() => null);
+  const ids = (data?.data || []).map(m => m?.id).filter(Boolean);
+  if (!ids.length) throw new Error("aucun modèle disponible pour cette clé Groq");
+
+  const utilisables = ids.filter(id => !IA_MODELES_GROQ_EXCLUS.test(id));
+  if (!utilisables.length) {
+    throw new Error("aucun modèle de conversation parmi : " + ids.join(", "));
+  }
+  _iaModelesGroqCache = utilisables;
+  return utilisables;
+}
+
+async function choisirModeleGroq(env, exclus = []) {
+  const disponibles = (await listerModelesGroq(env)).filter(id => !exclus.includes(id));
+  if (!disponibles.length) throw new Error("plus aucun modèle Groq utilisable");
+  return IA_MODELES_GROQ_PREFERES.find(p => disponibles.includes(p)) || disponibles[0];
+}
+
+/* Variante qui n'échoue jamais, pour les appels Groq historiques des
+   autres modules : en cas de problème de liste, on retombe sur le nom
+   par défaut (comportement d'avant), au lieu d'ajouter une panne. */
+async function modeleGroqOuDefaut(env) {
+  try {
+    return await choisirModeleGroq(env);
+  } catch (err) {
+    console.error("[groq] Choix du modèle impossible, repli sur le nom par défaut :", String(err?.message || err));
+    return IA_MODELES_GROQ_PREFERES[0];
+  }
+}
 /* 8 missions suffisent largement pour un objectif, et un plan plus court
    limite le risque que la réponse JSON soit tronquée en plein milieu
    (ce qui ferait échouer toute la décomposition). */
@@ -2789,7 +2848,19 @@ async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 200
   if (!env.GROQ_API_KEY) throw new Error("GROQ_API_KEY absente du Worker");
 
   const echecs = [];
-  for (const modele of IA_MODELES_GROQ) {
+  const modelesEcartes = [];
+
+  // Deux tentatives : si le modèle choisi est refusé (retiré entre-temps,
+  // surcharge), on l'écarte, on vide le cache et on en choisit un autre.
+  for (let tentative = 0; tentative < 2; tentative++) {
+    let modele;
+    try {
+      modele = await choisirModeleGroq(env, modelesEcartes);
+    } catch (err) {
+      echecs.push(String(err?.message || err).slice(0, 250));
+      break;
+    }
+
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -2809,6 +2880,8 @@ async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 200
       if (!res.ok) {
         const corps = await res.text().catch(() => "");
         echecs.push(`${modele} → HTTP ${res.status} ${corps.slice(0, 200)}`);
+        modelesEcartes.push(modele);
+        _iaModelesGroqCache = null;
         continue;
       }
 
@@ -2816,11 +2889,13 @@ async function appelerGroqJson({ env, systemPrompt, userContent, maxTokens = 200
       const raw = data?.choices?.[0]?.message?.content?.trim();
       if (!raw) {
         echecs.push(`${modele} → réponse vide`);
+        modelesEcartes.push(modele);
         continue;
       }
       return extraireJsonGroq(raw);
     } catch (err) {
       echecs.push(`${modele} → ${String(err?.message || err).slice(0, 200)}`);
+      modelesEcartes.push(modele);
     }
   }
 
@@ -3361,6 +3436,15 @@ async function handleIaDiagnostic(request, env) {
   if (!env.GROQ_API_KEY) {
     rapport.groq = "échec : GROQ_API_KEY absente du Worker";
   } else {
+    _iaModelesGroqCache = null; // un diagnostic doit refléter l'état réel, pas le cache
+    try {
+      const modeles = await listerModelesGroq(env);
+      rapport.modeles_disponibles = modeles.join(", ");
+      rapport.modele_choisi = await choisirModeleGroq(env);
+    } catch (err) {
+      rapport.modeles_disponibles = "échec : " + String(err?.message || err).slice(0, 300);
+    }
+
     const debut = Date.now();
     try {
       const essai = await appelerGroqJson({
@@ -3375,7 +3459,6 @@ async function handleIaDiagnostic(request, env) {
     }
   }
 
-  rapport.modeles_essayes = IA_MODELES_GROQ;
   return jsonResponseCors(rapport, 200, request);
 }
 
@@ -3480,16 +3563,27 @@ async function ecrireMessageIa(env, { objectifId, tacheId = null, deAgent, versA
    sans préavis — si un provider échoue avec une erreur "decommissioned"
    ou "model not found", corrige le modèle via son secret _MODEL sans
    avoir besoin de redéployer du code). */
-function construirePronosticsProviders(env) {
+async function construirePronosticsProviders(env) {
   const providers = [];
 
   // ── Groq : plusieurs modèles distincts hébergés = plusieurs avis indépendants.
-  //    Liste par défaut volontairement courte et conservatrice (modèles stables
-  //    déjà utilisés ailleurs dans ce Worker) ; personnalisable via GROQ_MODELS
-  //    (IDs séparés par des virgules) si tu veux en ajouter/retirer. ──
+  //    Sans GROQ_MODELS, on interroge Groq pour savoir quels modèles la clé
+  //    peut réellement utiliser (les noms en dur finissent toujours par être
+  //    retirés du catalogue) et on en garde deux. ──
   if (env.GROQ_API_KEY) {
-    const modelesGroq = (env.GROQ_MODELS || "llama-3.3-70b-versatile,llama-3.1-8b-instant")
-      .split(",").map(s => s.trim()).filter(Boolean);
+    let modelesGroq;
+    if (env.GROQ_MODELS) {
+      modelesGroq = env.GROQ_MODELS.split(",").map(s => s.trim()).filter(Boolean);
+    } else {
+      try {
+        const disponibles = await listerModelesGroq(env);
+        const preferes = IA_MODELES_GROQ_PREFERES.filter(p => disponibles.includes(p));
+        modelesGroq = (preferes.length ? preferes : disponibles).slice(0, 2);
+      } catch (err) {
+        console.error("[pronostics] Modèles Groq indisponibles :", String(err?.message || err));
+        modelesGroq = [];
+      }
+    }
     modelesGroq.forEach(m => providers.push({
       id: "groq_" + slugifyModel(m), label: `${m} (Groq)`,
       run: (sp, uc) => genererPronosticGroq(m, sp, uc, env)
@@ -3610,7 +3704,7 @@ async function analyserMatchInterne(matchId, env) {
   const systemPrompt = construirePromptPronostic();
   const userContent = construireContenuMatch(match);
 
-  const tousLesProviders = construirePronosticsProviders(env);
+  const tousLesProviders = await construirePronosticsProviders(env);
 
   if (tousLesProviders.length === 0) {
     await patchPronosticsMatch(matchId, { statut: "erreur" }, env);
@@ -4193,7 +4287,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après :
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${env.GROQ_API_KEY}` },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: await modeleGroqOuDefaut(env),
         messages: [{ role: "system", content: systemPrompt }, { role: "user", content: extraitsBruts.join("\n\n") }],
         temperature: 0.1,
         max_tokens: 1200,
